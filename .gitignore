@@ -1,0 +1,9 @@
+# Ignore all personal preferences and settings
+.settings/
+
+# Ignore project output
+bin/
+
+# Ignore game specific persistence files
+highscores.ser
+save.ser
