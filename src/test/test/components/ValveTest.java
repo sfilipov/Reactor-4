@@ -1,4 +1,4 @@
-package tests;
+package components;
 
 import static org.junit.Assert.assertEquals;
 
@@ -7,7 +7,8 @@ import model.FlowType;
 import org.junit.Before;
 import org.junit.Test;
 
-import pcomponents.Valve;
+import components.Valve;
+
 
 
 public class ValveTest {

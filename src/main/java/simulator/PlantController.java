@@ -13,14 +13,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import pcomponents.Condenser;
-import pcomponents.ConnectorPipe;
-import pcomponents.OperatingSoftware;
-import pcomponents.PlantComponent;
-import pcomponents.Pump;
-import pcomponents.Reactor;
-import pcomponents.Turbine;
-import pcomponents.Valve;
+import components.Condenser;
+import components.ConnectorPipe;
+import components.OperatingSoftware;
+import components.PlantComponent;
+import components.Pump;
+import components.Reactor;
+import components.Turbine;
+import components.Valve;
+
 
 import model.HighScore;
 import model.Plant;

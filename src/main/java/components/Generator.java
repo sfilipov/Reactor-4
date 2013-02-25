@@ -1,4 +1,4 @@
-package pcomponents;
+package components;
 
 /**
  * Generator class is used to calculate the power output of the plant

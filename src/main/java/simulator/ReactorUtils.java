@@ -3,15 +3,16 @@ package simulator;
 import java.util.ArrayList;
 import java.util.List;
 
-import pcomponents.Condenser;
-import pcomponents.ConnectorPipe;
-import pcomponents.Generator;
-import pcomponents.OperatingSoftware;
-import pcomponents.PlantComponent;
-import pcomponents.Pump;
-import pcomponents.Reactor;
-import pcomponents.Turbine;
-import pcomponents.Valve;
+import components.Condenser;
+import components.ConnectorPipe;
+import components.Generator;
+import components.OperatingSoftware;
+import components.PlantComponent;
+import components.Pump;
+import components.Reactor;
+import components.Turbine;
+import components.Valve;
+
 
 import model.FlowType;
 import model.Plant;

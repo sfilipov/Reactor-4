@@ -3,9 +3,10 @@ package simulator;
 import java.util.ArrayList;
 import java.util.List;
 
-import pcomponents.PlantComponent;
-import pcomponents.Pump;
-import pcomponents.Valve;
+import components.PlantComponent;
+import components.Pump;
+import components.Valve;
+
 
 import model.Plant;
 

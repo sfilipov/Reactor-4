@@ -21,10 +21,11 @@ import javax.swing.text.DefaultCaret;
 import javax.swing.text.NavigationFilter;
 import javax.swing.text.Position;
 
-import pcomponents.PlantComponent;
-import pcomponents.Pump;
-import pcomponents.Turbine;
-import pcomponents.Valve;
+import components.PlantComponent;
+import components.Pump;
+import components.Turbine;
+import components.Valve;
+
 
 import model.HighScore;
 

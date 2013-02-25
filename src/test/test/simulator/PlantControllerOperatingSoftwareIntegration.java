@@ -1,4 +1,4 @@
-package tests;
+package simulator;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -11,12 +11,13 @@ import model.Repair;
 import org.junit.Before;
 import org.junit.Test;
 
-import pcomponents.OperatingSoftware;
-import pcomponents.PlantComponent;
-import pcomponents.Pump;
-import pcomponents.Reactor;
-import pcomponents.Turbine;
-import pcomponents.Valve;
+import components.OperatingSoftware;
+import components.PlantComponent;
+import components.Pump;
+import components.Reactor;
+import components.Turbine;
+import components.Valve;
+
 
 import simulator.PlantController;
 import simulator.ReactorUtils;

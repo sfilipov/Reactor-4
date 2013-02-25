@@ -27,10 +27,11 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import pcomponents.OperatingSoftware;
-import pcomponents.Pump;
-import pcomponents.Reactor;
-import pcomponents.Turbine;
+import components.OperatingSoftware;
+import components.Pump;
+import components.Reactor;
+import components.Turbine;
+
 
 import model.Repair;
 

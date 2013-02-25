@@ -1,4 +1,4 @@
-package tests;
+package model;
 
 import static org.junit.Assert.assertEquals;
 
@@ -12,9 +12,10 @@ import model.Plant;
 import org.junit.Before;
 import org.junit.Test;
 
-import pcomponents.PlantComponent;
-import pcomponents.Pump;
-import pcomponents.Valve;
+import components.PlantComponent;
+import components.Pump;
+import components.Valve;
+
 
 import simulator.PlantController;
 import simulator.ReactorUtils;

@@ -1,11 +1,12 @@
-package tests;
+package components;
 
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import pcomponents.Pump;
+import components.Pump;
+
 
 import simulator.PlantController;
 import simulator.ReactorUtils;

@@ -1,11 +1,12 @@
-package tests;
+package components;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import pcomponents.Pump;
+import components.Pump;
+
 
 
 public class PumpTest {

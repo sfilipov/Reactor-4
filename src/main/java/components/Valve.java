@@ -1,4 +1,4 @@
-package pcomponents;
+package components;
 
 import model.FlowType;
 

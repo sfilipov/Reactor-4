@@ -1,4 +1,4 @@
-package tests;
+package components;
 
 import static org.junit.Assert.assertEquals;
 
@@ -7,7 +7,8 @@ import model.Plant;
 import org.junit.Before;
 import org.junit.Test;
 
-import pcomponents.Condenser;
+import components.Condenser;
+
 
 import simulator.PlantController;
 import simulator.ReactorUtils;

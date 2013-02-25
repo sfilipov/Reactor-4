@@ -2,7 +2,8 @@ package model;
 
 import java.io.Serializable;
 
-import pcomponents.PlantComponent;
+import components.PlantComponent;
+
 
 
 /**

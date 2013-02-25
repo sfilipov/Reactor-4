@@ -1,4 +1,4 @@
-package pcomponents;
+package components;
 
 import java.util.ArrayList;
 import java.util.HashMap;
