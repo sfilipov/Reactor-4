@@ -13,7 +13,7 @@ import components.Reactor;
 import simulator.PlantController;
 import simulator.ReactorUtils;
 
-public class ReactorTest {
+public class ReactorTests {
 
 	private PlantController presenter; 
 	private ReactorUtils utils;

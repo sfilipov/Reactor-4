@@ -9,7 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 
-public class FlowTest {
+public class FlowTests {
 
 	
 	private Flow flow;

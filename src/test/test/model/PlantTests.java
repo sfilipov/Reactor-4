@@ -19,7 +19,7 @@ import components.PlantComponent;
 import simulator.PlantController;
 import simulator.ReactorUtils;
 
-public class PlantTest {
+public class PlantTests {
 	
 	private PlantController presenter; 
 	private ReactorUtils utils;

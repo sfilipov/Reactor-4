@@ -11,7 +11,7 @@ import components.Valve;
 
 
 
-public class ValveTest {
+public class ValveTests {
 
 	private Valve valve;
 	private int valveID = 4;

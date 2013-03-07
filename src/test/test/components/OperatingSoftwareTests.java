@@ -12,7 +12,7 @@ import components.OperatingSoftware;
 import simulator.PlantController;
 import simulator.ReactorUtils;
 
-public class OperatingSoftwareTest {
+public class OperatingSoftwareTests {
 	private PlantController presenter; 
 	private ReactorUtils utils;
 	private OperatingSoftware OS;

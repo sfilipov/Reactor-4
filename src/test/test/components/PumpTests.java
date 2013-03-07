@@ -9,7 +9,7 @@ import components.Pump;
 
 
 
-public class PumpTest {
+public class PumpTests {
 
 	private Pump pump;
 	private int pumpID = 4;

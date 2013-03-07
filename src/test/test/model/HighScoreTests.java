@@ -8,7 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 
-public class HighScoreTest {
+public class HighScoreTests {
 
 	private HighScore highScore;
 
