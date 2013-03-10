@@ -70,7 +70,7 @@ public class ConnectorPipe extends PlantComponent {
 	 */
 	public ArrayList<PlantComponent> getInputs() {
 		ArrayList<PlantComponent> inputs = new ArrayList<PlantComponent>(this.inputs);
-		inputs.add(this.getInput());
+		if (this.getInput() != null) inputs.add(this.getInput());
 		return inputs;
 	}
 

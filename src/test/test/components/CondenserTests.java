@@ -15,18 +15,11 @@ import simulator.ReactorUtils;
 
 public class CondenserTests {
 
-	private PlantController presenter; 
-	private ReactorUtils utils;
-	private Plant plant;
 	private Condenser condenser;
 
 	@Before
 	public void setUp() {
-		utils = new ReactorUtils();
-		presenter = new PlantController(utils);
-		plant = presenter.getPlant();
 		
-		condenser = plant.getCondenser();
 	}
 	
 	@Test
