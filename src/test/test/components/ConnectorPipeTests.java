@@ -21,16 +21,16 @@ import components.PlantComponent;
 public class ConnectorPipeTests {
 
 	// Main ConnectorPipe object for testing.
-	ConnectorPipe cp;
+	ConnectorPipe connectorPipe;
 
 	@Before
 	public void setUp() {
-		cp = new ConnectorPipe();
+		connectorPipe = new ConnectorPipe();
 	}
 
 	@After
 	public void tearDown() {
-		cp = null;
+		connectorPipe = null;
 	}
 
 	@Test
@@ -38,9 +38,9 @@ public class ConnectorPipeTests {
 
 		PlantComponent newInput = new Pump(1);
 
-		cp.addInput(newInput);
+		connectorPipe.addInput(newInput);
 
-		assertSame(newInput, cp.getInputs().get(0));
+		assertSame(newInput, connectorPipe.getInputs().get(0));
 	}
 
 	/*
@@ -52,7 +52,7 @@ public class ConnectorPipeTests {
 
 		List<PlantComponent> expectedInputs = setupMultipleInputs();
 
-		assertTrue(cp.getInputs().containsAll(expectedInputs));
+		assertTrue(connectorPipe.getInputs().containsAll(expectedInputs));
 	}
 
 	/*
@@ -63,7 +63,7 @@ public class ConnectorPipeTests {
 	public void getInputs_shouldReturnExactNumberOfInputs() {
 		List<PlantComponent> expectedInputs = setupMultipleInputs();
 
-		assertEquals(expectedInputs.size(), cp.getInputs().size());
+		assertEquals(expectedInputs.size(), connectorPipe.getInputs().size());
 	}
 
 	@Test
@@ -71,9 +71,9 @@ public class ConnectorPipeTests {
 
 		PlantComponent newOutput = new Pump(99);
 
-		cp.addOutput(newOutput);
+		connectorPipe.addOutput(newOutput);
 
-		assertSame(newOutput, cp.getOutputs().get(0));
+		assertSame(newOutput, connectorPipe.getOutputs().get(0));
 	}
 
 	/*
@@ -85,7 +85,7 @@ public class ConnectorPipeTests {
 
 		List<PlantComponent> expectedOutputs = setupMultipleOutputs();
 
-		assertTrue(cp.getOutputs().containsAll(expectedOutputs));
+		assertTrue(connectorPipe.getOutputs().containsAll(expectedOutputs));
 
 	}
 
@@ -95,7 +95,7 @@ public class ConnectorPipeTests {
 		List<PlantComponent> expectedOutputs = setupMultipleOutputs();
 
 		// Assert that there should not be any extra objects in the list.
-		assertEquals(expectedOutputs.size(), cp.getOutputs().size());
+		assertEquals(expectedOutputs.size(), connectorPipe.getOutputs().size());
 
 	}
 
@@ -106,7 +106,7 @@ public class ConnectorPipeTests {
 
 		// Assert that every boolean in a fresh outputs map should be false.
 		// Hence, all outputs are initially unblocked.
-		for (Boolean blocked : cp.getOutputsMap().values()) {
+		for (Boolean blocked : connectorPipe.getOutputsMap().values()) {
 			assertTrue(!blocked);
 		}
 		
@@ -117,7 +117,7 @@ public class ConnectorPipeTests {
 		
 		List<PlantComponent> expectedOutputs = setupMultipleOutputs();
 
-		Map<PlantComponent, Boolean> outputsMap = cp.getOutputsMap();
+		Map<PlantComponent, Boolean> outputsMap = connectorPipe.getOutputsMap();
 		Set<PlantComponent> plantComponentsInMap = outputsMap.keySet();
 
 		assertTrue(plantComponentsInMap.containsAll(expectedOutputs));
@@ -132,8 +132,8 @@ public class ConnectorPipeTests {
 		// This is tested in getOutputsMap_allOutputsShouldInitiallyBeUnblocked.
 		
 		for (PlantComponent pc : outputs) {
-			cp.setComponentBlocked(pc);
-			outputsMap = cp.getOutputsMap();
+			connectorPipe.setComponentBlocked(pc);
+			outputsMap = connectorPipe.getOutputsMap();
 			assertTrue(outputsMap.get(pc));
 		}
 	}
@@ -145,7 +145,7 @@ public class ConnectorPipeTests {
 		
 		PlantComponent notAConnectedOutput = new Pump(50);
 		
-		cp.setComponentBlocked(notAConnectedOutput);
+		connectorPipe.setComponentBlocked(notAConnectedOutput);
 	}
 	
 	@Test
@@ -157,17 +157,17 @@ public class ConnectorPipeTests {
 		// This is tested in getOutputsMap_allOutputsShouldInitiallyBeUnblocked.
 		int numUnblockedOutputs = outputs.size();
 		
-		assertEquals(numUnblockedOutputs, cp.numOutputs());
+		assertEquals(numUnblockedOutputs, connectorPipe.numOutputs());
 		
 		// Block each output in turn and check that there is 1 less open
 		// output each time.
 		for (PlantComponent pc : outputs) {
-			cp.setComponentBlocked(pc);
+			connectorPipe.setComponentBlocked(pc);
 			numUnblockedOutputs--;
-			assertEquals(numUnblockedOutputs, cp.numOutputs());
+			assertEquals(numUnblockedOutputs, connectorPipe.numOutputs());
 		}
 		
-		assertEquals(0, cp.numOutputs());
+		assertEquals(0, connectorPipe.numOutputs());
 		
 	}
 
@@ -178,13 +178,13 @@ public class ConnectorPipeTests {
 		
 		// Block all output paths.
 		for (PlantComponent pc : outputs) {
-			cp.setComponentBlocked(pc);
+			connectorPipe.setComponentBlocked(pc);
 		}
 		
-		cp.resetState();
+		connectorPipe.resetState();
 		
 		// Assert that all output paths are now unblocked.
-		for (Boolean blocked : cp.getOutputsMap().values()) {
+		for (Boolean blocked : connectorPipe.getOutputsMap().values()) {
 			assertTrue(!blocked);
 		}
 		
@@ -204,9 +204,9 @@ public class ConnectorPipeTests {
 		PlantComponent newOutputB = new Reactor();
 		PlantComponent newOutputC = new Pump(88);
 
-		cp.addOutput(newOutputA);
-		cp.addOutput(newOutputB);
-		cp.addOutput(newOutputC);
+		connectorPipe.addOutput(newOutputA);
+		connectorPipe.addOutput(newOutputB);
+		connectorPipe.addOutput(newOutputC);
 
 		List<PlantComponent> expectedOutputList = new ArrayList<PlantComponent>();
 		expectedOutputList.add(newOutputA);
@@ -221,9 +221,9 @@ public class ConnectorPipeTests {
 		PlantComponent newInputB = new Pump(99);
 		PlantComponent newInputC = new Reactor();
 
-		cp.addInput(newInputA);
-		cp.addInput(newInputB);
-		cp.addInput(newInputC);
+		connectorPipe.addInput(newInputA);
+		connectorPipe.addInput(newInputB);
+		connectorPipe.addInput(newInputC);
 
 		List<PlantComponent> expectedInputList = new ArrayList<PlantComponent>();
 		expectedInputList.add(newInputA);
