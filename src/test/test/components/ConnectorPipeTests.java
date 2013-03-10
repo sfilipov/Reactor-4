@@ -1,83 +1,235 @@
 package components;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import model.Plant;
+import model.FlowType;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import components.ConnectorPipe;
 import components.PlantComponent;
 
-
-import simulator.PlantController;
-import simulator.ReactorUtils;
-
 public class ConnectorPipeTests {
 
-	private PlantController presenter; 
-	private ReactorUtils utils;
-	private Plant plant;
+	// Main ConnectorPipe object for testing.
+	ConnectorPipe cp;
 
 	@Before
 	public void setUp() {
-		utils = new ReactorUtils();
-		presenter = new PlantController(utils);
-		plant = presenter.getPlant();
+		cp = new ConnectorPipe();
+	}
+
+	@After
+	public void tearDown() {
+		cp = null;
+	}
+
+	@Test
+	public void getInputs_shouldReturnCorrectInputs() {
+
+		PlantComponent newInput = new Pump(1);
+
+		cp.addInput(newInput);
+
+		assertSame(newInput, cp.getInputs().get(0));
+	}
+
+	/*
+	 * Asserts that all connected inputs are included in the list returned by
+	 * getInputs(). However the order of the objects does not matter.
+	 */
+	@Test
+	public void getInputs_shouldReturnAllConnectedInputs() {
+
+		List<PlantComponent> expectedInputs = setupMultipleInputs();
+
+		assertTrue(cp.getInputs().containsAll(expectedInputs));
+	}
+
+	/*
+	 * Asserts that there should not be any extra objects included in the list
+	 * of inputs returned by getInputs.
+	 */
+	@Test
+	public void getInputs_shouldReturnExactNumberOfInputs() {
+		List<PlantComponent> expectedInputs = setupMultipleInputs();
+
+		assertEquals(expectedInputs.size(), cp.getInputs().size());
+	}
+
+	@Test
+	public void getOutputs_shouldReturnCorrectOutputs() {
+
+		PlantComponent newOutput = new Pump(99);
+
+		cp.addOutput(newOutput);
+
+		assertSame(newOutput, cp.getOutputs().get(0));
+	}
+
+	/*
+	 * Asserts that all connected outputs are included in the list returned by
+	 * getOutputs(). However the order of the objects does not matter.
+	 */
+	@Test
+	public void getOutputs_shouldReturnAllOutputs() {
+
+		List<PlantComponent> expectedOutputs = setupMultipleOutputs();
+
+		assertTrue(cp.getOutputs().containsAll(expectedOutputs));
+
+	}
+
+	@Test
+	public void getOutputs_shouldReturnExactNumberOfOutputs() {
+
+		List<PlantComponent> expectedOutputs = setupMultipleOutputs();
+
+		// Assert that there should not be any extra objects in the list.
+		assertEquals(expectedOutputs.size(), cp.getOutputs().size());
+
+	}
+
+	@Test
+	public void getOutputsMap_allOutputsShouldInitiallyBeUnblocked() {
+
+		setupMultipleOutputs();
+
+		// Assert that every boolean in a fresh outputs map should be false.
+		// Hence, all outputs are initially unblocked.
+		for (Boolean blocked : cp.getOutputsMap().values()) {
+			assertTrue(!blocked);
+		}
+		
+	}
+
+	@Test
+	public void getOutputsMap_shouldReturnMapContainingAllOutputs() {
+		
+		List<PlantComponent> expectedOutputs = setupMultipleOutputs();
+
+		Map<PlantComponent, Boolean> outputsMap = cp.getOutputsMap();
+		Set<PlantComponent> plantComponentsInMap = outputsMap.keySet();
+
+		assertTrue(plantComponentsInMap.containsAll(expectedOutputs));
+	}
+
+	@Test
+	public void setComponentBlocked_shouldActuallyBlockComponent() {
+		
+		List<PlantComponent> outputs = setupMultipleOutputs();
+		Map<PlantComponent, Boolean> outputsMap;
+		// Assume that initially, all outputs are unblocked.
+		// This is tested in getOutputsMap_allOutputsShouldInitiallyBeUnblocked.
+		
+		for (PlantComponent pc : outputs) {
+			cp.setComponentBlocked(pc);
+			outputsMap = cp.getOutputsMap();
+			assertTrue(outputsMap.get(pc));
+		}
+	}
+	
+	@Test (expected=IllegalArgumentException.class)
+	public void setComponentBlocked_shouldThrowExceptionIfComponentIsNotAnOutput() {
+		
+		setupMultipleOutputs();
+		
+		PlantComponent notAConnectedOutput = new Pump(50);
+		
+		cp.setComponentBlocked(notAConnectedOutput);
 	}
 	
 	@Test
-	public void testGetInputs() {
+	public void numOutputs_shouldReturnNumberOfUnblockedOutputs() {
 		
-		ConnectorPipe connectorPipe = new ConnectorPipe();
+		List<PlantComponent> outputs = setupMultipleOutputs();
 		
-		PlantComponent newInput = plant.getPlantComponents().get(0);
+		// Assume that initially, all outputs are unblocked.
+		// This is tested in getOutputsMap_allOutputsShouldInitiallyBeUnblocked.
+		int numUnblockedOutputs = outputs.size();
 		
-		connectorPipe.addInput(newInput);
+		assertEquals(numUnblockedOutputs, cp.numOutputs());
 		
+		// Block each output in turn and check that there is 1 less open
+		// output each time.
+		for (PlantComponent pc : outputs) {
+			cp.setComponentBlocked(pc);
+			numUnblockedOutputs--;
+			assertEquals(numUnblockedOutputs, cp.numOutputs());
+		}
+		
+		assertEquals(0, cp.numOutputs());
+		
+	}
+
+	@Test
+	public void resetState_shouldSetAllOutputsToUnblocked() {
+		
+		List<PlantComponent> outputs = setupMultipleOutputs();
+		
+		// Block all output paths.
+		for (PlantComponent pc : outputs) {
+			cp.setComponentBlocked(pc);
+		}
+		
+		cp.resetState();
+		
+		// Assert that all output paths are now unblocked.
+		for (Boolean blocked : cp.getOutputsMap().values()) {
+			assertTrue(!blocked);
+		}
+		
+	}
+
+	// --------- Helper Methods :) ---------
+	
+	/*
+	 * Connects several components to cp as outputs, and returns a list 
+	 * of those components.
+	 * 
+	 * returns a list of components that have just been connected to the
+	 * ConnectorPipe, cp, as outputs.
+	 */
+	private List<PlantComponent> setupMultipleOutputs() {
+		PlantComponent newOutputA = new Valve(99, FlowType.Water);
+		PlantComponent newOutputB = new Reactor();
+		PlantComponent newOutputC = new Pump(88);
+
+		cp.addOutput(newOutputA);
+		cp.addOutput(newOutputB);
+		cp.addOutput(newOutputC);
+
+		List<PlantComponent> expectedOutputList = new ArrayList<PlantComponent>();
+		expectedOutputList.add(newOutputA);
+		expectedOutputList.add(newOutputB);
+		expectedOutputList.add(newOutputC);
+
+		return expectedOutputList;
+	}
+
+	private List<PlantComponent> setupMultipleInputs() {
+		PlantComponent newInputA = new Valve(99, FlowType.Water);
+		PlantComponent newInputB = new Pump(99);
+		PlantComponent newInputC = new Reactor();
+
+		cp.addInput(newInputA);
+		cp.addInput(newInputB);
+		cp.addInput(newInputC);
+
 		List<PlantComponent> expectedInputList = new ArrayList<PlantComponent>();
-		expectedInputList.add(newInput);
-		expectedInputList.add(null);
-		
-		assertEquals("Result", expectedInputList, connectorPipe.getInputs());
-		
-	}
-	
-	@Test
-	public void testGetOutputs() {
-		
-		ConnectorPipe connectorPipe = new ConnectorPipe();
-		
-		PlantComponent newOutput = plant.getPlantComponents().get(0);
-		
-		connectorPipe.addOutput(newOutput);
-		
-		Map<PlantComponent, Boolean> expectedOutputMap = new HashMap<PlantComponent, Boolean>();
-		expectedOutputMap.put(newOutput, false);
-		
-		assertEquals("Result", expectedOutputMap, connectorPipe.getOutputsMap());
-		
-	}
-	
-	@Test
-	public void testNumOutputs() {
-		
-		ConnectorPipe connectorPipe = new ConnectorPipe();
-		
-		PlantComponent newOutput1 = plant.getPlantComponents().get(0);
-		PlantComponent newOutput2 = plant.getPlantComponents().get(1);
-		
-		connectorPipe.addOutput(newOutput1);
-		connectorPipe.addOutput(newOutput2);
-		
-		assertEquals("Result", 2, connectorPipe.numOutputs());
-		
+		expectedInputList.add(newInputA);
+		expectedInputList.add(newInputB);
+		expectedInputList.add(newInputC);
+		return expectedInputList;
 	}
 
 }
