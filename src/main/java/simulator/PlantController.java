@@ -643,7 +643,7 @@ public class PlantController {
 	{
 		Reactor reactor = this.plant.getReactor();
 		Condenser condenser = this.plant.getCondenser();
-		reactor.updateSteamVolume(-reactor.getFlowOut().getRate());
+		reactor.addSteamVolume(-reactor.getFlowOut().getRate());
 		condenser.updateSteamVolume(condenser.getInput().getFlowOut().getRate());
 	}
 

@@ -2,61 +2,59 @@ package components;
 
 import static org.junit.Assert.assertEquals;
 
-import model.Plant;
-
 import org.junit.Before;
 import org.junit.Test;
 
-import components.Reactor;
-
-
-import simulator.PlantController;
-import simulator.ReactorUtils;
-
 public class ReactorTests {
-
-	private PlantController presenter; 
-	private ReactorUtils utils;
-	private Plant plant;
 	private Reactor reactor;
 
 	@Before
 	public void setUp() {
-		utils = new ReactorUtils();
-		presenter = new PlantController(utils);
-		plant = presenter.getPlant();
-		reactor = plant.getReactor();
+		reactor = new Reactor();
 	}
 	
 	@Test
-	public void testUpdateWaterVolume() {
-		
+	public void updateWaterVolume_pumpedInPositive_addsToWaterVolume() {
 		int waterVolume = reactor.getWaterVolume();
+		reactor.updateWaterVolume(100);
 		
-		reactor.updateWaterVolume(300);
+		assertEquals(waterVolume + 100, reactor.getWaterVolume());
+	}	
+	
+	@Test
+	public void updateWaterVolume_pumpedInZero_sameWaterVolume() {
+		int waterVolume = reactor.getWaterVolume();
+		reactor.updateWaterVolume(0);
 		
-		assertEquals("Result", waterVolume+300, reactor.getWaterVolume());
-		
+		assertEquals(waterVolume, reactor.getWaterVolume());
+	}
+	
+	@Test (expected=IllegalArgumentException.class)
+	public void updateWaterVolume_pumpedInNegative_throwsException() {
+		reactor.updateWaterVolume(-100);
 	}
 	
 	@Test
-	public void testUpdateSteamVolume() {
-		
+	public void addSteamVolume_volumePositive_addsToSteamVolume() {
 		int steamVolume = reactor.getSteamVolume();
+		reactor.addSteamVolume(100);
 		
-		reactor.updateSteamVolume(300);
-		
-		assertEquals("Result", steamVolume+300, reactor.getSteamVolume());
-		
+		assertEquals(steamVolume+100, reactor.getSteamVolume());
 	}
 	
 	@Test
-	public void testUpdatePressure() {
+	public void addSteamVolume_volumeZero_sameSteamVolume() {
+		int steamVolume = reactor.getSteamVolume();
+		reactor.addSteamVolume(100);
 		
-		int expectedPressure = (int) Math.round(new Double(reactor.getSteamVolume()) * 0.15);
-		
-		assertEquals("Result", expectedPressure, reactor.getPressure());
-		
+		assertEquals(steamVolume+100, reactor.getSteamVolume());
 	}
-
+	
+	@Test
+	public void addSteamVolume_volumeNegative_subtractsFromSteamVolume() {
+		int steamVolume = reactor.getSteamVolume();
+		reactor.addSteamVolume(100);
+		
+		assertEquals(steamVolume+100, reactor.getSteamVolume());
+	}
 }

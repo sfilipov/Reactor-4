@@ -47,7 +47,6 @@ public class Reactor extends PlantComponent {
 	private int health;
 	private ControlRod controlRod;
 	private int waterPumpedIn;
-	private int steamOut;
 	
 	public Reactor() {
 		super(0,0,true,true); // Never fails, is operational and is pressurised.
@@ -117,11 +116,17 @@ public class Reactor extends PlantComponent {
 	 * Also stores the amount of water pumped in for future calculations.
 	 * This method should only be called once per timeStep.
 	 * 
-	 * @param amount amount of water to add to the total in the reactor
+	 * @param pumpedIn amount of water to add to the total in the reactor
 	 */
-	public void updateWaterVolume(int amount) {
-		this.waterPumpedIn = amount; // allows for only 1 call per step.
-		this.waterVolume += amount;
+	public void updateWaterVolume(int pumpedIn) {
+		if (pumpedIn < 0) {
+			throw new IllegalArgumentException("The volume of the water pumped in cannot be negative.");
+
+		}
+		else {
+			this.waterPumpedIn = pumpedIn; // allows for only 1 call per step.
+			this.waterVolume += pumpedIn;
+		}
 	}
 	
 	/** 
@@ -141,8 +146,7 @@ public class Reactor extends PlantComponent {
 	 *  
 	 * @param amount the amount of steam to add to the volume
 	 */
-	public void updateSteamVolume(int amount) {
-		if (amount < 0) this.steamOut = amount; 
+	public void addSteamVolume(int amount) {
 		this.steamVolume += amount;
 	}
 
