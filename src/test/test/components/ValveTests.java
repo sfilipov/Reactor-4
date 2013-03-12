@@ -23,22 +23,34 @@ public class ValveTests {
 		this.valve = new Valve(this.valveID, this.valveFlowType, this.valveOpen);
 	}
 	
+	/*
+	 * Asserts the getID method returns the same value that the Pump was instantiated with(this.valveId).
+	 */
 	@Test
-	public void testGetID() {
+	public void testGetIDReturnsTheCorrectValue() {
 		
-		assertEquals("Result", this.valveID, valve.getID());
+		assertEquals( this.valveID, valve.getID());
 		
 	}
 	
+	/*
+	 * Asserts that when the valveOpen variable is set to true, the isOpen method returns the same value
+	 */
 	@Test
-	public void testIsOpen() {
+	public void testValveCanBeSetToOpen() {		
 		
-		assertEquals("Result", valveOpen, valve.isOpen());
-		
-		valve.setOpen(false);
-		
-		assertEquals("Result", false, valve.isOpen());
-		
+		valve.setOpen(true);		
+		assertEquals(true, valve.isOpen());		
 	}
+	
+	/*
+	 * Asserts that when the valveOpen variable is set to false, the isOpen method returns the same value
+	 */
+	@Test
+	public void testValveCanBeSetToClosed() {		
+		
+		valve.setOpen(false);		
+		assertEquals(false, valve.isOpen());	
+	}	
 
 }

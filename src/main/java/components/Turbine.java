@@ -54,8 +54,8 @@ public class Turbine extends PlantComponent {
 		return (this.isOperational()) ? rpm : 0;
 	}
 	
-	//for testing
-	public void setRpm(int rpm){
+	public void setRpm (int rpm) { 
 		this.rpm = rpm;
-	}
+	}	
+
 }
