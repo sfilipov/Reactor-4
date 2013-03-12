@@ -1,43 +1,34 @@
 package model;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import model.HighScore;
-
-import org.junit.Before;
 import org.junit.Test;
 
-
-public class HighScoreTests {
-
-	private HighScore highScore;
-
-	@Before
-	public void setUp() {
-		this.highScore = new HighScore("Bob", 1233);
+public class HighScoreTests {	
+	@Test
+	public void compareTo_firstLessThanSecond_returnsNegative() {
+		HighScore firstScore  = new HighScore("Alice", 1000);
+		HighScore secondScore = new HighScore("Bob", 2000);
+		int result = firstScore.compareTo(secondScore);
+		
+		assertTrue(result < 0);
 	}
 	
 	@Test
-	public void testGetName() {
+	public void compareTo_firstGreaterThanSecond_returnsPositive() {
+		HighScore firstScore  = new HighScore("Alice", 2000);
+		HighScore secondScore = new HighScore("Bob", 1000);
+		int result = firstScore.compareTo(secondScore);
 		
-		assertEquals("Result", "Bob", this.highScore.getName());
-		
+		assertTrue(result > 0);
 	}
 	
 	@Test
-	public void testGetHighScore() {
+	public void compareTo_firstEqualToSecond_returnsZero() {
+		HighScore firstScore  = new HighScore("Alice", 1000);
+		HighScore secondScore = new HighScore("Bob", 1000);
+		int result = firstScore.compareTo(secondScore);
 		
-		assertEquals("Result", 1233, this.highScore.getHighScore());
-		
+		assertTrue(result == 0);
 	}
-	
-	@Test
-	public void testCompareTo() {
-		
-		HighScore anotherHighScore = new HighScore("George", 540);
-		
-		assertEquals("Result", (1233 - 540), this.highScore.compareTo(anotherHighScore));
-		
-	}
-
 }
