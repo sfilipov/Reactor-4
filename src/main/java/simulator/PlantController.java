@@ -381,7 +381,6 @@ public class PlantController {
 				break;
 			}
 		}
-		this.plant.updateTimeStepsUsed(numSteps);
 		//printFlowDebugInfo();
 	}
 	
@@ -467,7 +466,6 @@ public class PlantController {
 	 */
 	private void printDebugInfo() {
 		System.out.println("--------------------------");
-		System.out.println("--   Time Step No.: " + this.plant.getTimeStepsUsed() + "\t--");
 		System.out.println("--        Reactor       --");
 		System.out.println("-- Health:\t" + this.plant.getReactor().getHealth() + "\t--");
 		System.out.println("-- Steam Vol:\t" + this.plant.getReactor().getSteamVolume() + "\t--");

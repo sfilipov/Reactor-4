@@ -1,134 +1,103 @@
 package model;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import model.HighScore;
-import model.Plant;
-
 import org.junit.Before;
 import org.junit.Test;
 
+import components.Condenser;
 import components.PlantComponent;
-
-
-import simulator.PlantController;
-import simulator.ReactorUtils;
+import components.Reactor;
+import components.Turbine;
 
 public class PlantTests {
 	
-	private PlantController presenter; 
-	private ReactorUtils utils;
 	private Plant plant;
 
 	@Before
 	public void setUp() {
-		utils = new ReactorUtils();
-		presenter = new PlantController(utils);
-		plant = presenter.getPlant();
+		plant = new Plant();
 	}
 	
 	@Test
-	public void testOperatorName() {
-		
-		plant.setOperatorName("Bob");
-		
-		assertEquals("Result", "Bob", plant.getOperatorName());
-		
+	public void getReactor_noReactor_returnsNull() {
+		assertNull(plant.getReactor());
 	}
 	
 	@Test
-	public void testSetPaused() {
+	public void getReactor_reactorExists_returnsTheReactor() {
+		ArrayList<PlantComponent> components = new ArrayList<PlantComponent>();
+		Reactor reactor = new Reactor();
+		components.add(reactor);
+		plant.setPlantComponents(components);
 		
-		plant.setPaused(true);
-		
-		assertTrue("Result", plant.isPaused());
-		
+		assertSame(reactor, plant.getReactor());
 	}
 	
 	@Test
-	public void testGetReactor() {
-		
-		assertNotNull(plant.getReactor());
-		
+	public void getCondenser_noCondenser_returnsNull() {
+		assertNull(plant.getCondenser());
 	}
 	
 	@Test
-	public void testGetCondenser() {
+	public void getCondenser_condenserExists_returnsTheCondenser() {
+		ArrayList<PlantComponent> components = new ArrayList<PlantComponent>();
+		Condenser condenser = new Condenser(null);
+		components.add(condenser);
+		plant.setPlantComponents(components);
 		
-		assertNotNull(plant.getCondenser());
-		
+		assertSame(condenser, plant.getCondenser());
 	}
 	
 	@Test
-	public void testGetTurbine() {
-		
-		assertNotNull(plant.getTurbine());
-		
+	public void getTurbine_noTurbine_returnsNull() {
+		assertNull(plant.getTurbine());
 	}
 	
 	@Test
-	public void testGetGenerator() {
+	public void getTurbine_turbineExists_returnsTheTurbine() {
+		ArrayList<PlantComponent> components = new ArrayList<PlantComponent>();
+		Turbine turbine = new Turbine(0);
+		components.add(turbine);
+		plant.setPlantComponents(components);
 		
-		assertNotNull(plant.getGenerator());
-		
+		assertSame(turbine, plant.getTurbine());
 	}
 	
 	@Test
-	public void testSetGetHighScores() {
-		
+	public void getHighScores_noHighScores_returnsEmptyList() {
+		assertTrue(plant.getHighScores().isEmpty());
+	}
+	
+	@Test 
+	public void getHighScores_aHighScore_returnsTheHighScore() {
 		List<HighScore> highScores = new ArrayList<HighScore>();
-		highScores.add(new HighScore("Bob", 345));
-		highScores.add(new HighScore("George", 1023));
-		
+		HighScore highScore = new HighScore("Alice", 10000);
+		highScores.add(highScore);
 		plant.setHighScores(highScores);
 		
-		assertEquals("Result", highScores, plant.getHighScores());
-		
+		assertSame(highScore, plant.getHighScores().get(0));
+		assertTrue(plant.getHighScores().size() == 1);
 	}
 	
-	@Test
-	public void testUpdateTimeStepsUsed() {
-		
-		int timeStepsUsed = plant.getTimeStepsUsed();
-		int expected = timeStepsUsed + 10;
-		
-		plant.updateTimeStepsUsed(10);
-		
-		assertEquals("Result", expected, plant.getTimeStepsUsed());
-		
-	}
-	
-	@Test
-	public void testAddFailedComponents() {
-		
-		// add a component to the failed component list
-		PlantComponent component = plant.getPlantComponents().get(0);
-		plant.addFailedComponent(component);
-		
-		// the failed component list should now contain the above component
-		List<PlantComponent> expectedList = new ArrayList<PlantComponent>();
-		expectedList.add(component);
-		
-		// get the failed component list
-		List<PlantComponent> failedComponents = plant.getFailedComponents();
-		
-		// does the failed component list match the expected list?
-		assertEquals("Result", expectedList, failedComponents);
-		
-	}
-	
-	@Test
-	public void testGameOver() {
-		
-		plant.gameOver();
-		
-		assertTrue(plant.isGameOver());
-		
-	}
-
+	//To be implemented soon.
+//	@Test 
+//	public void getHighScores_twoHighScores_returnsSortedHighScores() {
+//		List<HighScore> highScores = new ArrayList<HighScore>();
+//		HighScore smallerHighScore = new HighScore("Alice", 10000);
+//		HighScore biggerHighScore = new HighScore("Bob", 20000);
+//		highScores.add(smallerHighScore);
+//		highScores.add(biggerHighScore);
+//		plant.setHighScores(highScores);
+//		
+//		assertSame(biggerHighScore, plant.getHighScores().get(0));
+//		assertSame(smallerHighScore, plant.getHighScores().get(1));
+//		assertTrue(plant.getHighScores().size() == 2);
+//	}
 }

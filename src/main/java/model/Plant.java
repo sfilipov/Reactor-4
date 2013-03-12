@@ -40,10 +40,6 @@ public class Plant implements Serializable {
 	// is the game over
 	private boolean gameOver;
 	
-	//how many timesteps have passed since the plant is created
-	//used to calculate the score - the more timesteps have passed
-	//the higher the score
-	private int timeStepsUsed;
 	
 	//operator's score
 	private int score;
@@ -80,7 +76,6 @@ public class Plant implements Serializable {
 	public Plant() {
 		this.operatorName = null;
 		this.gameOver = false;
-		this.timeStepsUsed = 0;
 		this.score = 0;
 		this.beingRepaired = new ArrayList<Repair>();
 		this.isPaused = false;
@@ -117,12 +112,11 @@ public class Plant implements Serializable {
 	/**
 	 * Updates the score.
 	 * 
-	 * Calculates the score based on the power output of the generator
-	 * and the number of time steps passed since the start of the game.
+	 * Calculates the score based on the power output of the generator.
 	 */
 	public void calcScore() {
 		int powerOutput = getGenerator().getPowerOutput();
-		this.score += powerOutput * (/*this.timeStepsUsed + */10);
+		this.score += powerOutput * 10;
 	}
 
 	/**
@@ -224,15 +218,14 @@ public class Plant implements Serializable {
 	{
 		if (this.condenser != null) {
 			return this.condenser;
-		} else {
-			for (PlantComponent pc : this.plantComponents) {
-				if (pc instanceof Condenser) {
-					this.condenser = (Condenser) pc;
-					return this.condenser;
-				}
-			}
-			return null; // No condenser found?!
 		}
+		for (PlantComponent pc : this.plantComponents) {
+			if (pc instanceof Condenser) {
+				this.condenser = (Condenser) pc;
+				return this.condenser;
+			}
+		}
+		return null; // No condenser found?!
 	}
 	
 	/**
@@ -256,15 +249,16 @@ public class Plant implements Serializable {
 	 * @return the turbine of the plant.
 	 */
 	public Turbine getTurbine() {
-		Turbine turbine = null;
 		if (this.turbine != null) {
 			return this.turbine;
 		}
 		for (PlantComponent pc : this.plantComponents) {
-			if (pc instanceof Turbine) turbine = (Turbine) pc;
+			if (pc instanceof Turbine) {
+				this.turbine = (Turbine) pc;
+				return this.turbine;
+			}
 		}
-		this.turbine = turbine;
-		return turbine;
+		return null;
 	}
 	
 	/**
@@ -305,7 +299,7 @@ public class Plant implements Serializable {
 	 */
 	public List<HighScore> getHighScores() {
 		if(this.highScores.size() > 20) {
-			this.highScores = this.highScores.subList(0, 20); //Trims the high scores list to only the first 10 elements
+			this.highScores = this.highScores.subList(0, 20); //Trims the high scores list to only the first 20 elements
 		}
 		return this.highScores;
 	}
@@ -319,23 +313,6 @@ public class Plant implements Serializable {
 	 */
 	public void setHighScores(List<HighScore> highScores) {
 		this.highScores = highScores;
-	}
-	
-	/**
-	 * 
-	 * @return number of steps passed since the start of the game
-	 */
-	public int getTimeStepsUsed() {
-		return timeStepsUsed;
-	}
-	
-	/**
-	 * Adds "n" steps to timeStepsUsed.
-	 * 
-	 * @param n number of steps to be added
-	 */
-	public void updateTimeStepsUsed(int n) {
-		if (n > 0) timeStepsUsed += n;
 	}
 
 	/**
