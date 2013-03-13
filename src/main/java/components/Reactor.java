@@ -118,10 +118,9 @@ public class Reactor extends PlantComponent {
 	 * 
 	 * @param pumpedIn amount of water to add to the total in the reactor
 	 */
-	public void updateWaterVolume(int pumpedIn) {
+	public void updateWaterVolume(int pumpedIn) throws IllegalArgumentException {
 		if (pumpedIn < 0) {
 			throw new IllegalArgumentException("The volume of the water pumped in cannot be negative.");
-
 		}
 		else {
 			this.waterPumpedIn = pumpedIn; // allows for only 1 call per step.
