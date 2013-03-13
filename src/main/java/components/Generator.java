@@ -26,9 +26,6 @@ public class Generator extends PlantComponent {
 		this.powerOutput = 0;
 	}
 	
-	/**
-	 * Updates the value of the power output based on the RPM of the turbine.
-	 */
 	@Override
 	public void updateState() {
 	}
