@@ -6,12 +6,14 @@ import java.util.List;
 
 import components.Condenser;
 import components.ConnectorPipe;
+import components.FailableComponent;
 import components.Generator;
 import components.OperatingSoftware;
 import components.PlantComponent;
 import components.Pump;
 import components.Reactor;
 import components.Turbine;
+import components.Updatable;
 import components.Valve;
 
 
@@ -57,7 +59,7 @@ public class Plant implements Serializable {
 	private List<PlantComponent> plantComponents;
 	
 	//a list of components that have failed
-	private List<PlantComponent> failedComponents;
+	private List<FailableComponent> failedComponents;
 	
 	
 	private Reactor reactor;
@@ -81,7 +83,7 @@ public class Plant implements Serializable {
 		this.isPaused = false;
 		this.highScores = new ArrayList<HighScore>();
 		this.plantComponents = new ArrayList<PlantComponent>();
-		this.failedComponents = new ArrayList<PlantComponent>();
+		this.failedComponents = new ArrayList<FailableComponent>();
 	}
 	
 	/**
@@ -331,6 +333,16 @@ public class Plant implements Serializable {
 		return plantComponents;
 	}
 	
+	public List<FailableComponent> getFailableComponents() {
+		ArrayList<FailableComponent> failableComponents = new ArrayList<FailableComponent>();
+		for (PlantComponent plantComponent : plantComponents) {
+			if(plantComponent instanceof FailableComponent) {
+				failableComponents.add((FailableComponent)plantComponent);
+			}
+		}
+		return failableComponents;
+	}
+	
 	/**
 	 * 
 	 * @param plantComponents   list of all plant components
@@ -343,7 +355,7 @@ public class Plant implements Serializable {
 	 * 
 	 * @return all failed (non-operational) components (including those that are being repaired)
 	 */
-	public List<PlantComponent> getFailedComponents() {
+	public List<FailableComponent> getFailedComponents() {
 		return failedComponents;
 	}
 	
@@ -353,7 +365,7 @@ public class Plant implements Serializable {
 	 * 
 	 * @param failedComponent
 	 */
-	public void addFailedComponent(PlantComponent failedComponent) {
+	public void addFailedComponent(FailableComponent failedComponent) {
 		if (!this.failedComponents.contains(failedComponent)) {
 			this.failedComponents.add(failedComponent);
 		}

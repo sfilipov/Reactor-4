@@ -18,7 +18,7 @@ import java.util.Random;
  * 
  * @author Velislav
  */
-public class OperatingSoftware extends PlantComponent {
+public class OperatingSoftware extends FailableComponent {
     
     public final static int DEFAULT_FAILURE_RATE = 10; //1%
     public final static int DEFAULT_REPAIR_TIME = 3;
@@ -121,7 +121,8 @@ public class OperatingSoftware extends PlantComponent {
      * 
      * Increases the failure rate of the operating software if appropriate.
      */
-    public void updateState() {
+    @Override
+    public void increaseFailureRate() {
         super.increaseFailureRate();
     }
     

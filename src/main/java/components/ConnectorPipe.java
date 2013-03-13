@@ -20,18 +20,11 @@ public class ConnectorPipe extends PlantComponent {
 	
 	private static final long serialVersionUID = 4562191438219268556L;
 	
-	/* Since these objects will effectively be invisible to the user,
-	 * they should never fail!
-	 */
-	private final static int FAILURE_RATE = 0;
-	private final static int REPAIR_TIME = 0;
-	private final static int MAX_FAILURE_RATE = 0;
-	
 	private List<PlantComponent> inputs;
 	private Map<PlantComponent, Boolean> outputs; // Boolean is true if that path is blocked.
 	
 	public ConnectorPipe() {
-		super(FAILURE_RATE, REPAIR_TIME, MAX_FAILURE_RATE);
+		super();
 		this.inputs = new ArrayList<PlantComponent>();
 		this.outputs = new HashMap<PlantComponent, Boolean>();
 	}
@@ -127,21 +120,4 @@ public class ConnectorPipe extends PlantComponent {
 			entry.setValue(false);
 		}
 	}
-	
-	/**
-	 * Does nothing (nothing to update).
-	 */
-	@Override
-	public void updateState() {
-		// Do nothing.
-	}
-
-	/**
-	 * Never breaks - returns false always.
-	 */
-	@Override
-	public boolean checkFailure() {
-		return false; //Never breaks.
-	}
-
 }

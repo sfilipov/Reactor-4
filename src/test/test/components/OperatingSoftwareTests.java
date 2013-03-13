@@ -30,7 +30,7 @@ public class OperatingSoftwareTests {
 	@Test
 	public void testUpdateState(){
 	    int initialFailureRate = OS.getFailureRate();
-		OS.updateState();
+		OS.increaseFailureRate();
 		assertTrue(initialFailureRate < OS.getFailureRate());
 	}
 	

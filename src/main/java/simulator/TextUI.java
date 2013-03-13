@@ -24,6 +24,7 @@ import javax.swing.text.Position;
 import components.PlantComponent;
 import components.Pump;
 import components.Turbine;
+import components.Updatable;
 import components.Valve;
 
 

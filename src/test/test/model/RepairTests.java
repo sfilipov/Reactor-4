@@ -6,15 +6,16 @@ import org.mockito.Mockito;
 import org.junit.Before;
 import org.junit.Test;
 
+import components.FailableComponent;
 import components.PlantComponent;
 
 
 public class RepairTests {
-	PlantComponent componentToRepair;
+	FailableComponent componentToRepair;
 	
 	@Before
 	public void setUp() {
-		componentToRepair = Mockito.mock(PlantComponent.class);
+		componentToRepair = Mockito.mock(FailableComponent.class);
 	}
 	
 	@Test

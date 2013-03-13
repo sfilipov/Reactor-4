@@ -6,7 +6,7 @@ package components;
  * 
  * @author Lamprey
  */
-public class Pump extends PlantComponent {
+public class Pump extends FailableComponent {
 
 	private static final long serialVersionUID = -446684199807618671L;
 	
@@ -98,8 +98,9 @@ public class Pump extends PlantComponent {
 	 * 
 	 * Increases the failure rate of the pump if appropriate.
 	 */
-	public void updateState() {
-		increaseFailureRate();
+	@Override
+	public void increaseFailureRate() {
+		super.increaseFailureRate();
 	}
 	
 	/**

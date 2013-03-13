@@ -11,7 +11,7 @@ import model.Flow;
  * 
  * @author Lamprey
  */
-public class Condenser extends PlantComponent {
+public class Condenser extends FailableComponent implements Updatable {
 	private static final long serialVersionUID = 4348915919668272156L;
 
 	private final static int DEFAULT_TEMPERATURE = 50;
@@ -154,7 +154,7 @@ public class Condenser extends PlantComponent {
 	 * Updates the temperature, condenses some steam to water,
 	 * updates the pressure and damages the condenser if required
 	 */
-
+	@Override
 	public void updateState() {
 		updateTemperature();
 		condenseSteam();

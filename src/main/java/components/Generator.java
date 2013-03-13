@@ -12,7 +12,6 @@ public class Generator extends PlantComponent {
 
 	private static final int DIVISOR = 123; //Random number to make score look better (not a multiple of 10/100/1000)
 	
-	private int powerOutput;
 	private Turbine turbine;
 	
 	/**
@@ -21,13 +20,8 @@ public class Generator extends PlantComponent {
 	 * @param turbine the turbine that the power output calculations are based on
 	 */
 	public Generator(Turbine turbine) {
-		super(0, 0, 0); //Perfect - never fails
+		super();
 		this.turbine = turbine;
-		this.powerOutput = 0;
-	}
-	
-	@Override
-	public void updateState() {
 	}
 	
 	/**

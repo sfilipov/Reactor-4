@@ -20,7 +20,7 @@ import model.FlowType;
  * 
  * @author Lamprey
  */
-public class Reactor extends PlantComponent {
+public class Reactor extends FailableComponent implements Updatable {
 	private static final long serialVersionUID = 2901479494890681361L;
 	
 	private final static int DEFAULT_TEMPERATURE = 50;
@@ -181,6 +181,7 @@ public class Reactor extends PlantComponent {
 	 * appropriate and check if the reactor is damaged based on
 	 * it's internal temperature and pressure.
 	 */
+	@Override
 	public void updateState() {
 		updateTemperature();
 		updatePressure();
