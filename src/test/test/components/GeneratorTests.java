@@ -12,27 +12,20 @@ public class GeneratorTests {
 	
 	@Before
 	public void setUp() {
-		turbine = new Turbine(300);
+		turbine = new Turbine(100);
 		generator = new Generator(turbine);
 	}
 	
-	/*
-	 * Assets that the getPowerOutput method works by attempting to get it
-	 * when it has not been updated, and hence should be 0
-	 */
 	@Test
-	public void checkPowerOutputIsZero() {
+	public void getPowerOutput_turbineRpmIsZero_powerOutputIsZero() {
+		turbine.setRpm(0);
+		
 		assertTrue(generator.getPowerOutput() == 0);
 	}
 	
-	/*
-	 * Asserts that when the turbines Rpm is above 0, the updateState method increases the 
-	 * powerOutput variable 
-	 */
 	@Test
-	public void checkPowerOutoutIsAboveZero() {
-		turbine.setRpm(2000);
-		generator.updateState();
+	public void getPowerOutput_turbineRpmIsPositive_powerOutputIsPositive() {
+		turbine.setRpm(1000);
 		
 		assertTrue(generator.getPowerOutput() > 0);
 	}

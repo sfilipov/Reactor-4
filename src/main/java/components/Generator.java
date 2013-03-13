@@ -31,7 +31,6 @@ public class Generator extends PlantComponent {
 	 */
 	@Override
 	public void updateState() {
-		powerOutput = turbine.getRpm() / DIVISOR;
 	}
 	
 	/**
@@ -39,6 +38,6 @@ public class Generator extends PlantComponent {
 	 * @return the power output.
 	 */
 	public int getPowerOutput() {
-		return powerOutput;
+		return turbine.getRpm() / DIVISOR;
 	}
 }
