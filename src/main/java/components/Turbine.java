@@ -52,10 +52,5 @@ public class Turbine extends FailableComponent implements Updatable {
 	 */
 	public int getRpm() {
 		return (this.isOperational()) ? rpm : 0;
-	}
-	
-	public void setRpm (int rpm) { 
-		this.rpm = rpm;
 	}	
-
 }

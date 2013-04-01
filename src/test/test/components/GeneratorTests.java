@@ -1,9 +1,11 @@
 package components;
 
-import static org.junit.Assert.*;
-import org.junit.Test;
-import org.junit.Before;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import org.junit.Before;
+import org.junit.Test;
 
 public class GeneratorTests {
 
@@ -12,20 +14,20 @@ public class GeneratorTests {
 	
 	@Before
 	public void setUp() {
-		turbine = new Turbine(100);
+		turbine = mock(Turbine.class);
 		generator = new Generator(turbine);
 	}
 	
 	@Test
 	public void getPowerOutput_turbineRpmIsZero_powerOutputIsZero() {
-		turbine.setRpm(0);
+		when(turbine.getRpm()).thenReturn(0);
 		
 		assertTrue(generator.getPowerOutput() == 0);
 	}
 	
 	@Test
 	public void getPowerOutput_turbineRpmIsPositive_powerOutputIsPositive() {
-		turbine.setRpm(1000);
+		when(turbine.getRpm()).thenReturn(1000);
 		
 		assertTrue(generator.getPowerOutput() > 0);
 	}
