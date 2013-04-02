@@ -17,82 +17,37 @@ public class PumpTests {
 	@Before
 	public void setUp() {
 		this.pump = new Pump(pumpID);
-	}
+	}	
 	
-	/*
-	 * Asserts that when the rpm is set to a value above its maximum, it throws an exception
-	 */
 	@Test(expected = IllegalArgumentException.class)
-	public void testSettingRPM_OutOfRange_ThrowsException() {
+	public void setRpm_RPM_OutOfRange_ThrowsException() {
 		
 		this.pump.setRpm(pump.getMaxRpm()+1); // argument above MAX_RPM
 		
 	}
 	
-	/*
-	 * Asserts that when the rpm is set to a value within the valid range, the rpm is updated correctly
-	 * and getRpm returns it correctly.
-	 */
 	@Test
-	public void testSetRpm_450_IsAcceptable() {
+	public void setRpm_100_RpmIs100() {
 		
-		pump.setRpm(450);		
-		assertEquals(450, this.pump.getRpm());
+		pump.setRpm(100);		//A value within the valid range, to check the setRpm works
+		assertEquals(100, this.pump.getRpm());
 		
-	}
+	}		
 	
-	/*
-	 * Asserts the getID method returns the same value that the Pump was instantiated with(this.valveId).
-	 */
 	@Test
-	public void testGetIDReturnsTheCorrectValue() {
-		
-		assertEquals(this.pumpID, pump.getID());
-		
-	}
-	
-	/*
-	 *  Asserts that when the pumps on variable is set to false, the isOn method returns the same value
-	 */
-	@Test
-	public void testPumpCanBeTurnedOff() {
-		
-		this.pump.setOn(false);
-		assertEquals(false, this.pump.isOn());	
-	}
-	
-	/*
-	 *  Asserts that when the pumps on variable is set to true, the isOn method returns the same value
-	 */
-	@Test
-	public void testPumpCanBeTurnedOn() {
-		
-		this.pump.setOn(true);		
-		assertEquals(true, this.pump.isOn());
-	}
-	
-	/*
-	 * Asserts that when the pump is on, the Rpm is returned as would be expected (the same as it was set to)
-	 */
-	@Test
-	public void testRpmIsCorrectWhenPumpIsOn() {
-		pump.setRpm(450);
+	public void getRpm_pumpIsSetOn_RpmIsCorrect() {
+		pump.setRpm(100); 		//A Value within the valid range
 		pump.setOn(true);
 		
-		assertEquals(450, pump.getRpm());		
+		assertEquals(100, pump.getRpm());		
 	}
 	
-	/*
-	 *Asserts that when the pump is off, the Rpm returned is 0, as it cannot be pumping when off
-	 */
 	@Test
-	public void testRpmIsZeroWhenPumpIsOff() {
-		pump.setRpm(450);
+	public void getRpm_pumpIsSetOff_RpmIsZero() {
+		pump.setRpm(100);		//A Value within the valid range
 		pump.setOn(false);		//Setting the state to off should mean there can be no Rpm
 		
 		assertEquals(0, pump.getRpm());		
-	}
-	
-	
+	}	
 
 }
