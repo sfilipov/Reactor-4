@@ -15,6 +15,7 @@ import java.util.Random;
 
 import components.Condenser;
 import components.ConnectorPipe;
+import components.GameOverException;
 import components.RandomlyFailableComponent;
 import components.OperatingSoftware;
 import components.PlantComponent;
@@ -570,11 +571,6 @@ public class PlantController {
 			}
 		}
 		
-		//Check for game over based on Reactor and Condenser failing or not
-//		if (component instanceof Reactor || component instanceof Condenser) {
-//			gameOver();
-//		}
-		
 		//Picks only one of all randomly failing components.
 		if(faults > 0) {
 			Random random = new Random();
@@ -583,6 +579,13 @@ public class PlantController {
 			plant.addFailedComponent(failedComponent);
 			failedComponent.setOperational(false);
 			uidata.addBrokenOnStep(failedComponent);
+		}
+		
+		try {
+			plant.getReactor().updateHealth();
+			plant.getCondenser().updateHealth();
+		} catch (GameOverException e) {
+			gameOver();
 		}
 	}
 	
