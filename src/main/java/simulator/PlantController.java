@@ -559,15 +559,8 @@ public class PlantController {
 		{
 			if (component.hasFailed() && !failedComponents.contains(component)) 
 			{
-				if (component instanceof Turbine) {
-					setValve(1,false);
-					setValve(2, true);
-					setControlRods(100);
-				}
-				else {
-					failingComponents.add(component);
-					faults++;
-				}
+				failingComponents.add(component);
+				faults++;
 			}
 		}
 		
@@ -576,6 +569,13 @@ public class PlantController {
 			Random random = new Random();
 			int selection = random.nextInt(faults);
 			RandomlyFailableComponent failedComponent = failingComponents.get(selection);
+			
+			if (failedComponent instanceof Turbine) {
+				setValve(1,false);
+				setValve(2, true);
+				setControlRods(100);
+			}
+			
 			plant.addFailedComponent(failedComponent);
 			failedComponent.setOperational(false);
 			uidata.addBrokenOnStep(failedComponent);

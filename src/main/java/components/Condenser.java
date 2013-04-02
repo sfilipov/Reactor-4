@@ -21,6 +21,7 @@ public class Condenser extends CriticalComponent implements UpdatableComponent {
 	private final static int COOLANT_TEMP = 20; // temperature of the coolant coming in
 	private final static int MAX_COOLDOWN_PER_STEP = 500; // Maximum amount to cool the condenser per step. 
 	private final static int WATER_STEAM_RATIO = 2; // water to steam ratio.
+	private final static int HEALTH_CHANGE_WHEN_DAMAGING = 5;
 	private final static double COND_MULTIPLIER = 2; // temperature to steam condensed multiplier.
 	private final static double VOL_TO_PRESSURE_MULTIPLIER = 0.15;
 	
@@ -68,7 +69,7 @@ public class Condenser extends CriticalComponent implements UpdatableComponent {
 			throw new IllegalArgumentException("The volume of the water pumped out cannot be negative.");
 		}
 		else {
-			setWaterVolume(getWaterVolume() + pumpedOutVolume);
+			setWaterVolume(getWaterVolume() - pumpedOutVolume);
 		}
 	}
 
@@ -199,21 +200,16 @@ public class Condenser extends CriticalComponent implements UpdatableComponent {
 	}
 	
 	/**
-	 * Checks if the condenser fails.
+	 * Updates the health of the condenser.
 	 * 
-	 * If the health is below 0 and the method returns true,
-	 * the PlantController will detect a game over state.
-	 * 
-	 * @return true if health is less than or equal to 0
+	 * Lowers the health of the condenser if appropriate and
+	 * throws GameOverException once the health is less 
+	 * than or equal to 0.
 	 */
 	@Override
 	public void updateHealth() throws GameOverException {
 		checkIfDamaging();
 		checkGameOver();
-//		if (getHealth() > 0)
-//			return false;
-//		else
-//			return true;
 	}
 
 	/**
@@ -225,10 +221,10 @@ public class Condenser extends CriticalComponent implements UpdatableComponent {
 	 */
 	private void checkIfDamaging() {
 		if(getTemperature() >= MAX_TEMPERATURE) {
-			damageCondenser(5);
+			damageCondenser(HEALTH_CHANGE_WHEN_DAMAGING);
 		}
 		if(getPressure() >= MAX_PRESSURE) {
-			damageCondenser(5);
+			damageCondenser(HEALTH_CHANGE_WHEN_DAMAGING);
 		}
 	}
 	

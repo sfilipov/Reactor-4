@@ -27,12 +27,11 @@ public class Reactor extends CriticalComponent implements UpdatableComponent {
 	
 	private final static int MAX_TEMPERATURE = 2865; // 2865C is the melting point of uranium oxide.
 	private final static int MAX_PRESSURE = 2000;
-	private final static int MAX_HEALTH = 100;
 	private final static int MAX_HEATING_PER_STEP = 100; // in degrees C. maximum amount to increase temp by in a step. 
 	private final static int MIN_SAFE_WATER_VOLUME = 2000;
 	private final static int UNSAFE_HEATING_MULTIPLIER = 2; // amount to increase 
 	private final static int WATER_STEAM_RATIO = 2; // 1:2 water to steam
-	private final static int HEALTH_CHANGE_WHEN_DAMAGING = 10;
+	private final static int HEALTH_CHANGE_WHEN_DAMAGING = 5;
 	private final static double EVAP_MULTIPLIER = 0.2; // conversion from temperature to amount evaporated. 
 	private final static double VOL_TO_PRESSURE_MULTIPLIER = 0.15;
 	private final static int BOILING_POINT = 285; // boiling point of water at 1000psi - no variable boiling point.
@@ -52,18 +51,10 @@ public class Reactor extends CriticalComponent implements UpdatableComponent {
 		return MAX_TEMPERATURE;
 	}
 	
-	/**
-	 * 
-	 * @return
-	 */
 	public int getMaxPressure() {
 		return MAX_PRESSURE;
 	}
 	
-	/**
-	 * 
-	 * @return
-	 */
 	public int getMinSafeWaterVolume() {
 		return MIN_SAFE_WATER_VOLUME;
 	}
@@ -97,19 +88,10 @@ public class Reactor extends CriticalComponent implements UpdatableComponent {
 		setSteamVolume(getSteamVolume() + amount);
 	}
 
-	
-	/**
-	 * 
-	 * @return rod level
-	 */
 	public int getPercentageLowered() {
 		return controlRod.getPercentageLowered();
 	}
 	
-	/**
-	 * 
-	 * @param percentageLowered the new rod level
-	 */
 	public void setPercentageLowered(int percentageLowered) {
 		controlRod.setPercentageLowered(percentageLowered);
 	}
@@ -119,8 +101,7 @@ public class Reactor extends CriticalComponent implements UpdatableComponent {
 	 * Updates the state of the reactor.
 	 * 
 	 * Updates the temperature, pressure, evaporates some water if
-	 * appropriate and check if the reactor is damaged based on
-	 * it's internal temperature and pressure.
+	 * appropriate.
 	 */
 	@Override
 	public void updateState() {
@@ -224,7 +205,11 @@ public class Reactor extends CriticalComponent implements UpdatableComponent {
 	}
 	
 	/**
+	 * Updates the health of the reactor.
 	 * 
+	 * Lowers the health of the reactor if appropriate and
+	 * throws GameOverException once the health is less 
+	 * than or equal to 0.
 	 */
     @Override
 	public void updateHealth() throws GameOverException {
@@ -240,21 +225,22 @@ public class Reactor extends CriticalComponent implements UpdatableComponent {
 	 */
 	private void checkIfDamaging() {
 		if(getTemperature() > MAX_TEMPERATURE) {
-			damageReactor();					
+			damageReactor(HEALTH_CHANGE_WHEN_DAMAGING);					
 		}
 		if (getPressure() > MAX_PRESSURE) {
-			damageReactor();					
+			damageReactor(HEALTH_CHANGE_WHEN_DAMAGING);					
 		}
 		if(getWaterVolume() < MIN_SAFE_WATER_VOLUME){
-			damageReactor();
+			damageReactor(HEALTH_CHANGE_WHEN_DAMAGING);
 		}
 	}
 	
 	/**
 	 * Damages the reactor by amount of HEALT_CHANGE_WHEN_DAMAGING.
+	 * @param damageAmount TODO
 	 */
-	private void damageReactor() {
-		setHealth(getHealth() - HEALTH_CHANGE_WHEN_DAMAGING);
+	private void damageReactor(int damageAmount) {
+		setHealth(getHealth() - damageAmount);
 	}
 	
     private void checkHealth() throws GameOverException {
