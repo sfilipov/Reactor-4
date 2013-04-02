@@ -24,11 +24,6 @@ public class Condenser extends CriticalComponent implements UpdatableComponent {
 	private final static double COND_MULTIPLIER = 2; // temperature to steam condensed multiplier.
 	private final static double VOL_TO_PRESSURE_MULTIPLIER = 0.15;
 	
-	private int temperature;
-	private int pressure;
-	private int health;
-	private int waterVolume;
-	private int steamVolume;
 	private int steamIn;
 	private Pump coolantPump;
 	
@@ -49,14 +44,6 @@ public class Condenser extends CriticalComponent implements UpdatableComponent {
 	
 	/**
 	 * 
-	 * @return the temperature of the condenser.
-	 */
-	public int getTemperature() {
-		return temperature;
-	}
-	
-	/**
-	 * 
 	 * @return the max temperature of the condenser.
 	 */
 	public int getMaxTemperature() {
@@ -65,26 +52,10 @@ public class Condenser extends CriticalComponent implements UpdatableComponent {
 	
 	/**
 	 * 
-	 * @return the pressure of the condenser.
-	 */
-	public int getPressure() {
-		return pressure;
-	}
-	
-	/**
-	 * 
 	 * @return the max pressure of the condenser.
 	 */
 	public int getMaxPressure() {
 		return MAX_PRESSURE;
-	}
-	
-	/**
-	 * 
-	 * @return the current water volume inside the condenser.
-	 */
-	public int getWaterVolume() {
-		return waterVolume;
 	}
 	
 	/**
@@ -100,15 +71,6 @@ public class Condenser extends CriticalComponent implements UpdatableComponent {
 			setWaterVolume(getWaterVolume() + pumpedOutVolume);
 		}
 	}
-	
-	/**
-	 * 
-	 * @return the current steam volume inside the condenser.
-	 */
-	public int getSteamVolume()
-	{
-		return steamVolume;
-	}
 
 	/**
 	 * Updates the amount of steam in the condenser.
@@ -122,15 +84,7 @@ public class Condenser extends CriticalComponent implements UpdatableComponent {
 	public void updateSteamVolume(int amount)
 	{
 		this.steamIn = amount;
-		this.steamVolume += amount;
-	}
-
-	/**
-	 * 
-	 * @return the current health of the condenser.
-	 */
-	public int getHealth() {
-		return health;
+		setSteamVolume(getSteamVolume() + amount);
 	}
 
 	public Pump getCoolantPump() {
@@ -141,31 +95,13 @@ public class Condenser extends CriticalComponent implements UpdatableComponent {
 	 * Updates the state of the condenser.
 	 * 
 	 * Updates the temperature, condenses some steam to water,
-	 * updates the pressure and damages the condenser if required
+	 * updates the pressure.
 	 */
 	@Override
 	public void updateState() {
 		updateTemperature();
 		condenseSteam();
 		updatePressure();
-		checkIfDamaging();
-	}
-	
-	
-	/**
-	 * Checks if the condenser fails.
-	 * 
-	 * If the health is below 0 and the method returns true,
-	 * the PlantController will detect a game over state.
-	 * 
-	 * @return true if health is less than or equal to 0
-	 */
-//	@Override
-	public boolean hasFailed() {
-		if (getHealth() > 0)
-			return false;
-		else
-			return true;
 	}
 
 	/**
@@ -181,7 +117,7 @@ public class Condenser extends CriticalComponent implements UpdatableComponent {
 		int steamTemperature = flowIn.getTemperature();
 		
 		changeInTemp = heating(steamTemperature, this.steamIn) - cooldown();
-		this.temperature += changeInTemp;
+		setTemperature(getTemperature() + changeInTemp);
 	}
 	
 	/**
@@ -191,8 +127,8 @@ public class Condenser extends CriticalComponent implements UpdatableComponent {
 	 */
 	private void updatePressure() {
 		int currentPressure;
-		currentPressure = (int) Math.round(new Double(this.steamVolume) * VOL_TO_PRESSURE_MULTIPLIER);
-		this.pressure = currentPressure;
+		currentPressure = (int) Math.round(new Double(getSteamVolume()) * VOL_TO_PRESSURE_MULTIPLIER);
+		setPressure(currentPressure);
 	}
 	
 	/**
@@ -204,10 +140,10 @@ public class Condenser extends CriticalComponent implements UpdatableComponent {
 	 * @return temperature increase for this step
 	 */
 	private int heating(int steamTemperature, int steamVolumeIn) {
-		int tempDiff = steamTemperature - this.temperature;
-		if (this.steamVolume < 1) return 0; // stops a potential divide by 0.
+		int tempDiff = steamTemperature - getTemperature();
+		if (getSteamVolume() < 1) return 0; // stops a potential divide by 0.
 		if (steamVolumeIn == 0) return 0; // No steam flowing in => no heating.
-		return tempDiff * (1 - ((this.steamVolume - steamVolumeIn)/this.steamVolume));
+		return tempDiff * (1 - ((getSteamVolume() - steamVolumeIn) / getSteamVolume()));
 	}
 	
 	/**
@@ -220,11 +156,11 @@ public class Condenser extends CriticalComponent implements UpdatableComponent {
 	 */
 	private int cooldown() {
 		int cooldownAmount = cooldownPerStep();
-		int potentialNewTemp = this.temperature - cooldownAmount;
+		int potentialNewTemp = getTemperature() - cooldownAmount;
 		if (potentialNewTemp > COOLANT_TEMP) {
 			return cooldownAmount;
 		} else {
-			return this.temperature - COOLANT_TEMP;
+			return getTemperature() - COOLANT_TEMP;
 		}
 	}
 	
@@ -245,21 +181,39 @@ public class Condenser extends CriticalComponent implements UpdatableComponent {
 	private void condenseSteam() {
 		int steamCondensed;
 		int waterCreated;
-		if (this.temperature < MAX_TEMPERATURE) {
-			steamCondensed = (int) Math.ceil((MAX_TEMPERATURE - this.temperature) * COND_MULTIPLIER);
+		if (getTemperature() < MAX_TEMPERATURE) {
+			steamCondensed = (int) Math.ceil((MAX_TEMPERATURE - getTemperature()) * COND_MULTIPLIER);
 		} else {
 			steamCondensed = 0;
 		}
 		
-		if (steamCondensed > this.steamVolume) steamCondensed = this.steamVolume;
+		if (steamCondensed > getSteamVolume()) steamCondensed = getSteamVolume();
 		waterCreated = (int) Math.ceil(steamCondensed * (1 / new Double(WATER_STEAM_RATIO)));
 		/*
 		 * Since we do a dodgy division above, to make sure we aren't losing / creating
 		 * water we remultiply out the waterCreated.
 		 */
 		steamCondensed = waterCreated * WATER_STEAM_RATIO;	
-		this.steamVolume -= steamCondensed; // made negative as the water is removed.
-		this.waterVolume += waterCreated;
+		setSteamVolume(getSteamVolume() - steamCondensed); // made negative as the water is removed.
+		setWaterVolume(getWaterVolume() + waterCreated);
+	}
+	
+	/**
+	 * Checks if the condenser fails.
+	 * 
+	 * If the health is below 0 and the method returns true,
+	 * the PlantController will detect a game over state.
+	 * 
+	 * @return true if health is less than or equal to 0
+	 */
+	@Override
+	public void updateHealth() throws GameOverException {
+		checkIfDamaging();
+		checkGameOver();
+//		if (getHealth() > 0)
+//			return false;
+//		else
+//			return true;
 	}
 
 	/**
@@ -270,10 +224,10 @@ public class Condenser extends CriticalComponent implements UpdatableComponent {
 	 * above the max pressure.
 	 */
 	private void checkIfDamaging() {
-		if(this.temperature >= MAX_TEMPERATURE) {
+		if(getTemperature() >= MAX_TEMPERATURE) {
 			damageCondenser(5);
 		}
-		if(this.pressure >= MAX_PRESSURE) {
+		if(getPressure() >= MAX_PRESSURE) {
 			damageCondenser(5);
 		}
 	}
@@ -285,6 +239,12 @@ public class Condenser extends CriticalComponent implements UpdatableComponent {
 	 * @param damageAmount the amount to be subtracted from condenser's health.
 	 */
 	private void damageCondenser(int damageAmount) {
-		health -= damageAmount;
+		setHealth(getHealth() - damageAmount);
+	}
+	
+	private void checkGameOver() throws GameOverException {
+		if (getHealth() <= 0) {
+			throw new GameOverException("The health of the condenser is below 0!");
+		}
 	}
 }

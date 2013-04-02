@@ -46,19 +46,6 @@ public class CondenserTests {
 		assertSame(coolantPumpTest, c.getCoolantPump());
 	}
 	
-//	@Test
-//	public void hasFailed_healthPositive_returnsFalse() {
-//		boolean result = (condenser.getHealth() >= 0);
-//		assertTrue(result);
-//		
-//		assertFalse(condenser.hasFailed());
-//	}
-	
-//	@Test
-//	public void hasFailed_healthZero_returnsTrue() {
-//		assertTrue(condenser.hasFailed());
-//	}
-	
 	@Test
 	public void Condenser_shouldCoolWhenNoSteamFlowingIn() {
 		setupWithHighTemperatureAndFlowIn();

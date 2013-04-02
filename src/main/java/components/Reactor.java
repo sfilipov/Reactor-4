@@ -127,7 +127,7 @@ public class Reactor extends CriticalComponent implements UpdatableComponent {
 		updateTemperature();
 		updatePressure();
 		evaporateWater();
-		checkIfDamaging();
+
 	}
 	
 	/**
@@ -224,6 +224,15 @@ public class Reactor extends CriticalComponent implements UpdatableComponent {
 	}
 	
 	/**
+	 * 
+	 */
+    @Override
+	public void updateHealth() throws GameOverException {
+		checkIfDamaging();
+		checkHealth();
+	}
+	
+	/**
 	 * Damages the reactor if temperature
 	 * and/or pressure is higher than the max
 	 * temperature and max pressure. Or if water
@@ -239,7 +248,6 @@ public class Reactor extends CriticalComponent implements UpdatableComponent {
 		if(getWaterVolume() < MIN_SAFE_WATER_VOLUME){
 			damageReactor();
 		}
-		
 	}
 	
 	/**
@@ -249,19 +257,12 @@ public class Reactor extends CriticalComponent implements UpdatableComponent {
 		setHealth(getHealth() - HEALTH_CHANGE_WHEN_DAMAGING);
 	}
 	
-	/**
-	 * 
-	 * @return true if health is 0 or lower.
-	 */
-//	@Override
-	public boolean hasFailed() {
+    private void checkHealth() throws GameOverException {
 		if (getHealth() <= 0) {
-			return true;
-		} else {
-			return false;
+			throw new GameOverException("The health of the reactor is below 0!");
 		}
-	}
-	
+    }
+    
 	/**
 	 * Control rods class is internal to Reactor. It has a field
 	 * that keeps track of how lowered are the control rods.

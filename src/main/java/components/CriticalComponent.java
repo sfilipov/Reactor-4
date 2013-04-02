@@ -68,4 +68,6 @@ public abstract class CriticalComponent extends PlantComponent {
 	protected void setSteamVolume(int steamVolume) {
 		this.steamVolume = steamVolume;
 	}
+	
+	abstract void updateHealth() throws GameOverException;
 }
