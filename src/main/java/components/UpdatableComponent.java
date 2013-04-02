@@ -1,6 +1,6 @@
 package components;
 
-public interface Updatable {
+public interface UpdatableComponent {
 
 	/**
 	 * Updates the information about the component.

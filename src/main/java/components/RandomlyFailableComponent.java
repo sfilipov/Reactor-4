@@ -2,7 +2,7 @@ package components;
 
 import java.util.Random;
 
-public abstract class FailableComponent extends PlantComponent {
+public abstract class RandomlyFailableComponent extends PlantComponent {
 	private static final long serialVersionUID = 3981519622605741840L;
 	
 	//The values of the constants below are for illustration.
@@ -17,7 +17,7 @@ public abstract class FailableComponent extends PlantComponent {
 	private boolean operational; //Possibly unnecessary
 	private Random random;
 	
-	protected FailableComponent() {
+	protected RandomlyFailableComponent() {
 		super();
 		this.failureRate    = DEFAULT_FAILURE_RATE;
 		this.maxFailureRate = MAX_FAILURE_RATE;
@@ -26,7 +26,7 @@ public abstract class FailableComponent extends PlantComponent {
 		this.random = new Random();
 	}
 	
-	protected FailableComponent(int failureRate, int repairTime, int maxFailureRate) {
+	protected RandomlyFailableComponent(int failureRate, int repairTime, int maxFailureRate) {
 		super();
 		this.failureRate    = failureRate;
 		this.repairTime     = repairTime;
@@ -35,7 +35,7 @@ public abstract class FailableComponent extends PlantComponent {
 		random = new Random();
 	}
 	
-	protected FailableComponent(int failureRate, int repairTime, boolean operational, boolean pressurised) {
+	protected RandomlyFailableComponent(int failureRate, int repairTime, boolean operational, boolean pressurised) {
 		super(pressurised);
 		this.failureRate = failureRate;
 		this.repairTime = repairTime;
@@ -100,7 +100,7 @@ public abstract class FailableComponent extends PlantComponent {
 	/**
 	 * Runs all checks for the component and changes it's operational state if needed. 
 	 */
-	public boolean checkFailure() {
+	public boolean hasFailed() {
 		int checkFailure = random.nextInt(1000);
 		if(failureRate > checkFailure) {
 			return true;

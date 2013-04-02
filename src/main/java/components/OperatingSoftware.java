@@ -18,7 +18,7 @@ import java.util.Random;
  * 
  * @author Velislav
  */
-public class OperatingSoftware extends FailableComponent {
+public class OperatingSoftware extends RandomlyFailableComponent {
     
     public final static int DEFAULT_FAILURE_RATE = 10; //1%
     public final static int DEFAULT_REPAIR_TIME = 3;
@@ -133,8 +133,8 @@ public class OperatingSoftware extends FailableComponent {
      * 
      * @return whether or not the operating software has failed
      */
-    public boolean checkFailure() {
-        return super.checkFailure();
+    public boolean hasFailed() {
+        return super.hasFailed();
     }
     
     

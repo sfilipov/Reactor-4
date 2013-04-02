@@ -6,7 +6,7 @@ package components;
  * 
  * @author Lamprey
  */
-public class Pump extends FailableComponent {
+public class Pump extends RandomlyFailableComponent {
 
 	private static final long serialVersionUID = -446684199807618671L;
 	
@@ -108,7 +108,7 @@ public class Pump extends FailableComponent {
 	 * 
 	 * @return true if the pump has failed
 	 */
-	public boolean checkFailure() {
-		return super.checkFailure();
+	public boolean hasFailed() {
+		return super.hasFailed();
 	}
 }

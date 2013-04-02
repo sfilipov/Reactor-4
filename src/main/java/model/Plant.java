@@ -6,14 +6,14 @@ import java.util.List;
 
 import components.Condenser;
 import components.ConnectorPipe;
-import components.FailableComponent;
+import components.RandomlyFailableComponent;
 import components.Generator;
 import components.OperatingSoftware;
 import components.PlantComponent;
 import components.Pump;
 import components.Reactor;
 import components.Turbine;
-import components.Updatable;
+import components.UpdatableComponent;
 import components.Valve;
 
 
@@ -59,7 +59,7 @@ public class Plant implements Serializable {
 	private List<PlantComponent> plantComponents;
 	
 	//a list of components that have failed
-	private List<FailableComponent> failedComponents;
+	private List<RandomlyFailableComponent> failedComponents;
 	
 	
 	private Reactor reactor;
@@ -83,7 +83,7 @@ public class Plant implements Serializable {
 		this.isPaused = false;
 		this.highScores = new ArrayList<HighScore>();
 		this.plantComponents = new ArrayList<PlantComponent>();
-		this.failedComponents = new ArrayList<FailableComponent>();
+		this.failedComponents = new ArrayList<RandomlyFailableComponent>();
 	}
 	
 	/**
@@ -333,11 +333,11 @@ public class Plant implements Serializable {
 		return plantComponents;
 	}
 	
-	public List<FailableComponent> getFailableComponents() {
-		ArrayList<FailableComponent> failableComponents = new ArrayList<FailableComponent>();
+	public List<RandomlyFailableComponent> getFailableComponents() {
+		ArrayList<RandomlyFailableComponent> failableComponents = new ArrayList<RandomlyFailableComponent>();
 		for (PlantComponent plantComponent : plantComponents) {
-			if(plantComponent instanceof FailableComponent) {
-				failableComponents.add((FailableComponent)plantComponent);
+			if(plantComponent instanceof RandomlyFailableComponent) {
+				failableComponents.add((RandomlyFailableComponent)plantComponent);
 			}
 		}
 		return failableComponents;
@@ -355,7 +355,7 @@ public class Plant implements Serializable {
 	 * 
 	 * @return all failed (non-operational) components (including those that are being repaired)
 	 */
-	public List<FailableComponent> getFailedComponents() {
+	public List<RandomlyFailableComponent> getFailedComponents() {
 		return failedComponents;
 	}
 	
@@ -365,7 +365,7 @@ public class Plant implements Serializable {
 	 * 
 	 * @param failedComponent
 	 */
-	public void addFailedComponent(FailableComponent failedComponent) {
+	public void addFailedComponent(RandomlyFailableComponent failedComponent) {
 		if (!this.failedComponents.contains(failedComponent)) {
 			this.failedComponents.add(failedComponent);
 		}

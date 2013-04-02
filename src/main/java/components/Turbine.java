@@ -7,7 +7,7 @@ package components;
  * 
  * @author Lamprey
  */
-public class Turbine extends FailableComponent implements Updatable {
+public class Turbine extends RandomlyFailableComponent implements UpdatableComponent {
 	private static final long serialVersionUID = 1106025692966179166L;
 
 	public final static int DEFAULT_FAILURE_RATE = 10; //1%

@@ -11,18 +11,13 @@ import model.Flow;
  * 
  * @author Lamprey
  */
-public class Condenser extends FailableComponent implements Updatable {
+public class Condenser extends CriticalComponent implements UpdatableComponent {
 	private static final long serialVersionUID = 4348915919668272156L;
 
-	private final static int DEFAULT_TEMPERATURE = 50;
-	private final static int DEFAULT_PRESSURE = 0;
 	private final static int DEFAULT_WATER_VOLUME = 2000;
-	private final static int DEFAULT_STEAM_VOLUME = 0;
 	
 	private final static int MAX_TEMPERATURE = 2000;
 	private final static int MAX_PRESSURE = 2000;
-	private final static int MAX_HEALTH = 100;
-	private final static int HEALTH_CHANGE_WHEN_DAMAGING = 10;
 	private final static int COOLANT_TEMP = 20; // temperature of the coolant coming in
 	private final static int MAX_COOLDOWN_PER_STEP = 500; // Maximum amount to cool the condenser per step. 
 	private final static int WATER_STEAM_RATIO = 2; // water to steam ratio.
@@ -46,12 +41,7 @@ public class Condenser extends FailableComponent implements Updatable {
 	 * @param coolantPump   the pump which is used to cool the condenser
 	 */
 	public Condenser(Pump coolantPump) {
-		super(0,0,true,true); // Never randomly fails, is operational and is pressurised. 
-		this.health = MAX_HEALTH;
-		this.temperature = DEFAULT_TEMPERATURE;
-		this.pressure = DEFAULT_PRESSURE;
-		this.waterVolume = DEFAULT_WATER_VOLUME;
-		this.steamVolume = DEFAULT_STEAM_VOLUME;
+		super(DEFAULT_WATER_VOLUME);
 		this.coolantPump = coolantPump;
 	}
 
@@ -65,9 +55,6 @@ public class Condenser extends FailableComponent implements Updatable {
 		return temperature;
 	}
 	
-	public void setTemperature(int temp){
-		this.temperature = temp;
-	}
 	/**
 	 * 
 	 * @return the max temperature of the condenser.
@@ -84,11 +71,8 @@ public class Condenser extends FailableComponent implements Updatable {
 		return pressure;
 	}
 	
-	public void setPressure(int pressure){
-		this.pressure = pressure;
-	}
 	/**
-	 * .
+	 * 
 	 * @return the max pressure of the condenser.
 	 */
 	public int getMaxPressure() {
@@ -106,10 +90,15 @@ public class Condenser extends FailableComponent implements Updatable {
 	/**
 	 * Updates the amount of water in the condenser.
 	 * 
-	 * @param amount amount of water to add to the total in the condenser
+	 * @param pumpedOutVolume amount of water to add to the total in the condenser
 	 */
-	public void updateWaterVolume(int amount) {
-		this.waterVolume += amount;
+	public void pumpOutWater(int pumpedOutVolume) throws IllegalArgumentException {
+		if (pumpedOutVolume < 0) {
+			throw new IllegalArgumentException("The volume of the water pumped out cannot be negative.");
+		}
+		else {
+			setWaterVolume(getWaterVolume() + pumpedOutVolume);
+		}
 	}
 	
 	/**
@@ -169,14 +158,14 @@ public class Condenser extends FailableComponent implements Updatable {
 	 * If the health is below 0 and the method returns true,
 	 * the PlantController will detect a game over state.
 	 * 
-	 * @return true if health is below 0
+	 * @return true if health is less than or equal to 0
 	 */
-	@Override
-	public boolean checkFailure() {
-		if (health <= 0)
-			return true;
-		else
+//	@Override
+	public boolean hasFailed() {
+		if (getHealth() > 0)
 			return false;
+		else
+			return true;
 	}
 
 	/**
@@ -282,19 +271,20 @@ public class Condenser extends FailableComponent implements Updatable {
 	 */
 	private void checkIfDamaging() {
 		if(this.temperature >= MAX_TEMPERATURE) {
-			damageCondenser();
+			damageCondenser(5);
 		}
 		if(this.pressure >= MAX_PRESSURE) {
-			damageCondenser();
+			damageCondenser(5);
 		}
 	}
 	
 	/**
 	 * Damages the condenser.
 	 * 
-	 * Lowers the health by HEALTH_CHANGE_WHEN_DAMAGING.
+	 * Lowers the health of the condenser by damageAmount.
+	 * @param damageAmount the amount to be subtracted from condenser's health.
 	 */
-	private void damageCondenser() {
-		health -= HEALTH_CHANGE_WHEN_DAMAGING;
+	private void damageCondenser(int damageAmount) {
+		health -= damageAmount;
 	}
 }

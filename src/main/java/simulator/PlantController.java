@@ -15,13 +15,13 @@ import java.util.Random;
 
 import components.Condenser;
 import components.ConnectorPipe;
-import components.FailableComponent;
+import components.RandomlyFailableComponent;
 import components.OperatingSoftware;
 import components.PlantComponent;
 import components.Pump;
 import components.Reactor;
 import components.Turbine;
-import components.Updatable;
+import components.UpdatableComponent;
 import components.Valve;
 
 
@@ -301,7 +301,7 @@ public class PlantController {
 	 */
 	public synchronized boolean repairTurbine() {
 		Turbine turbine = plant.getTurbine();
-		List<FailableComponent> failedComponents = plant.getFailedComponents();
+		List<RandomlyFailableComponent> failedComponents = plant.getFailedComponents();
 		List<Repair> beingRepaired = plant.getBeingRepaired();
 		if (failedComponents.contains(turbine)) {
 			for (Repair br : beingRepaired) {
@@ -324,7 +324,7 @@ public class PlantController {
 		List<Pump> pumps = plant.getPumps();
 		Pump foundPump = null;
 		boolean found = false;
-		List<FailableComponent> failedComponents = plant.getFailedComponents();
+		List<RandomlyFailableComponent> failedComponents = plant.getFailedComponents();
 		List<Repair> beingRepaired = plant.getBeingRepaired();
 		for (Pump pump : pumps) { //Find the pump with the selected ID
 			if (pump.getID() == pumpID) {
@@ -350,7 +350,7 @@ public class PlantController {
 	 */
 	public synchronized boolean repairOperatingSoftware() {
 		OperatingSoftware operatingSoftware = plant.getOperatingSoftware();
-		List<FailableComponent> failedComponents = plant.getFailedComponents();
+		List<RandomlyFailableComponent> failedComponents = plant.getFailedComponents();
 		List<Repair> beingRepaired = plant.getBeingRepaired();
 		if (failedComponents.contains(operatingSoftware)) {
 			for (Repair br : beingRepaired) {
@@ -508,9 +508,9 @@ public class PlantController {
 	private void updatePlant() {
 		List<PlantComponent> plantComponents = plant.getPlantComponents();
 		for (PlantComponent plantComponent : plantComponents) {
-			if (plantComponent instanceof Updatable)
+			if (plantComponent instanceof UpdatableComponent)
 				//NEEDS TO INCLUDE FAILING COMPONENTS !!!
-				((Updatable) plantComponent).updateState();
+				((UpdatableComponent) plantComponent).updateState();
 		}
 		plant.calcScore();
 	}
@@ -526,7 +526,7 @@ public class PlantController {
 	private void updateBeingRepaired() {
 		List<Repair> beingRepaired = plant.getBeingRepaired();
 		List<Repair> finishedRepairing = new ArrayList<Repair>();
-		List<FailableComponent> failedComponents = plant.getFailedComponents();
+		List<RandomlyFailableComponent> failedComponents = plant.getFailedComponents();
 		for (Repair repair : beingRepaired) {
 			repair.decTimeStepsRemaining();
 			int timeStepsRemaining = repair.getTimeStepsRemaining();
@@ -548,36 +548,38 @@ public class PlantController {
 	 * If a reactor or condenser is broken, then the game is over.
 	 */
 	private void checkFailures() {
-		List<FailableComponent> failableComponents  = plant.getFailableComponents();
-		List<FailableComponent> failedComponents    = plant.getFailedComponents();
-		List<FailableComponent> failingComponents = new ArrayList<FailableComponent>();
+		List<RandomlyFailableComponent> failableComponents  = plant.getFailableComponents();
+		List<RandomlyFailableComponent> failedComponents    = plant.getFailedComponents();
+		List<RandomlyFailableComponent> failingComponents = new ArrayList<RandomlyFailableComponent>();
 		int faults = 0;
 		
 		//Checks all components if they randomly fail
-		for (FailableComponent component : failableComponents) 
+		for (RandomlyFailableComponent component : failableComponents) 
 		{
-			if (component.checkFailure() && !failedComponents.contains(component)) 
+			if (component.hasFailed() && !failedComponents.contains(component)) 
 			{
-				if (component instanceof Reactor || component instanceof Condenser) {
-					gameOver();
-				}
-				else {
-					failingComponents.add(component);
-					faults++;
-				}
 				if (component instanceof Turbine) {
 					setValve(1,false);
 					setValve(2, true);
 					setControlRods(100);
 				}
+				else {
+					failingComponents.add(component);
+					faults++;
+				}
 			}
 		}
+		
+		//Check for game over based on Reactor and Condenser failing or not
+//		if (component instanceof Reactor || component instanceof Condenser) {
+//			gameOver();
+//		}
 		
 		//Picks only one of all randomly failing components.
 		if(faults > 0) {
 			Random random = new Random();
 			int selection = random.nextInt(faults);
-			FailableComponent failedComponent = failingComponents.get(selection);
+			RandomlyFailableComponent failedComponent = failingComponents.get(selection);
 			plant.addFailedComponent(failedComponent);
 			failedComponent.setOperational(false);
 			uidata.addBrokenOnStep(failedComponent);
@@ -631,9 +633,9 @@ public class PlantController {
 		amountOut = (waterInCondenser > condenser.getFlowOut().getRate()) ?
 						condenserFlowOut: 
 						waterInCondenser; // otherwise empty out the condenser!)
-		condenser.updateWaterVolume(-amountOut);
+		condenser.pumpOutWater(amountOut);
 		// This should really use reactor's input's flow out but ah well.
-		reactor.updateWaterVolume(amountOut);
+		reactor.pumpInWater(amountOut);
 	}
 
 	/**

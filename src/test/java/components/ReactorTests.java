@@ -14,24 +14,24 @@ public class ReactorTests {
 	}
 	
 	@Test
-	public void updateWaterVolume_pumpedInPositive_addsToWaterVolume() {
+	public void pumpInWater_pumpedInPositive_addsToWaterVolume() {
 		int waterVolume = reactor.getWaterVolume();
-		reactor.updateWaterVolume(100);
+		reactor.pumpInWater(100);
 		
 		assertEquals(waterVolume + 100, reactor.getWaterVolume());
 	}	
 	
 	@Test
-	public void updateWaterVolume_pumpedInZero_sameWaterVolume() {
+	public void pumpInWater_pumpedInZero_sameWaterVolume() {
 		int waterVolume = reactor.getWaterVolume();
-		reactor.updateWaterVolume(0);
+		reactor.pumpInWater(0);
 		
 		assertEquals(waterVolume, reactor.getWaterVolume());
 	}
 	
 	@Test (expected=IllegalArgumentException.class)
-	public void updateWaterVolume_pumpedInNegative_throwsException() {
-		reactor.updateWaterVolume(-100);
+	public void pumpInWater_pumpedInNegative_throwsException() {
+		reactor.pumpInWater(-100);
 	}
 	
 	@Test

@@ -2,7 +2,7 @@ package model;
 
 import java.io.Serializable;
 
-import components.FailableComponent;
+import components.RandomlyFailableComponent;
 import components.PlantComponent;
 
 
@@ -18,14 +18,14 @@ import components.PlantComponent;
 public class Repair implements Serializable {
 	private static final long serialVersionUID = 1819944421888642516L;
 	
-	private FailableComponent failableComponent;
+	private RandomlyFailableComponent failableComponent;
 	private int timeStepsRemaining;
 	
 	/**
 	 * 
 	 * @param componentToRepair component that needs repairing 
 	 */
-	public Repair (FailableComponent componentToRepair) {
+	public Repair (RandomlyFailableComponent componentToRepair) {
 		this.failableComponent  = componentToRepair;
 		this.timeStepsRemaining = componentToRepair.getRepairTime();
 	}
@@ -52,7 +52,7 @@ public class Repair implements Serializable {
 	 * 
 	 * @return plant component 
 	 */
-	public FailableComponent getPlantComponent() {
+	public RandomlyFailableComponent getPlantComponent() {
 		return failableComponent;
 	}
 	

@@ -12,7 +12,7 @@ import model.Plant;
 import org.junit.Before;
 import org.junit.Test;
 
-import components.FailableComponent;
+import components.RandomlyFailableComponent;
 import components.Pump;
 import components.Valve;
 
@@ -132,7 +132,7 @@ public class PlantControllerTests {
 		assertEquals("Result", false, presenter.repairTurbine()); // the turbine hasn't failed so repairTurbine() should return false
 		
 		// break the turbine
-		List<FailableComponent> failedComponents = plant.getFailedComponents();
+		List<RandomlyFailableComponent> failedComponents = plant.getFailedComponents();
 		failedComponents.add(plant.getTurbine());
 		
 		assertEquals("Result", true, presenter.repairTurbine()); // the turbine is now broken so repairTurbine() should return true
@@ -147,7 +147,7 @@ public class PlantControllerTests {
 		assertEquals("Result", false, presenter.repairPump(1));
 		
 		// break the pump
-		List<FailableComponent> failedComponents = plant.getFailedComponents();
+		List<RandomlyFailableComponent> failedComponents = plant.getFailedComponents();
 		failedComponents.add(plant.getPumps().get(0));
 		
 		assertEquals("Result", true, presenter.repairPump(1));

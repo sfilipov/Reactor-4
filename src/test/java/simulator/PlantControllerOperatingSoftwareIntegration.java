@@ -11,7 +11,7 @@ import model.Repair;
 import org.junit.Before;
 import org.junit.Test;
 
-import components.FailableComponent;
+import components.RandomlyFailableComponent;
 import components.OperatingSoftware;
 import components.Pump;
 import components.Reactor;
@@ -76,7 +76,7 @@ public class PlantControllerOperatingSoftwareIntegration {
 	
 	@Test
 	public void testRepairPump(){
-		List<FailableComponent> failedComponents = plant.getFailedComponents();
+		List<RandomlyFailableComponent> failedComponents = plant.getFailedComponents();
 		failedComponents.add(plant.getPumps().get(1));
 		List<Repair> expected = plant.getBeingRepaired();
 		expected.add(new Repair(pump));
@@ -87,7 +87,7 @@ public class PlantControllerOperatingSoftwareIntegration {
 	
 	@Test 
 	public void testRepairTurbine(){
-		List<FailableComponent> failedComponents = plant.getFailedComponents();
+		List<RandomlyFailableComponent> failedComponents = plant.getFailedComponents();
 		failedComponents.add(plant.getTurbine());
 		List<Repair> expected = plant.getBeingRepaired();
 		expected.add(new Repair(turbine));

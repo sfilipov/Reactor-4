@@ -20,13 +20,10 @@ import model.FlowType;
  * 
  * @author Lamprey
  */
-public class Reactor extends FailableComponent implements Updatable {
+public class Reactor extends CriticalComponent implements UpdatableComponent {
 	private static final long serialVersionUID = 2901479494890681361L;
 	
-	private final static int DEFAULT_TEMPERATURE = 50;
-	private final static int DEFAULT_PRESSURE = 0;
 	private final static int DEFAULT_WATER_VOLUME = 8000;
-	private final static int DEFAULT_STEAM_VOLUME = 0;
 	
 	private final static int MAX_TEMPERATURE = 2865; // 2865C is the melting point of uranium oxide.
 	private final static int MAX_PRESSURE = 2000;
@@ -40,37 +37,16 @@ public class Reactor extends FailableComponent implements Updatable {
 	private final static double VOL_TO_PRESSURE_MULTIPLIER = 0.15;
 	private final static int BOILING_POINT = 285; // boiling point of water at 1000psi - no variable boiling point.
 	
-	private int temperature;
-	private int pressure;
-	private int waterVolume;
-	private int steamVolume;
-	private int health;
 	private ControlRod controlRod;
 	private int waterPumpedIn;
 	
 	public Reactor() {
-		super(0,0,true,true); // Never fails, is operational and is pressurised.
+		super(DEFAULT_WATER_VOLUME);
 		this.controlRod = new ControlRod();
-		this.health = MAX_HEALTH;
-		this.temperature = DEFAULT_TEMPERATURE;
-		this.pressure = DEFAULT_PRESSURE;
-		this.waterVolume = DEFAULT_WATER_VOLUME;
-		this.steamVolume = DEFAULT_STEAM_VOLUME;
 		this.getFlowOut().setType(FlowType.Steam);
 	}
 	
 	// ----------- Getters & Setters ---------------
-	
-	public void setTemperature(int temp){
-		this.temperature = temp;
-	}
-	/**
-	 * 
-	 * @return
-	 */
-	public int getTemperature() {
-		return temperature;
-	}
 	
 	public int getMaxTemperature() {
 		return MAX_TEMPERATURE;
@@ -80,27 +56,8 @@ public class Reactor extends FailableComponent implements Updatable {
 	 * 
 	 * @return
 	 */
-	public int getPressure() {
-		return pressure;
-	}
-	
-	public void setPressure(int pressure){
-		this.pressure = pressure;
-	}
-	/**
-	 * 
-	 * @return
-	 */
 	public int getMaxPressure() {
 		return MAX_PRESSURE;
-	}
-	
-	/**
-	 * 
-	 * @return
-	 */
-	public int getWaterVolume() {
-		return waterVolume;
 	}
 	
 	/**
@@ -116,25 +73,16 @@ public class Reactor extends FailableComponent implements Updatable {
 	 * Also stores the amount of water pumped in for future calculations.
 	 * This method should only be called once per timeStep.
 	 * 
-	 * @param pumpedIn amount of water to add to the total in the reactor
+	 * @param pumpedInVolume amount of water to add to the total in the reactor
 	 */
-	public void updateWaterVolume(int pumpedIn) throws IllegalArgumentException {
-		if (pumpedIn < 0) {
+	public void pumpInWater(int pumpedInVolume) throws IllegalArgumentException {
+		if (pumpedInVolume < 0) {
 			throw new IllegalArgumentException("The volume of the water pumped in cannot be negative.");
 		}
 		else {
-			this.waterPumpedIn = pumpedIn; // allows for only 1 call per step.
-			this.waterVolume += pumpedIn;
+			this.waterPumpedIn = pumpedInVolume; // allows for only 1 call per step.
+			setWaterVolume(getWaterVolume() + pumpedInVolume);
 		}
-	}
-	
-	/** 
-	 * 
-	 * @return
-	 */
-	public int getSteamVolume()
-	{
-		return steamVolume;
 	}
 
 	/**
@@ -146,16 +94,9 @@ public class Reactor extends FailableComponent implements Updatable {
 	 * @param amount the amount of steam to add to the volume
 	 */
 	public void addSteamVolume(int amount) {
-		this.steamVolume += amount;
+		setSteamVolume(getSteamVolume() + amount);
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
-	public int getHealth() {
-		return health;
-	}
 	
 	/**
 	 * 
@@ -202,7 +143,7 @@ public class Reactor extends FailableComponent implements Updatable {
 		int waterTemperature = flowIn.getTemperature();
 		
 		changeInTemp = heating(controlRod.getPercentageLowered()) - cooldown(waterTemperature, this.waterPumpedIn);
-		this.temperature += changeInTemp;
+		setTemperature(getTemperature() + changeInTemp);
 	}
 	
 	/**
@@ -212,8 +153,8 @@ public class Reactor extends FailableComponent implements Updatable {
 	 */
 	private void updatePressure() {
 		int currentPressure;
-		currentPressure = (int) Math.round(new Double(this.steamVolume) * VOL_TO_PRESSURE_MULTIPLIER);
-		this.pressure = currentPressure;
+		currentPressure = (int) Math.round(new Double(getSteamVolume()) * VOL_TO_PRESSURE_MULTIPLIER);
+		setPressure(currentPressure);
 	}
 	
 	/**
@@ -226,9 +167,9 @@ public class Reactor extends FailableComponent implements Updatable {
 	 * @return how much to reduce the temperature by 
 	 */
 	private int cooldown(int waterTemperature, int pumpedIn) {
-		int waterInTempDiff = this.temperature - waterTemperature; 
-		if (this.waterVolume < 1) return 0; // stops a potential divide by 0 on the next line.
-		return (int) Math.round(waterInTempDiff * (1 - (new Double(this.waterVolume - pumpedIn)/ this.waterVolume)));
+		int waterInTempDiff = getTemperature() - waterTemperature; 
+		if (getWaterVolume() < 1) return 0; // stops a potential divide by 0 on the next line.
+		return (int) Math.round(waterInTempDiff * (1 - (new Double(getWaterVolume() - pumpedIn)/ getWaterVolume() )));
 		
 	}
 	
@@ -244,7 +185,7 @@ public class Reactor extends FailableComponent implements Updatable {
 	 * @return how much to the increase the temperature by
 	 */
 	private int heating(int loweredPercentage) {
-		if (this.waterVolume <= MIN_SAFE_WATER_VOLUME) {
+		if (getWaterVolume() <= MIN_SAFE_WATER_VOLUME) {
 			return (int) Math.round((MAX_HEATING_PER_STEP * UNSAFE_HEATING_MULTIPLIER) 
 									* (1 - percentageToDecimal(loweredPercentage)));
 		} else {
@@ -271,14 +212,14 @@ public class Reactor extends FailableComponent implements Updatable {
 		int waterEvaporated;
 		int steamCreated;
 		// Don't evaporate anything if the reactor is not above boiling point.
-		if (this.temperature > BOILING_POINT) {
+		if (getTemperature() > BOILING_POINT) {
 			// I don't like this hacky cast but ah well.
-			waterEvaporated = (int) Math.round(temperature * EVAP_MULTIPLIER);
-			if (waterEvaporated > this.waterVolume) waterEvaporated = this.waterVolume;
+			waterEvaporated = (int) Math.round(getTemperature() * EVAP_MULTIPLIER);
+			if (waterEvaporated > getWaterVolume()) waterEvaporated = getWaterVolume();
 			steamCreated = waterEvaporated * WATER_STEAM_RATIO;
 		
-			this.waterVolume -= waterEvaporated; // made negative as the water is removed.
-			this.steamVolume += steamCreated;
+			setWaterVolume(getWaterVolume() - waterEvaporated);
+			setSteamVolume(getSteamVolume() + steamCreated);
 		}
 	}
 	
@@ -289,13 +230,13 @@ public class Reactor extends FailableComponent implements Updatable {
 	 * level is below the safe volume. 
 	 */
 	private void checkIfDamaging() {
-		if(this.temperature > MAX_TEMPERATURE) {
+		if(getTemperature() > MAX_TEMPERATURE) {
 			damageReactor();					
 		}
-		if (this.pressure > MAX_PRESSURE) {
+		if (getPressure() > MAX_PRESSURE) {
 			damageReactor();					
 		}
-		if(this.waterVolume < MIN_SAFE_WATER_VOLUME){
+		if(getWaterVolume() < MIN_SAFE_WATER_VOLUME){
 			damageReactor();
 		}
 		
@@ -305,16 +246,16 @@ public class Reactor extends FailableComponent implements Updatable {
 	 * Damages the reactor by amount of HEALT_CHANGE_WHEN_DAMAGING.
 	 */
 	private void damageReactor() {
-		health -= HEALTH_CHANGE_WHEN_DAMAGING;
+		setHealth(getHealth() - HEALTH_CHANGE_WHEN_DAMAGING);
 	}
 	
 	/**
 	 * 
 	 * @return true if health is 0 or lower.
 	 */
-	@Override
-	public boolean checkFailure() {
-		if (health <= 0) {
+//	@Override
+	public boolean hasFailed() {
+		if (getHealth() <= 0) {
 			return true;
 		} else {
 			return false;
