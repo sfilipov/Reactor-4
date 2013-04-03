@@ -784,7 +784,7 @@ public class PlantController {
 		Condenser condenser = this.plant.getCondenser();
 		// If there's a clear path from the reactor to the condenser then calculate
 		// and start off the flow being propagated.
-		if (isPathTo(reactor, condenser, true)) {
+		if (isPathToForwards(reactor, condenser)) {
 			reactor.getFlowOut().setRate(flowRate);
 			reactor.getFlowOut().setTemperature(reactor.getTemperature());
 			limitReactorFlowDueToValveMaxFlow(reactor);
@@ -807,7 +807,7 @@ public class PlantController {
 		for (Valve v : this.plant.getValves()) {
 			// If there is a path backwards from this valve to the reactor.
 			// Also implying that it is actually in front of the reactor.
-			if (isPathTo(v, reactor, false)) {
+			if (isPathToBackwards(v, reactor)) {
 				// increase the maximum flow allowed out of the reactor.
 				maxFlow += v.getMaxSteamFlow();
 			}
@@ -980,62 +980,84 @@ public class PlantController {
 		Condenser condenser = this.plant.getCondenser();
 		// If there's a clear path to the condenser from p then add the flowRate of this pump
 		// to the flowOut rate of the condenser.
-		if (isPathTo(p, condenser, false)) {
+		if (isPathToBackwards(p, condenser)) {
 			condenser.getFlowOut().setRate(condenser.getFlowOut().getRate() + flowRate);
 		}
 	}
 	
 	/**
-	 * Returns true if there exists a path from start to goal that is not blocked and does not 
+	 * Returns true if there exists a path forwards from start to goal that is not blocked and does not 
 	 * pass through a pressurised component (Reactor/Condenser) in the direction that is specified.
-	 * 
-	 * If forwards = true then the path with be traced using outputs, otherwise inputs.
 	 * 
 	 * @param start Component to start from.
 	 * @param goal Component to attempt to reach.
-	 * @param forwards Direction of the path
 	 * @return true if there exists a path from start to goal that is not blocked and does not 
 	 * pass through a pressurised component in the direction that is specified.
 	 */
-	private boolean isPathTo(PlantComponent start, PlantComponent goal, boolean forwards) {
-		List<PlantComponent> possiblePaths;
-		ConnectorPipe cp;
-		
-		PlantComponent current = start;
-		PlantComponent next = (forwards) ? start.getOutput() : start.getInput();
-		while(!current.equals(goal)) {
+	private boolean isPathToForwards(PlantComponent start, PlantComponent goal) {
+		if(start.equals(goal)) {
+			return true;
+		} else {
 			// If we're at any other component than a ConnectorPipe, then advance to the next
 			// component in the system in the direction we want.
-			if (!(next instanceof ConnectorPipe)) {
-				current = next;
-				next = (forwards) ? current.getOutput() : current.getInput();
+			if (!(start.getOutput() instanceof ConnectorPipe)) {				
+				return isPathToForwards(start.getOutput(), goal);
 			} else {
-				cp = (ConnectorPipe) next;
-				if (!forwards) {
-					// If we're travelling backwards check if this path back is blocked
-					if (cp.getOutputsMap().get(current)) return false;
-				}
+				ConnectorPipe cp = (ConnectorPipe) start.getOutput();
 				// I say, I say, we've got ourselves a ConnectorPipe!
-				possiblePaths = (forwards) ? cp.getOutputs() : cp.getInputs();
+				List<PlantComponent> possiblePaths = cp.getOutputs();
 				for (PlantComponent possibleNext : possiblePaths) {
 					/* Check if we're moving forwards, check that the ConnectorPipe output
 					 * we're leaving from isn't blocked. If it is we don't move that way.
 					 */
-					if (forwards) {
-						if (!cp.getOutputsMap().get(possibleNext)) {
-							// return isPathTo(possibleNext1, ...) || ... || isPathTo(possibleNextN,...)
-							if (isPathTo(possibleNext, goal, forwards)) return true;
-						}
-					} else {
+					if (!cp.getOutputsMap().get(possibleNext)) {
 						// return isPathTo(possibleNext1, ...) || ... || isPathTo(possibleNextN,...)
-						if (isPathTo(possibleNext, goal, forwards)) return true;
+						if (isPathToForwards(possibleNext, goal)) return true;
 					}
 				}
 				// All paths out of this connector pipe are blocked, no paths available :(
 				return false;
 			}
 		}
-		return true;
+	}
+	
+	/**
+	 * Returns true if there exists a path backwards from start to goal that is not blocked and does not 
+	 * pass through a pressurised component (Reactor/Condenser) in the direction that is specified.
+	 * 
+	 * @param start Component to start from.
+	 * @param goal Component to attempt to reach.
+	 * @return true if there exists a path from start to goal that is not blocked and does not 
+	 * pass through a pressurised component in the direction that is specified.
+	 */
+	private boolean isPathToBackwards(PlantComponent start, PlantComponent goal) {
+		if (start.equals(goal)) {
+			return true;
+		} else {
+			// If we're at any other component than a ConnectorPipe, then advance to the next
+			// component in the system in the direction we want.
+			if (!(start.getInput() instanceof ConnectorPipe)) {
+				return isPathToBackwards(start.getInput(), goal);
+			} else {
+				ConnectorPipe cp = (ConnectorPipe) start.getInput();
+				//Check if this path back is blocked
+				if (cp.getOutputsMap().get(start)) {
+					return false;
+				}
+				// I say, I say, we've got ourselves a ConnectorPipe!
+				List<PlantComponent> possiblePaths = cp.getInputs();
+				for (PlantComponent possibleNext : possiblePaths) {
+					/* Check if we're moving forwards, check that the ConnectorPipe output
+					 * we're leaving from isn't blocked. If it is we don't move that way.
+					 */
+					
+					// return isPathTo(possibleNext1, ...) || ... || isPathTo(possibleNextN,...)
+					if (isPathToBackwards(possibleNext, goal)) return true;
+				}
+				// All paths out of this connector pipe are blocked, no paths available :(
+				return false;
+			}
+		}
 	}
 	
 	/**
