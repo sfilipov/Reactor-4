@@ -650,7 +650,7 @@ public class PlantController {
 		Reactor reactor = this.plant.getReactor();
 		Condenser condenser = this.plant.getCondenser();
 		reactor.removeSteam(reactor.getFlowOut().getRate());
-		condenser.updateSteamVolume(condenser.getInput().getFlowOut().getRate());
+		condenser.addSteam(condenser.getInput().getFlowOut().getRate());
 	}
 
 	/**
@@ -825,17 +825,8 @@ public class PlantController {
 	 * @return rate of flow of steam out of the reactor
 	 */
 	private int calcReactorFlowOut() {
-		Reactor reactor = this.plant.getReactor();
-		Condenser condenser = this.plant.getCondenser();
-		int steamDiff = Math.abs(reactor.getSteamVolume() - condenser.getSteamVolume());
-		int flowRate;
-		if (steamDiff > this.plant.getMaxSteamFlowRate()) {
-			flowRate = this.plant.getMaxSteamFlowRate();
-		} else {
-			flowRate = steamDiff;
-		}
-		if (reactor.getSteamVolume() < flowRate) flowRate = reactor.getSteamVolume();
-		return flowRate;
+		int steamDifference = Math.abs(plant.getReactor().getSteamVolume() - plant.getCondenser().getSteamVolume());
+		return Math.min(steamDifference, Math.min(plant.getReactor().getSteamVolume(), plant.getMaxSteamFlowRate()));
 	}
 	
 	/**
@@ -1072,5 +1063,4 @@ public class PlantController {
 		int maxRpm = pump.getMaxRpm();
 		return (int) Math.round(this.plant.getMaxWaterFlowRatePerPump() * (1 - (new Double((maxRpm - pump.getRpm())/new Double(maxRpm)))));
 	}
-	
 }

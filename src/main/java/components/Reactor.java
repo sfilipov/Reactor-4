@@ -68,7 +68,7 @@ public class Reactor extends CriticalComponent implements UpdatableComponent {
 	 */
 	public void pumpInWater(int waterPumpedIn) throws IllegalArgumentException {
 		if (waterPumpedIn < 0) {
-			throw new IllegalArgumentException("The volume of the water pumped in should be positive.");
+			throw new IllegalArgumentException("The volume of the water pumped in the reactor should be positive.");
 		}
 		else {
 			this.waterPumpedIn = waterPumpedIn; // allows for only 1 call per step.
@@ -85,10 +85,7 @@ public class Reactor extends CriticalComponent implements UpdatableComponent {
 	 */
 	public void removeSteam(int amount) {
 		if (amount < 0) {
-			throw new IllegalArgumentException("The amount should be positive.");
-		}
-		else if (getSteamVolume() < amount) {
-			setSteamVolume(getSteamVolume() - amount); //TODO not correct
+			throw new IllegalArgumentException("The amount of steam to remove from the reactor should be positive.");
 		}
 		else {
 			setSteamVolume(getSteamVolume() - amount);

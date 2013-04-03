@@ -66,7 +66,7 @@ public class Condenser extends CriticalComponent implements UpdatableComponent {
 	 */
 	public void pumpOutWater(int waterPumpedOut) throws IllegalArgumentException {
 		if (waterPumpedOut < 0) {
-			throw new IllegalArgumentException("The volume of the water pumped out cannot be negative.");
+			throw new IllegalArgumentException("The volume of the water pumped out of the condenser should be positive.");
 		}
 		else {
 			setWaterVolume(getWaterVolume() - waterPumpedOut);
@@ -82,10 +82,14 @@ public class Condenser extends CriticalComponent implements UpdatableComponent {
 	 *  
 	 * @param amount the amount of steam to add to the volume
 	 */
-	public void updateSteamVolume(int amount)
+	public void addSteam(int amount)
 	{
-		this.steamIn = amount;
-		setSteamVolume(getSteamVolume() + amount);
+		if (amount < 0) {
+			throw new IllegalArgumentException("The amount of steam to add to the condenser should be positive.");
+		} else {
+			this.steamIn = amount;
+			setSteamVolume(getSteamVolume() + amount);
+		}
 	}
 
 	public Pump getCoolantPump() {

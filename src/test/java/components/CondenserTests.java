@@ -34,7 +34,7 @@ public class CondenserTests {
 	public void updateSteamVolume_shouldIncreaseSteamVolumeByCorrectAmount() {
 		int deltaVolume = 1234;
 		int initialSteamVolume = condenser.getSteamVolume();
-		condenser.updateSteamVolume(deltaVolume);
+		condenser.addSteam(deltaVolume);
 		int finalSteamVolume = condenser.getSteamVolume();
 		assertEquals(deltaVolume, finalSteamVolume - initialSteamVolume);
 	}
@@ -53,7 +53,7 @@ public class CondenserTests {
 		int startingTemperature = 1000;
 		
 		while (condenser.getTemperature() < startingTemperature) {
-			condenser.updateSteamVolume(condenser.getInput().getFlowOut().getRate());
+			condenser.addSteam(condenser.getInput().getFlowOut().getRate());
 			condenser.updateState();
 		}
 		
