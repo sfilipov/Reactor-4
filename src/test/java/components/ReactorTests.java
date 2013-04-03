@@ -35,26 +35,23 @@ public class ReactorTests {
 	}
 	
 	@Test
-	public void addSteamVolume_volumePositive_addsToSteamVolume() {
+	public void removeSteam_volumePositive_removesFromSteamVolume() {
 		int steamVolume = reactor.getSteamVolume();
-		reactor.addSteamVolume(100);
+		reactor.removeSteam(100);
 		
-		assertEquals(steamVolume+100, reactor.getSteamVolume());
+		assertEquals(steamVolume-100, reactor.getSteamVolume());
 	}
 	
 	@Test
-	public void addSteamVolume_volumeZero_sameSteamVolume() {
+	public void removeSteam_volumeZero_sameSteamVolume() {
 		int steamVolume = reactor.getSteamVolume();
-		reactor.addSteamVolume(100);
+		reactor.removeSteam(0);
 		
-		assertEquals(steamVolume+100, reactor.getSteamVolume());
+		assertEquals(steamVolume, reactor.getSteamVolume());
 	}
 	
-	@Test
-	public void addSteamVolume_volumeNegative_subtractsFromSteamVolume() {
-		int steamVolume = reactor.getSteamVolume();
-		reactor.addSteamVolume(100);
-		
-		assertEquals(steamVolume+100, reactor.getSteamVolume());
+	@Test (expected=IllegalArgumentException.class)
+	public void removeSteam_volumeNegative_throwsException() {
+		reactor.removeSteam(-100);
 	}
 }

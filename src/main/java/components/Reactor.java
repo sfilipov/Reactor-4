@@ -64,28 +64,35 @@ public class Reactor extends CriticalComponent implements UpdatableComponent {
 	 * Also stores the amount of water pumped in for future calculations.
 	 * This method should only be called once per timeStep.
 	 * 
-	 * @param pumpedInVolume amount of water to add to the total in the reactor
+	 * @param waterPumpedIn amount of water to add to the total in the reactor
 	 */
-	public void pumpInWater(int pumpedInVolume) throws IllegalArgumentException {
-		if (pumpedInVolume < 0) {
-			throw new IllegalArgumentException("The volume of the water pumped in cannot be negative.");
+	public void pumpInWater(int waterPumpedIn) throws IllegalArgumentException {
+		if (waterPumpedIn < 0) {
+			throw new IllegalArgumentException("The volume of the water pumped in should be positive.");
 		}
 		else {
-			this.waterPumpedIn = pumpedInVolume; // allows for only 1 call per step.
-			setWaterVolume(getWaterVolume() + pumpedInVolume);
+			this.waterPumpedIn = waterPumpedIn; // allows for only 1 call per step.
+			setWaterVolume(getWaterVolume() + waterPumpedIn);
 		}
 	}
 
 	/**
-	 * Updates the amount of steam in the reactor.
+	 * Removes steam from the reactor.
 	 * 
-	 * amount can be negative and will be when steam is leaving 
-	 * the reactor.
+	 * Amount should be positive.
 	 *  
-	 * @param amount the amount of steam to add to the volume
+	 * @param amount the amount of steam to remove from reactor.
 	 */
-	public void addSteamVolume(int amount) {
-		setSteamVolume(getSteamVolume() + amount);
+	public void removeSteam(int amount) {
+		if (amount < 0) {
+			throw new IllegalArgumentException("The amount should be positive.");
+		}
+		else if (getSteamVolume() < amount) {
+			setSteamVolume(getSteamVolume() - amount); //TODO not correct
+		}
+		else {
+			setSteamVolume(getSteamVolume() - amount);
+		}
 	}
 
 	public int getPercentageLowered() {

@@ -40,44 +40,6 @@ public class Flow implements Serializable {
 		this.temperature = DEFAULT_TEMPERATURE;
 	}
 	
-	 /**
-     * This constructor uses the predefined values for
-     * temperature and rate but takes the type as an input
-     * 
-     * @param type   type of flow - either steam or water
-     */
-	public Flow(FlowType type) {
-		this.rate = DEFAULT_RATE;
-		this.temperature = DEFAULT_TEMPERATURE;
-		this.type = type;
-	}
-	
-    /**
-     * This constructor uses the predefined value for
-     * temperature but takes the type and the rate as inputs
-     * 
-     * @param type    type of flow - either steam or water
-     * @param rate    rate of flow 
-     */
-	public Flow(FlowType type, int rate) {
-		this.rate = rate;
-		this.temperature = DEFAULT_TEMPERATURE;
-		this.type = type;
-	}
-	
-    /**
-     * This constructor uses none of the predefined values
-     * 
-     * @param type         type of flow - either steam or water
-     * @param rate         rate of flow
-     * @param temperature  temperature of the water/steam
-     */
-	public Flow(FlowType type, int rate, int temperature) {
-		this.rate = rate;
-		this.temperature = temperature;
-		this.type = type;
-	}
-	
 	/**
 	 * 
 	 * @return rate of flow

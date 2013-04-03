@@ -62,14 +62,14 @@ public class Condenser extends CriticalComponent implements UpdatableComponent {
 	/**
 	 * Updates the amount of water in the condenser.
 	 * 
-	 * @param pumpedOutVolume amount of water to add to the total in the condenser
+	 * @param waterPumpedOut amount of water to add to the total in the condenser
 	 */
-	public void pumpOutWater(int pumpedOutVolume) throws IllegalArgumentException {
-		if (pumpedOutVolume < 0) {
+	public void pumpOutWater(int waterPumpedOut) throws IllegalArgumentException {
+		if (waterPumpedOut < 0) {
 			throw new IllegalArgumentException("The volume of the water pumped out cannot be negative.");
 		}
 		else {
-			setWaterVolume(getWaterVolume() - pumpedOutVolume);
+			setWaterVolume(getWaterVolume() - waterPumpedOut);
 		}
 	}
 

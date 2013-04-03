@@ -649,27 +649,8 @@ public class PlantController {
 	{
 		Reactor reactor = this.plant.getReactor();
 		Condenser condenser = this.plant.getCondenser();
-		reactor.addSteamVolume(-reactor.getFlowOut().getRate());
+		reactor.removeSteam(reactor.getFlowOut().getRate());
 		condenser.updateSteamVolume(condenser.getInput().getFlowOut().getRate());
-	}
-
-	/**
-	 * If all paths out of the reactor are blocked and the reactor is 
-	 * connected to a ConnectorPipe, then the 'zero flow' will not have been
-	 * propagated back to it's flowOut. We therefore need to check whether or not 
-	 */
-	private void propagateNoFlowBackToReactor()
-	{
-		Reactor reactor = this.plant.getReactor();
-		PlantComponent nextComponent = reactor.getOutput();
-		int	nextComponentFlowRate = nextComponent.getFlowOut().getRate();
-		// If the next component is a ConnectorPipe we need to
-		// remember that the flowOut is divided by the number of active
-		// outputs!
-		if (nextComponent instanceof ConnectorPipe) 
-			nextComponentFlowRate *= ((ConnectorPipe) nextComponent).numOutputs();
-		// If the rate of flow out of the first component is zero, propagate this back to the reactor.
-		if (nextComponentFlowRate == 0) reactor.getFlowOut().setRate(nextComponentFlowRate);
 	}
 
 	/**
@@ -1000,8 +981,7 @@ public class PlantController {
 		// If there's a clear path to the condenser from p then add the flowRate of this pump
 		// to the flowOut rate of the condenser.
 		if (isPathTo(p, condenser, false)) {
-			int condenserFlowOut = condenser.getFlowOut().getRate();
-			condenser.getFlowOut().setRate(condenserFlowOut + flowRate);
+			condenser.getFlowOut().setRate(condenser.getFlowOut().getRate() + flowRate);
 		}
 	}
 	
@@ -1062,13 +1042,13 @@ public class PlantController {
 	 * Calculates the flow through a pump based upon it's rpm.
 	 * The flow is linearly correlated to the rpm.
 	 * 
-	 * @param p The pump to calculate the rpm of
-	 * @return The flow rate through pump, p
+	 * @param pump The pump to calculate the flow of
+	 * @return The flow rate through pump
 	 */
-	private int calcFlowFromPumpRpm(Pump p)
+	private int calcFlowFromPumpRpm(Pump pump)
 	{
-		int maxRpm = p.getMaxRpm();
-		return (int) Math.round(this.plant.getMaxWaterFlowRatePerPump() * (1 - (new Double((maxRpm - p.getRpm())/new Double(maxRpm)))));
+		int maxRpm = pump.getMaxRpm();
+		return (int) Math.round(this.plant.getMaxWaterFlowRatePerPump() * (1 - (new Double((maxRpm - pump.getRpm())/new Double(maxRpm)))));
 	}
 	
 }
