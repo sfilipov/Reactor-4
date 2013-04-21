@@ -307,15 +307,49 @@ public class PlantController {
 	}
 	
 	/**
-	 * Forces the specified component to instantly fail.
-	 * Used in multiplayer mode. 
+	 * Forces the specified pump (by ID) to fail.
 	 * 
 	 * @param componentToFail the component to fail.
 	 */
-	public synchronized void failComponent(RandomlyFailableComponent componentToFail) {
+	public synchronized void failPump(int pumpID) {
+		List<Pump> pumps = plant.getPumps();
+		Pump foundPump = null;
 		List<RandomlyFailableComponent> failedComponents = plant.getFailedComponents();
-		if (failedComponents.contains(componentToFail)) {
-			
+		for (Pump pump : pumps) { // Find the pump with the selected ID
+			if (pump.getID() == pumpID) {
+				foundPump = pump;
+			}
+		}
+		if (!failedComponents.contains(foundPump)) {
+			// No need to check if the pump is currently being repaired...
+			// If it is being repaired then it must be broken.
+			failedComponents.add(foundPump);
+			foundPump.setOperational(false);
+			uidata.addBrokenOnStep(foundPump);
+		}
+	}
+	
+	public synchronized void failTurbine() {
+		List<RandomlyFailableComponent> failedComponents = plant.getFailedComponents();
+		Turbine turbine = plant.getTurbine();
+		if (!failedComponents.contains(turbine)) {
+			// No need to check if the pump is currently being repaired...
+			// If it is being repaired then it must be broken.
+			failedComponents.add(turbine);
+			turbine.setOperational(false);
+			uidata.addBrokenOnStep(turbine);
+		}
+	}
+	
+	public synchronized void failOS() {
+		List<RandomlyFailableComponent> failedComponents = plant.getFailedComponents();
+		OperatingSoftware os = plant.getOperatingSoftware();
+		if (!failedComponents.contains(os)) {
+			// No need to check if the pump is currently being repaired...
+			// If it is being repaired then it must be broken.
+			failedComponents.add(os);
+			os.setOperational(false);
+			uidata.addBrokenOnStep(os);
 		}
 	}
 	
