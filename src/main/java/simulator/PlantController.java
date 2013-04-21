@@ -233,8 +233,9 @@ public class PlantController {
 	 * 
 	 * @param multiplayerMode true to turn on multiplayer mode.
 	 */
-	public synchronized void setMultiplayer(boolean multiplayerMode) {
-		plant.setMultiplayer(multiplayerMode);
+	public synchronized boolean toggleMultiplayer() {
+		plant.setMultiplayer(!plant.isMultiplayer());
+		return plant.isMultiplayer();
 	}
 	
 	/**
@@ -309,7 +310,7 @@ public class PlantController {
 	/**
 	 * Forces the specified pump (by ID) to fail.
 	 * 
-	 * @param componentToFail the component to fail.
+	 * @param pumpID ID of the pump to fail.
 	 */
 	public synchronized void failPump(int pumpID) {
 		List<Pump> pumps = plant.getPumps();
@@ -329,6 +330,9 @@ public class PlantController {
 		}
 	}
 	
+	/**
+	 * Forces the failure of the turbine.
+	 */
 	public synchronized void failTurbine() {
 		List<RandomlyFailableComponent> failedComponents = plant.getFailedComponents();
 		Turbine turbine = plant.getTurbine();
@@ -337,10 +341,18 @@ public class PlantController {
 			// If it is being repaired then it must be broken.
 			failedComponents.add(turbine);
 			turbine.setOperational(false);
+			// Safety feature.
+			setValve(1,false);
+			setValve(2, true);
+			setControlRods(100);
+
 			uidata.addBrokenOnStep(turbine);
 		}
 	}
 	
+	/**
+	 * Forces the failure of the operating software.
+	 */
 	public synchronized void failOS() {
 		List<RandomlyFailableComponent> failedComponents = plant.getFailedComponents();
 		OperatingSoftware os = plant.getOperatingSoftware();

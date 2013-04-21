@@ -42,7 +42,7 @@ public class MultiplayerController {
 	/**
 	 * Acts upon KeyEvents that it is passed. ie fails the relevant component.
 	 * 
-	 * @param event
+	 * @param event KeyEvent
 	 */
 	private void keyPressActionHandler(KeyEvent event) {
 		if (plantController.getUIData().isMultiplayer()) {

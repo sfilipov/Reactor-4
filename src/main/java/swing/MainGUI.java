@@ -67,6 +67,7 @@ public class MainGUI
     private JButton btnSave;
     private JButton btnShowManual;
     private JButton btnShowScores;
+    private JButton btnToggleMultiplayer;
     //make a number of steps
     private JButton btnStep;
     private JButton btnRepairOperatingSoftware;
@@ -516,6 +517,24 @@ public class MainGUI
         btnShowManual.setBounds(899, 17, 40, 40);
         layeredPane.setLayer(btnShowManual, 1);
         layeredPane.add(btnShowManual);
+        
+       //shows the scores so far
+        //by calling a function that instantiates the scoresGUI
+        btnToggleMultiplayer = new JButton();
+        btnToggleMultiplayer.setToolTipText("Multiplayer on/off");
+        btnToggleMultiplayer.setText("S");
+        btnToggleMultiplayer.setMargin(new Insets(0,0,0,0));
+        btnToggleMultiplayer.setBorder(null);
+        btnToggleMultiplayer.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent arg0) {
+        		boolean multiplayer = plantController.toggleMultiplayer();
+        		btnToggleMultiplayer.setText((multiplayer) ? "M" : "S");
+        	}
+        });
+        btnToggleMultiplayer.setBounds(999, 17, 40, 40);
+        layeredPane.setLayer(btnToggleMultiplayer, 1);
+        layeredPane.add(btnToggleMultiplayer);
+        
         
         //when this button is pressed it takes the value of the sliderNumber of time steps,
         //and issues a single time step at a time to the plant
