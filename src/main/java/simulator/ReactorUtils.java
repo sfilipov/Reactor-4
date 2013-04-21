@@ -27,6 +27,8 @@ import model.Plant;
  */
 public class ReactorUtils
 {
+	private static final boolean DEFAULT_MULTIPLAYER_MODE = false;
+	
 	private Plant newPlant;
 	private Reactor reactor;
 	private Condenser condenser;
@@ -60,6 +62,7 @@ public class ReactorUtils
 		instantiateComponents();
 		setupComponentReferences();
 		newPlant.setPlantComponents(makeComponentList());
+		newPlant.setMultiplayer(DEFAULT_MULTIPLAYER_MODE);
 		return newPlant;
 	}
 	
@@ -72,6 +75,7 @@ public class ReactorUtils
 		instantiateComponents();
 		setupComponentReferencesTesting();
 		newPlant.setPlantComponents(makeComponentListTesting());
+		newPlant.setMultiplayer(DEFAULT_MULTIPLAYER_MODE);
 		return newPlant;
 	}
 

@@ -42,6 +42,8 @@ public class Plant implements Serializable {
 	// is the game over
 	private boolean gameOver;
 	
+	// is the game in multiplayer mode
+	private boolean multiplayer;
 	
 	//operator's score
 	private int score;
@@ -385,5 +387,23 @@ public class Plant implements Serializable {
 	 */
 	public boolean isGameOver() {
 		return this.gameOver;
+	}
+
+	/**
+	 * Returns true if the game is currently in multiplayer mode.
+	 * 
+	 * @return true if the game is currently in multiplayer mode.
+	 */
+	public boolean isMultiplayer() {
+		return this.multiplayer;
+	}
+
+	/**
+	 * Turns on/off multiplayer mode.
+	 * 
+	 * @param multiplayer true to set the game to multiplayer mode.
+	 */
+	public void setMultiplayer(boolean multiplayer) {
+		this.multiplayer = multiplayer;
 	}
 }

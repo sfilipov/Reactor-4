@@ -227,6 +227,17 @@ public class PlantController {
 	}
 	
 	/**
+	 * Turns on/off multiplayer mode.
+	 * If multiplayer mode is already on, passing true to this method will do nothing.
+	 * Likewise for off & false.
+	 * 
+	 * @param multiplayerMode true to turn on multiplayer mode.
+	 */
+	public synchronized void setMultiplayer(boolean multiplayerMode) {
+		plant.setMultiplayer(multiplayerMode);
+	}
+	
+	/**
 	 * 
 	 * @param valveID the valve to be set
 	 * @param open true to open the valve, false to close it
@@ -292,6 +303,19 @@ public class PlantController {
 		if(percentageLowered >= 0 && percentageLowered <= 100) {
 			Reactor reactor = plant.getReactor();
 			reactor.setPercentageLowered(percentageLowered);
+		}
+	}
+	
+	/**
+	 * Forces the specified component to instantly fail.
+	 * Used in multiplayer mode. 
+	 * 
+	 * @param componentToFail the component to fail.
+	 */
+	public synchronized void failComponent(RandomlyFailableComponent componentToFail) {
+		List<RandomlyFailableComponent> failedComponents = plant.getFailedComponents();
+		if (failedComponents.contains(componentToFail)) {
+			
 		}
 	}
 	
@@ -378,7 +402,9 @@ public class PlantController {
 				updateBeingRepaired();
 				updateFlow();
 				updatePlant();
-				checkFailures();
+				checkWearFailures(); //Condenser/Reactor wear failures.
+				// If not in multiplayer mode then invoke random failures.
+				if (!plant.isMultiplayer()) checkRandomFailures();
 			}
 			else {
 				break;
@@ -548,7 +574,7 @@ public class PlantController {
 	 * If more than one component fails, only one is actually getting broken.
 	 * If a reactor or condenser is broken, then the game is over.
 	 */
-	private void checkFailures() {
+	private void checkRandomFailures() {
 		List<RandomlyFailableComponent> failableComponents  = plant.getFailableComponents();
 		List<RandomlyFailableComponent> failedComponents    = plant.getFailedComponents();
 		List<RandomlyFailableComponent> failingComponents = new ArrayList<RandomlyFailableComponent>();
@@ -580,7 +606,9 @@ public class PlantController {
 			failedComponent.setOperational(false);
 			uidata.addBrokenOnStep(failedComponent);
 		}
-		
+	}
+	
+	private void checkWearFailures() {
 		try {
 			plant.getReactor().updateHealth();
 			plant.getCondenser().updateHealth();

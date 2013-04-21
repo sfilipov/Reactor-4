@@ -24,6 +24,7 @@ public class UIData {
 	private String  operatorName;
 	private int     score;
 	private boolean gameOver;
+	private boolean multiplayer;
 	
 	private int reactorHealth;
 	private int reactorTemperature;
@@ -58,6 +59,7 @@ public class UIData {
 		this.operatorName = plant.getOperatorName();
 		this.score        = plant.getScore();
 		this.gameOver     = plant.isGameOver();
+		this.multiplayer  = plant.isMultiplayer();
 		
 		this.turbineRpm			= plant.getTurbine().getRpm();
 		this.turbineFunctional	= plant.getTurbine().isOperational();
@@ -94,6 +96,7 @@ public class UIData {
 		this.operatorName = plant.getOperatorName();
 		this.score        = plant.getScore();
 		this.gameOver     = plant.isGameOver();
+		this.multiplayer  = plant.isMultiplayer();
 		
 		this.turbineRpm			= plant.getTurbine().getRpm();
 		this.turbineFunctional	= plant.getTurbine().isOperational();
@@ -331,5 +334,9 @@ public class UIData {
 	 */
 	public List<PlantComponent> getBrokenOnStep() {
 		return brokenOnStep;
+	}
+
+	public boolean isMultiplayer() {
+		return multiplayer;
 	}
 }

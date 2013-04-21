@@ -35,6 +35,7 @@ import components.Turbine;
 
 import model.Repair;
 
+import simulator.MultiplayerController;
 import simulator.PlantController;
 
 
@@ -51,6 +52,8 @@ public class MainGUI
 {
 	// the only reference that is needed to the plant
     private PlantController plantController;
+    
+    private MultiplayerController multiplayerController;
     
     //the main frame
     private JFrame frame;
@@ -150,6 +153,7 @@ public class MainGUI
         this.plantController = plantController;
         initialize();
         frame.setVisible(true);
+        this.multiplayerController = new MultiplayerController(this.plantController);
     }
 
 
