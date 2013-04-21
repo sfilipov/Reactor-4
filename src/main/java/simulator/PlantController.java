@@ -227,11 +227,8 @@ public class PlantController {
 	}
 	
 	/**
-	 * Turns on/off multiplayer mode.
-	 * If multiplayer mode is already on, passing true to this method will do nothing.
-	 * Likewise for off & false.
-	 * 
-	 * @param multiplayerMode true to turn on multiplayer mode.
+	 * Toggles multiplayer mode on/off.
+	 * Returns the new boolean state. (True = multiplayer on).
 	 */
 	public synchronized boolean toggleMultiplayer() {
 		plant.setMultiplayer(!plant.isMultiplayer());
