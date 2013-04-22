@@ -518,8 +518,7 @@ public class MainGUI
         layeredPane.setLayer(btnShowManual, 1);
         layeredPane.add(btnShowManual);
         
-       //shows the scores so far
-        //by calling a function that instantiates the scoresGUI
+        // Button that toggles multiplayer on and off!
         btnToggleMultiplayer = new JButton();
         btnToggleMultiplayer.setToolTipText("Multiplayer on/off");
         btnToggleMultiplayer.setText("S");
