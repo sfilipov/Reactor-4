@@ -5,7 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import model.Plant;
+import model.PlantModel;
 import model.Repair;
 
 import org.junit.Before;
@@ -20,9 +20,9 @@ import components.Valve;
 
 public class PlantControllerOperatingSoftwareIntegration {
 	
-	private PlantController presenter; 
-	private ReactorUtils utils;
-	private Plant plant;
+	private PlantModel model;
+	private PlantController controller;
+	private PlantModel plant;
     private OperatingSoftware OS;
     private Reactor reactor;
     private Pump pump;
@@ -31,22 +31,22 @@ public class PlantControllerOperatingSoftwareIntegration {
 	
 	@Before
 	public void setUp() {
-		utils = new ReactorUtils();
-		presenter = new PlantController(utils);
-		presenter.newGame("Bob");
-		plant = presenter.getPlant();
-		OS = presenter.getPlant().getOperatingSoftware();
-		pump = presenter.getPlant().getPumps().get(0);
-		valve = presenter.getPlant().getValves().get(0);
-		turbine = presenter.getPlant().getTurbine();
-		reactor = presenter.getPlant().getReactor();
+		model = new PlantModel();
+		controller = new PlantController(model);
+		controller.newGame("Bob");
+		plant = controller.getPlant();
+		OS = controller.getPlant().getOperatingSoftware();
+		pump = controller.getPlant().getPumps().get(0);
+		valve = controller.getPlant().getValves().get(0);
+		turbine = controller.getPlant().getTurbine();
+		reactor = controller.getPlant().getReactor();
 	}
 	
 	@Test
 	public void testSetControlRods(){
 		reactor.setPercentageLowered(50);
 		OS.setControlRods(10);
-		presenter.executeStoredCommand();
+		controller.executeStoredCommand();
 		assertEquals(10, reactor.getPercentageLowered());
 	}
 	
@@ -54,7 +54,7 @@ public class PlantControllerOperatingSoftwareIntegration {
 	public void testSetPumpOnOff(){
 		pump.setOn(false);
 		OS.setPumpOnOff(1, true);
-		presenter.executeStoredCommand();
+		controller.executeStoredCommand();
 		assertTrue(pump.isOn());
 	}
 	
@@ -62,7 +62,7 @@ public class PlantControllerOperatingSoftwareIntegration {
 	public void testSetPumpRpm(){
 		pump.setRpm(0);
 		OS.setPumpRpm(1, 20);
-		presenter.executeStoredCommand();
+		controller.executeStoredCommand();
 		assertEquals(20, pump.getRpm());
 	}
 	
@@ -70,7 +70,7 @@ public class PlantControllerOperatingSoftwareIntegration {
 	public void testSetValve(){
 		valve.setOpen(false);
 		OS.setValve(1, true);
-		presenter.executeStoredCommand();
+		controller.executeStoredCommand();
 		assertTrue(valve.isOpen());
 	}
 	
@@ -81,7 +81,7 @@ public class PlantControllerOperatingSoftwareIntegration {
 		List<Repair> expected = plant.getBeingRepaired();
 		expected.add(new Repair(pump));
 		OS.repairPump(0);
-		presenter.executeStoredCommand();
+		controller.executeStoredCommand();
 		assertEquals(expected, plant.getBeingRepaired());
 	}
 	
@@ -92,7 +92,7 @@ public class PlantControllerOperatingSoftwareIntegration {
 		List<Repair> expected = plant.getBeingRepaired();
 		expected.add(new Repair(turbine));
 		OS.repairTurbine();
-		presenter.executeStoredCommand();
+		controller.executeStoredCommand();
 		assertEquals(expected, plant.getBeingRepaired());
 	}
 }
