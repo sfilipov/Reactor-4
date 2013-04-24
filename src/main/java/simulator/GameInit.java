@@ -15,23 +15,11 @@ import swing.MainGUI;
  *
  *@author Lamprey
  */
-public class GameInit {
-	
-	private TextUI view;
-	private PlantController controller;
-	private ReactorUtils utils;
-	private MainGUI newView;
-	
-	public GameInit() {
-		utils = new ReactorUtils();
-		controller = new PlantController(utils);
-		//view = new TextUI(controller);
-		newView = new MainGUI(controller);
-	}
-	
+public class GameInit {	
 	@SuppressWarnings("unused")
 	public static void main(String[] args) {
-		GameInit game = new GameInit();
+		ReactorUtils utils = new ReactorUtils();
+		PlantController controller = new PlantController(utils);
+		MainGUI newView = new MainGUI(controller);
 	}
-	
 }
