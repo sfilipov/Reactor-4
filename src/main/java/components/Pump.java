@@ -17,6 +17,8 @@ public class Pump extends RandomlyFailableComponent {
 	public final static int DEFAULT_FAILURE_RATE = 10; //1%
 	public final static int DEFAULT_REPAIR_TIME = 5;
 	private final static int MAX_FAILURE_RATE = 50; //5%
+	// the maximum flow rate for a pump when it is on and not broken
+	private final static int MAX_WATER_FLOW_RATE_PER_PUMP = 400;
 	
 	private int ID;
 	private int rpm;
@@ -110,5 +112,14 @@ public class Pump extends RandomlyFailableComponent {
 	 */
 	public boolean hasFailed() {
 		return super.hasFailed();
+	}
+	
+	/**
+	 * 
+	 * @return maximum rate at which water can flow through a pump
+	 */
+	public static int getMaxWaterFlowRatePerPump()
+	{
+		return MAX_WATER_FLOW_RATE_PER_PUMP;
 	}
 }

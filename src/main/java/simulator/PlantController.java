@@ -27,7 +27,7 @@ import components.Valve;
 
 
 import model.HighScore;
-import model.Plant;
+import model.PlantModel;
 import model.Repair;
 
 
@@ -41,18 +41,18 @@ import model.Repair;
  */
 public class PlantController {
 
-	private Plant plant;
+	private PlantModel model;
 	private UIData uidata;
 	
 	/**
 	 * 
 	 * @param utils the utilities for the game
 	 */
-	public PlantController(ReactorUtils utils)
+	public PlantController(PlantModel model)
 	{
-		this.plant = utils.createNewPlant();
+		this.model = model;
 		readHighScores();
-		uidata = new UIData(plant);
+		uidata = new UIData(model);
 	}
 	
 	/* ----------------		Methods	for UI to call	----------------
@@ -66,7 +66,7 @@ public class PlantController {
 	public void executeStoredCommand()
 	{
 	    //obtains reference to the object
-	    OperatingSoftware operatingSoftware = plant.getOperatingSoftware();
+	    OperatingSoftware operatingSoftware = model.getOperatingSoftware();
 	    
 	    switch(operatingSoftware.getRequestedOperation())
 	    {//checks what is the command that has to be executed and calls the
@@ -109,11 +109,9 @@ public class PlantController {
 	 * @param operatorName the name of the player
 	 */
 	public synchronized void newGame(String operatorName) {
-		ReactorUtils utils = new ReactorUtils();
-		this.plant = utils.createNewPlant();
-		this.plant.setOperatorName(operatorName);
+		this.model.newGame(operatorName);
 		readHighScores();
-		uidata = new UIData(plant);
+		uidata = new UIData(model);
 		// update things as per the default values.
 		// mainly to calculate the pressure etc in these things.
 		updateFlow();
@@ -131,7 +129,7 @@ public class PlantController {
 		try {
 			fileOut = new FileOutputStream("save.ser");
 			out =     new ObjectOutputStream(fileOut);
-			out.writeObject(plant);
+			out.writeObject(model);
 			out.close();
 			fileOut.close();
 			return true;
@@ -149,7 +147,7 @@ public class PlantController {
 	 * @return true if loading a game was successful, false otherwise
 	 */
 	public synchronized boolean loadGame() {
-		Plant plant = null;
+		PlantModel plant = null;
 		FileInputStream fileIn  = null;
 		ObjectInputStream in = null;
 		try {
@@ -157,10 +155,10 @@ public class PlantController {
 			if(f.exists()) {
 				fileIn = new FileInputStream(f);
 				in = new ObjectInputStream(fileIn);
-				plant = (Plant) in.readObject();
+				plant = (PlantModel) in.readObject();
 				in.close();
 				fileIn.close();
-				this.plant = plant;
+				this.model = plant;
 				uidata = new UIData(plant);
 				return true;
 			}
@@ -185,7 +183,7 @@ public class PlantController {
 	 * to easily create a real-time game.
 	 */
 	public synchronized void togglePaused() {
-		this.plant.setPaused(!this.plant.isPaused());
+		this.model.setPaused(!this.model.isPaused());
 	}
 	
 	/**
@@ -194,7 +192,7 @@ public class PlantController {
 	 * @return list of highscores.
 	 */
 	public List<HighScore> getHighScores() {
-		return plant.getHighScores();
+		return model.getHighScores();
 	}
 	
 	/**
@@ -204,7 +202,7 @@ public class PlantController {
 	 * @return true if adding was successful and the new score is in top 10, false otherwise
 	 */
 	public boolean addHighScore(HighScore newHighScore) {
-		List<HighScore> highScores = plant.getHighScores();
+		List<HighScore> highScores = model.getHighScores();
 		int size = highScores.size();
 		if (newHighScore.getHighScore() > 0) {
 			for (int i=0; i < 20; i++) {
@@ -231,8 +229,8 @@ public class PlantController {
 	 * Returns the new boolean state. (True = multiplayer on).
 	 */
 	public synchronized boolean toggleMultiplayer() {
-		plant.setMultiplayer(!plant.isMultiplayer());
-		return plant.isMultiplayer();
+		model.setMultiplayer(!model.isMultiplayer());
+		return model.isMultiplayer();
 	}
 	
 	/**
@@ -259,7 +257,7 @@ public class PlantController {
 	 * @return true if command was successful, false if a valve with that ID was not found
 	 */
 	public synchronized boolean setValve(int valveID, boolean open) {
-		List<Valve> valves = plant.getValves();
+		List<Valve> valves = model.getValves();
 		for (Valve valve : valves) {
 			if (valveID == valve.getID()) {
 				valve.setOpen(open);
@@ -276,7 +274,7 @@ public class PlantController {
 	 * @return true if command was successful, false if a pump with that ID was not found
 	 */
 	public synchronized boolean setPumpOnOff(int pumpID, boolean on) {
-		List<Pump> pumps = plant.getPumps();
+		List<Pump> pumps = model.getPumps();
 		for (Pump pump : pumps) {
 			if (pumpID == pump.getID()) {
 				pump.setOn(on);
@@ -295,7 +293,7 @@ public class PlantController {
 	 * @throws IllegalArgumentException if RPM is out of the allowed range (rpm < 0 || rpm > MAX_RPM).
 	 */
 	public synchronized boolean setPumpRpm(int pumpID, int rpm) throws IllegalArgumentException {
-		List<Pump> pumps = plant.getPumps();
+		List<Pump> pumps = model.getPumps();
 		for (Pump pump : pumps) {
 			if (pumpID == pump.getID()) {
 				pump.setRpm(rpm);
@@ -316,7 +314,7 @@ public class PlantController {
 	 */
 	public synchronized void setControlRods(int percentageLowered) {
 		if(percentageLowered >= 0 && percentageLowered <= 100) {
-			Reactor reactor = plant.getReactor();
+			Reactor reactor = model.getReactor();
 			reactor.setPercentageLowered(percentageLowered);
 		}
 	}
@@ -327,9 +325,9 @@ public class PlantController {
 	 * @param pumpID ID of the pump to fail.
 	 */
 	public synchronized void failPump(int pumpID) {
-		List<Pump> pumps = plant.getPumps();
+		List<Pump> pumps = model.getPumps();
 		Pump foundPump = null;
-		List<RandomlyFailableComponent> failedComponents = plant.getFailedComponents();
+		List<RandomlyFailableComponent> failedComponents = model.getFailedComponents();
 		for (Pump pump : pumps) { // Find the pump with the selected ID
 			if (pump.getID() == pumpID) {
 				foundPump = pump;
@@ -348,8 +346,8 @@ public class PlantController {
 	 * Forces the failure of the turbine.
 	 */
 	public synchronized void failTurbine() {
-		List<RandomlyFailableComponent> failedComponents = plant.getFailedComponents();
-		Turbine turbine = plant.getTurbine();
+		List<RandomlyFailableComponent> failedComponents = model.getFailedComponents();
+		Turbine turbine = model.getTurbine();
 		if (!failedComponents.contains(turbine)) {
 			// No need to check if the pump is currently being repaired...
 			// If it is being repaired then it must be broken.
@@ -368,8 +366,8 @@ public class PlantController {
 	 * Forces the failure of the operating software.
 	 */
 	public synchronized void failOS() {
-		List<RandomlyFailableComponent> failedComponents = plant.getFailedComponents();
-		OperatingSoftware os = plant.getOperatingSoftware();
+		List<RandomlyFailableComponent> failedComponents = model.getFailedComponents();
+		OperatingSoftware os = model.getOperatingSoftware();
 		if (!failedComponents.contains(os)) {
 			// No need to check if the pump is currently being repaired...
 			// If it is being repaired then it must be broken.
@@ -385,9 +383,9 @@ public class PlantController {
 	 * @return true only if the turbine has failed and is not already being repaired
 	 */
 	public synchronized boolean repairTurbine() {
-		Turbine turbine = plant.getTurbine();
-		List<RandomlyFailableComponent> failedComponents = plant.getFailedComponents();
-		List<Repair> beingRepaired = plant.getBeingRepaired();
+		Turbine turbine = model.getTurbine();
+		List<RandomlyFailableComponent> failedComponents = model.getFailedComponents();
+		List<Repair> beingRepaired = model.getBeingRepaired();
 		if (failedComponents.contains(turbine)) {
 			for (Repair br : beingRepaired) {
 				if (br.getPlantComponent() == turbine)
@@ -406,11 +404,11 @@ public class PlantController {
 	 * @return true only if the pump is found, has failed and is not already being repaired
 	 */
 	public synchronized boolean repairPump(int pumpID) {
-		List<Pump> pumps = plant.getPumps();
+		List<Pump> pumps = model.getPumps();
 		Pump foundPump = null;
 		boolean found = false;
-		List<RandomlyFailableComponent> failedComponents = plant.getFailedComponents();
-		List<Repair> beingRepaired = plant.getBeingRepaired();
+		List<RandomlyFailableComponent> failedComponents = model.getFailedComponents();
+		List<Repair> beingRepaired = model.getBeingRepaired();
 		for (Pump pump : pumps) { //Find the pump with the selected ID
 			if (pump.getID() == pumpID) {
 				foundPump = pump;
@@ -434,9 +432,9 @@ public class PlantController {
 	 * @return true only if the operating software has failed and is not already being repaired
 	 */
 	public synchronized boolean repairOperatingSoftware() {
-		OperatingSoftware operatingSoftware = plant.getOperatingSoftware();
-		List<RandomlyFailableComponent> failedComponents = plant.getFailedComponents();
-		List<Repair> beingRepaired = plant.getBeingRepaired();
+		OperatingSoftware operatingSoftware = model.getOperatingSoftware();
+		List<RandomlyFailableComponent> failedComponents = model.getFailedComponents();
+		List<Repair> beingRepaired = model.getBeingRepaired();
 		if (failedComponents.contains(operatingSoftware)) {
 			for (Repair br : beingRepaired) {
 				if (br.getPlantComponent() == operatingSoftware)
@@ -458,13 +456,13 @@ public class PlantController {
 	 */
 	public synchronized void step(int numSteps) {
 		for (int i = 0; i < numSteps; i++) {
-			if (!plant.isGameOver()) {
+			if (!model.isGameOver()) {
 				updateBeingRepaired();
 				updateFlow();
 				updatePlant();
 				checkWearFailures(); //Condenser/Reactor wear failures.
 				// If not in multiplayer mode then invoke random failures.
-				if (!plant.isMultiplayer()) checkRandomFailures();
+				if (!model.isMultiplayer()) checkRandomFailures();
 			}
 			else {
 				break;
@@ -486,8 +484,8 @@ public class PlantController {
 	 * 
 	 * @return 
 	 */
-	public Plant getPlant() {
-		return this.plant;
+	public PlantModel getPlant() {
+		return this.model;
 	}
 	
 	// ----------------		Internal helper methods ------------------
@@ -496,7 +494,7 @@ public class PlantController {
 	 * Writes all highscores currently inside plant to a file called "highscores.ser".
 	 */
 	private void writeHighScores() {
-		List<HighScore> highScores = plant.getHighScores();
+		List<HighScore> highScores = model.getHighScores();
 		FileOutputStream fileOut   = null;
 		ObjectOutputStream out = null;
 		try {
@@ -526,7 +524,7 @@ public class PlantController {
 				highScores = (List<HighScore>) in.readObject();
 				in.close();
 				fileIn.close();
-				plant.setHighScores(highScores);
+				model.setHighScores(highScores);
 			}
 		}
 
@@ -544,8 +542,8 @@ public class PlantController {
 	 * Sets the game over state of the plant and adds the score of the player to "highscores" if it's big enough.
 	 */
 	private void gameOver() {
-		plant.gameOver();
-		HighScore highScore = new HighScore(plant.getOperatorName(), plant.getScore());
+		model.gameOver();
+		HighScore highScore = new HighScore(model.getOperatorName(), model.getScore());
 		addHighScore(highScore);
 	}
 	
@@ -556,20 +554,20 @@ public class PlantController {
 	private void printDebugInfo() {
 		System.out.println("--------------------------");
 		System.out.println("--        Reactor       --");
-		System.out.println("-- Health:\t" + this.plant.getReactor().getHealth() + "\t--");
-		System.out.println("-- Steam Vol:\t" + this.plant.getReactor().getSteamVolume() + "\t--");
-		System.out.println("-- Water Vol:\t" + this.plant.getReactor().getWaterVolume() + "\t--");
-		System.out.println("-- Temp:\t" + this.plant.getReactor().getTemperature() + "\t--");
-		System.out.println("-- Steam Flow:\t" + this.plant.getReactor().getFlowOut().getRate() + "\t--");
-		System.out.println("-- Steam Temp:\t" + this.plant.getReactor().getFlowOut().getTemperature() + "\t--");
+		System.out.println("-- Health:\t" + this.model.getReactor().getHealth() + "\t--");
+		System.out.println("-- Steam Vol:\t" + this.model.getReactor().getSteamVolume() + "\t--");
+		System.out.println("-- Water Vol:\t" + this.model.getReactor().getWaterVolume() + "\t--");
+		System.out.println("-- Temp:\t" + this.model.getReactor().getTemperature() + "\t--");
+		System.out.println("-- Steam Flow:\t" + this.model.getReactor().getFlowOut().getRate() + "\t--");
+		System.out.println("-- Steam Temp:\t" + this.model.getReactor().getFlowOut().getTemperature() + "\t--");
 		System.out.println("--------------------------");
 		System.out.println("--       Condenser      --");
-		System.out.println("-- Health:\t" + this.plant.getCondenser().getHealth() + "\t--");
-		System.out.println("-- Steam Vol:\t" + this.plant.getCondenser().getSteamVolume() + "\t--");
-		System.out.println("-- Water Vol:\t" + this.plant.getCondenser().getWaterVolume() + "\t--");
-		System.out.println("-- Temp:\t" + this.plant.getCondenser().getTemperature() + "\t--");
-		System.out.println("-- Stm Flow In:\t" + this.plant.getCondenser().getInput().getFlowOut().getRate() + "\t--");
-		System.out.println("-- Stm Temp In:\t" + this.plant.getCondenser().getInput().getFlowOut().getTemperature() + "\t--");
+		System.out.println("-- Health:\t" + this.model.getCondenser().getHealth() + "\t--");
+		System.out.println("-- Steam Vol:\t" + this.model.getCondenser().getSteamVolume() + "\t--");
+		System.out.println("-- Water Vol:\t" + this.model.getCondenser().getWaterVolume() + "\t--");
+		System.out.println("-- Temp:\t" + this.model.getCondenser().getTemperature() + "\t--");
+		System.out.println("-- Stm Flow In:\t" + this.model.getCondenser().getInput().getFlowOut().getRate() + "\t--");
+		System.out.println("-- Stm Temp In:\t" + this.model.getCondenser().getInput().getFlowOut().getTemperature() + "\t--");
 	}
 	
 	/**
@@ -577,7 +575,7 @@ public class PlantController {
 	 */
 	private void printFlowDebugInfo() {
 		System.out.println("--------------------------");
-		for (PlantComponent pc : this.plant.getPlantComponents()) {
+		for (PlantComponent pc : this.model.getPlantComponents()) {
 			System.out.println("-----");
 			System.out.println(pc.getClass().toString());
 			if (pc instanceof Pump) System.out.println("\tID:" + ((Pump) pc).getID());
@@ -593,13 +591,13 @@ public class PlantController {
 	 * Go through all components and call updateState() then calculates the current score.
 	 */
 	private void updatePlant() {
-		List<PlantComponent> plantComponents = plant.getPlantComponents();
+		List<PlantComponent> plantComponents = model.getPlantComponents();
 		for (PlantComponent plantComponent : plantComponents) {
 			if (plantComponent instanceof UpdatableComponent)
 				//NEEDS TO INCLUDE FAILING COMPONENTS !!!
 				((UpdatableComponent) plantComponent).updateState();
 		}
-		plant.calcScore();
+		model.calcScore();
 	}
 	
 	/**
@@ -611,9 +609,9 @@ public class PlantController {
 	 * and set to operational).
 	 */
 	private void updateBeingRepaired() {
-		List<Repair> beingRepaired = plant.getBeingRepaired();
+		List<Repair> beingRepaired = model.getBeingRepaired();
 		List<Repair> finishedRepairing = new ArrayList<Repair>();
-		List<RandomlyFailableComponent> failedComponents = plant.getFailedComponents();
+		List<RandomlyFailableComponent> failedComponents = model.getFailedComponents();
 		for (Repair repair : beingRepaired) {
 			repair.decTimeStepsRemaining();
 			int timeStepsRemaining = repair.getTimeStepsRemaining();
@@ -635,8 +633,8 @@ public class PlantController {
 	 * If a reactor or condenser is broken, then the game is over.
 	 */
 	private void checkRandomFailures() {
-		List<RandomlyFailableComponent> failableComponents  = plant.getFailableComponents();
-		List<RandomlyFailableComponent> failedComponents    = plant.getFailedComponents();
+		List<RandomlyFailableComponent> failableComponents  = model.getFailableComponents();
+		List<RandomlyFailableComponent> failedComponents    = model.getFailedComponents();
 		List<RandomlyFailableComponent> failingComponents = new ArrayList<RandomlyFailableComponent>();
 		int faults = 0;
 		
@@ -662,7 +660,7 @@ public class PlantController {
 				setControlRods(100);
 			}
 			
-			plant.addFailedComponent(failedComponent);
+			model.addFailedComponent(failedComponent);
 			failedComponent.setOperational(false);
 			uidata.addBrokenOnStep(failedComponent);
 		}
@@ -670,8 +668,8 @@ public class PlantController {
 	
 	private void checkWearFailures() {
 		try {
-			plant.getReactor().updateHealth();
-			plant.getCondenser().updateHealth();
+			model.getReactor().updateHealth();
+			model.getCondenser().updateHealth();
 		} catch (GameOverException e) {
 			gameOver();
 		}
@@ -715,8 +713,8 @@ public class PlantController {
 	 */
 	private void moveWater()
 	{
-		Condenser condenser = this.plant.getCondenser();
-		Reactor reactor = this.plant.getReactor();
+		Condenser condenser = this.model.getCondenser();
+		Reactor reactor = this.model.getReactor();
 		int waterInCondenser = condenser.getWaterVolume();
 		int amountOut = 0;
 		int condenserFlowOut = condenser.getFlowOut().getRate();
@@ -735,8 +733,8 @@ public class PlantController {
 	 */
 	private void moveSteam()
 	{
-		Reactor reactor = this.plant.getReactor();
-		Condenser condenser = this.plant.getCondenser();
+		Reactor reactor = this.model.getReactor();
+		Condenser condenser = this.model.getCondenser();
 		reactor.removeSteam(reactor.getFlowOut().getRate());
 		condenser.addSteam(condenser.getInput().getFlowOut().getRate());
 	}
@@ -748,7 +746,7 @@ public class PlantController {
 	 * steps.
 	 */
 	private void setAllConnectorPipesUnblocked() {
-		for (ConnectorPipe cp : this.plant.getConnectorPipes()) {
+		for (ConnectorPipe cp : this.model.getConnectorPipes()) {
 			cp.resetState();
 		}
 	}
@@ -758,7 +756,7 @@ public class PlantController {
 	 * propagate the blockage through to the next preceding ConnectorPipe.
 	 */
 	private void blockFromValves() {
-		List<Valve> valves = this.plant.getValves();
+		List<Valve> valves = this.model.getValves();
 		for (Valve v : valves) {
 			if (!v.isOpen()) blockToPrecedingConnectorPipe(v);
 		}
@@ -772,7 +770,7 @@ public class PlantController {
 	 */
 	private void blockFromConnectorPipes() {
 		boolean changed = true;
-		List<ConnectorPipe> connectorPipes = this.plant.getConnectorPipes();
+		List<ConnectorPipe> connectorPipes = this.model.getConnectorPipes();
 		Map<ConnectorPipe, Boolean> hasBeenPropagated = new HashMap<ConnectorPipe, Boolean>();
 		while (changed) {
 			changed = false;
@@ -855,7 +853,7 @@ public class PlantController {
 	 * recalculated for the current state of the plant.
 	 */
 	private void resetFlowAllComponents() {
-		for (PlantComponent pc : this.plant.getPlantComponents()) {
+		for (PlantComponent pc : this.model.getPlantComponents()) {
 			pc.getFlowOut().setRate(0);
 			pc.getFlowOut().setTemperature(0);
 		}
@@ -868,8 +866,8 @@ public class PlantController {
 	private void propagateFlowFromReactor()
 	{
 		int flowRate = calcReactorFlowOut();
-		Reactor reactor = this.plant.getReactor();
-		Condenser condenser = this.plant.getCondenser();
+		Reactor reactor = this.model.getReactor();
+		Condenser condenser = this.model.getCondenser();
 		// If there's a clear path from the reactor to the condenser then calculate
 		// and start off the flow being propagated.
 		if (isPathToForwards(reactor, condenser)) {
@@ -892,7 +890,7 @@ public class PlantController {
 	private void limitReactorFlowDueToValveMaxFlow(Reactor reactor)
 	{
 		int maxFlow = 0;
-		for (Valve v : this.plant.getValves()) {
+		for (Valve v : this.model.getValves()) {
 			// If there is a path backwards from this valve to the reactor.
 			// Also implying that it is actually in front of the reactor.
 			if (isPathToBackwards(v, reactor)) {
@@ -913,8 +911,8 @@ public class PlantController {
 	 * @return rate of flow of steam out of the reactor
 	 */
 	private int calcReactorFlowOut() {
-		int steamDifference = Math.abs(plant.getReactor().getSteamVolume() - plant.getCondenser().getSteamVolume());
-		return Math.min(steamDifference, Math.min(plant.getReactor().getSteamVolume(), plant.getMaxSteamFlowRate()));
+		int steamDifference = Math.abs(model.getReactor().getSteamVolume() - model.getCondenser().getSteamVolume());
+		return Math.min(steamDifference, Math.min(model.getReactor().getSteamVolume(), Reactor.getMaxSteamFlowRate()));
 	}
 	
 	/**
@@ -927,7 +925,7 @@ public class PlantController {
 	{
 		boolean changed = true;
 		int oldRate;
-		List<ConnectorPipe> connectorPipes = this.plant.getConnectorPipes();
+		List<ConnectorPipe> connectorPipes = this.model.getConnectorPipes();
 		while (changed) {
 			changed = false;
 			// iterate through all connector pipes and update their rate.
@@ -1019,7 +1017,7 @@ public class PlantController {
 	 */
 	private void propagateFlowFromCondenser()
 	{
-		Condenser condenser = this.plant.getCondenser();
+		Condenser condenser = this.model.getCondenser();
 		condenser.getFlowOut().setTemperature(condenser.getTemperature());
 		propagateFlowToNextConnectorPipe(condenser);
 	}
@@ -1032,11 +1030,11 @@ public class PlantController {
 	 */
 	private void propagateFlowFromPumpsToCondenser()
 	{
-		Condenser condenser = this.plant.getCondenser();
+		Condenser condenser = this.model.getCondenser();
 		// Iterate through all pumps and start tracking back through the system
-		for (Pump p : this.plant.getPumps()) {
+		for (Pump p : this.model.getPumps()) {
 			// If the pump is broken, move onto the next one.
-			if (!this.plant.getFailedComponents().contains(p) && p.getInput() != null) {
+			if (!this.model.getFailedComponents().contains(p) && p.getInput() != null) {
 				increaseCondenserFlowOutFromPump(p);
 			}
 		}
@@ -1056,7 +1054,7 @@ public class PlantController {
 	 */
 	private void increaseCondenserFlowOutFromPump(Pump p) {
 		int flowRate = calcFlowFromPumpRpm(p);
-		Condenser condenser = this.plant.getCondenser();
+		Condenser condenser = this.model.getCondenser();
 		// If there's a clear path to the condenser from p then add the flowRate of this pump
 		// to the flowOut rate of the condenser.
 		if (isPathToBackwards(p, condenser)) {
@@ -1149,6 +1147,6 @@ public class PlantController {
 	private int calcFlowFromPumpRpm(Pump pump)
 	{
 		int maxRpm = pump.getMaxRpm();
-		return (int) Math.round(this.plant.getMaxWaterFlowRatePerPump() * (1 - (new Double((maxRpm - pump.getRpm())/new Double(maxRpm)))));
+		return (int) Math.round(Pump.getMaxWaterFlowRatePerPump() * (1 - (new Double((maxRpm - pump.getRpm())/new Double(maxRpm)))));
 	}
 }

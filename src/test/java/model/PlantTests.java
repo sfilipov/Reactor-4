@@ -1,6 +1,5 @@
 package model;
 
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
@@ -17,16 +16,11 @@ import components.Turbine;
 
 public class PlantTests {
 	
-	private Plant plant;
+	private PlantModel plant;
 
 	@Before
 	public void setUp() {
-		plant = new Plant();
-	}
-	
-	@Test
-	public void getReactor_noReactor_returnsNull() {
-		assertNull(plant.getReactor());
+		plant = new PlantModel();
 	}
 	
 	@Test
@@ -40,11 +34,6 @@ public class PlantTests {
 	}
 	
 	@Test
-	public void getCondenser_noCondenser_returnsNull() {
-		assertNull(plant.getCondenser());
-	}
-	
-	@Test
 	public void getCondenser_condenserExists_returnsTheCondenser() {
 		ArrayList<PlantComponent> components = new ArrayList<PlantComponent>();
 		Condenser condenser = new Condenser(null);
@@ -52,11 +41,6 @@ public class PlantTests {
 		plant.setPlantComponents(components);
 		
 		assertSame(condenser, plant.getCondenser());
-	}
-	
-	@Test
-	public void getTurbine_noTurbine_returnsNull() {
-		assertNull(plant.getTurbine());
 	}
 	
 	@Test

@@ -35,6 +35,7 @@ public class Reactor extends CriticalComponent implements UpdatableComponent {
 	private final static double EVAP_MULTIPLIER = 0.2; // conversion from temperature to amount evaporated. 
 	private final static double VOL_TO_PRESSURE_MULTIPLIER = 0.15;
 	private final static int BOILING_POINT = 285; // boiling point of water at 1000psi - no variable boiling point.
+	private final static int MAX_STEAM_FLOW_RATE = 500; // Out of the reactor.
 	
 	// Quench feature constants.
 	private final static double FRACTION_OF_STEAM_CONDENSED = 0.9;
@@ -42,8 +43,13 @@ public class Reactor extends CriticalComponent implements UpdatableComponent {
 	
 	private ControlRod controlRod;
 	private int waterPumpedIn;
+<<<<<<< HEAD
 	private boolean quenchAvailable;
 	
+=======
+
+
+>>>>>>> d7d4824cdc5975cfe791c74923094dda669e9f81
 	public Reactor() {
 		super(DEFAULT_WATER_VOLUME);
 		this.controlRod = new ControlRod();
@@ -283,6 +289,15 @@ public class Reactor extends CriticalComponent implements UpdatableComponent {
 		}
     }
     
+	/**
+	 * 
+	 * @return maximum rate at which steam can flow out of the reactor 
+	 */
+	public static int getMaxSteamFlowRate()
+	{
+		return MAX_STEAM_FLOW_RATE;
+	}
+
 	/**
 	 * Control rods class is internal to Reactor. It has a field
 	 * that keeps track of how lowered are the control rods.

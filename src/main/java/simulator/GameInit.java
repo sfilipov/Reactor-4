@@ -1,5 +1,6 @@
 package simulator;
 
+import model.PlantModel;
 import swing.MainGUI;
 
 
@@ -15,23 +16,11 @@ import swing.MainGUI;
  *
  *@author Lamprey
  */
-public class GameInit {
-	
-	private TextUI view;
-	private PlantController controller;
-	private ReactorUtils utils;
-	private MainGUI newView;
-	
-	public GameInit() {
-		utils = new ReactorUtils();
-		controller = new PlantController(utils);
-		//view = new TextUI(controller);
-		newView = new MainGUI(controller);
-	}
-	
+public class GameInit {	
 	@SuppressWarnings("unused")
 	public static void main(String[] args) {
-		GameInit game = new GameInit();
+		PlantModel model = new PlantModel();
+		PlantController controller = new PlantController(model);
+		MainGUI newView = new MainGUI(controller);
 	}
-	
 }

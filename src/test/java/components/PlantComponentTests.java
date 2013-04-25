@@ -1,26 +1,23 @@
 package components;
 
 import static org.junit.Assert.assertTrue;
+import model.PlantModel;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import components.Pump;
-
-
 import simulator.PlantController;
-import simulator.ReactorUtils;
 
 public class PlantComponentTests {
 
-	private PlantController presenter; 
-	private ReactorUtils utils;
+	private PlantModel model;
+	private PlantController presenter;
     private Pump pump;
 	
 	@Before
 	public void setUp() {
-		utils = new ReactorUtils();
-		presenter = new PlantController(utils);
+		model = new PlantModel();
+		presenter = new PlantController(model);
 		pump = presenter.getPlant().getPumps().get(0);
 	}
 	//need to set get failure rate to public for testing

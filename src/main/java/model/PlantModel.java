@@ -21,49 +21,25 @@ import components.Valve;
 
 /**
  * Plant class is the holder of all plant components, the score, time steps passed, the name of the
- * player, etc. It represents the "model" of the MVC model of the game.
+ * player, etc. It represents the "model" of the MVC design of the game.
  * 
  * @author Lamprey
  */
-public class Plant implements Serializable {
-	/**
-	 * serialVersionUID: http://docs.oracle.com/javase/7/docs/api/java/io/Serializable.html
-	 */
+public class PlantModel implements Serializable {
+
 	private static final long serialVersionUID = 4799981348038802742L;
 	
-	private final static int MAX_STEAM_FLOW_RATE = 500; // Out of the reactor.
+	private ComponentFactory factory;
 	
-	// the maximum flow rate for a pump when it is on and not broken
-	private final static int MAX_WATER_FLOW_RATE_PER_PUMP = 400;
-	
-	// the name of the operator
 	private String operatorName;
-	
-	// is the game over
 	private boolean gameOver;
-	
-	// is the game in multiplayer mode
 	private boolean multiplayer;
-	
-	//operator's score
 	private int score;
-	
-	//a list of components that are being repaired
 	private List<Repair> beingRepaired;
-	
-	//is the game paused
 	private boolean isPaused;
-	
-	//a list of all the high scores
 	private List<HighScore> highScores;
-	
-	//a list with all the functional components of the plant
 	private List<PlantComponent> plantComponents;
-	
-	//a list of components that have failed
 	private List<RandomlyFailableComponent> failedComponents;
-	
-	
 	private Reactor reactor;
 	private List<Valve> valves;
 	private List<ConnectorPipe> connectorPipes;
@@ -77,14 +53,27 @@ public class Plant implements Serializable {
 	 * This is the default constructor that is used 
 	 * when there is no saved game (i.e. new game)
 	 */
-	public Plant() {
+	public PlantModel() {
+		this.factory = new ModelComponentFactory();
+		
 		this.operatorName = null;
 		this.gameOver = false;
 		this.score = 0;
 		this.beingRepaired = new ArrayList<Repair>();
 		this.isPaused = false;
 		this.highScores = new ArrayList<HighScore>();
-		this.plantComponents = new ArrayList<PlantComponent>();
+		this.plantComponents = factory.createPlantComponents();
+		this.failedComponents = new ArrayList<RandomlyFailableComponent>();
+	}
+	
+	public void newGame(String operatorName) {
+		this.operatorName = operatorName;
+		this.gameOver = false;
+		this.score = 0;
+		this.beingRepaired = new ArrayList<Repair>();
+		this.isPaused = false;
+		this.highScores = new ArrayList<HighScore>();
+		this.plantComponents = factory.createPlantComponents();
 		this.failedComponents = new ArrayList<RandomlyFailableComponent>();
 	}
 	
@@ -143,23 +132,7 @@ public class Plant implements Serializable {
 		this.isPaused = isPaused;
 	}
 	
-	/**
-	 * 
-	 * @return maximum rate at which steam can flow out of the reactor 
-	 */
-	public int getMaxSteamFlowRate()
-	{
-		return MAX_STEAM_FLOW_RATE;
-	}
 
-	/**
-	 * 
-	 * @return maximum rate at which water can flow through a pump
-	 */
-	public int getMaxWaterFlowRatePerPump()
-	{
-		return MAX_WATER_FLOW_RATE_PER_PUMP;
-	}
 
 	/**
 	 *
