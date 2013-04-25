@@ -17,29 +17,12 @@ public abstract class RandomlyFailableComponent extends PlantComponent {
 	private boolean operational; //Possibly unnecessary
 	private Random random;
 	
-	protected RandomlyFailableComponent() {
-		super();
-		this.failureRate    = DEFAULT_FAILURE_RATE;
-		this.maxFailureRate = MAX_FAILURE_RATE;
-		this.repairTime     = DEFAULT_REPAIR_TIME;
-		this.operational    = DEFAULT_OPERATIONAL;
-		this.random = new Random();
-	}
-	
 	protected RandomlyFailableComponent(int failureRate, int repairTime, int maxFailureRate) {
 		super();
 		this.failureRate    = failureRate;
 		this.repairTime     = repairTime;
 		this.maxFailureRate = maxFailureRate;
 		this.operational = DEFAULT_OPERATIONAL;
-		random = new Random();
-	}
-	
-	protected RandomlyFailableComponent(int failureRate, int repairTime, boolean operational, boolean pressurised) {
-		super(pressurised);
-		this.failureRate = failureRate;
-		this.repairTime = repairTime;
-		this.operational = operational;
 		random = new Random();
 	}
 	
@@ -67,16 +50,6 @@ public abstract class RandomlyFailableComponent extends PlantComponent {
 	 */	
 	public int getRepairTime() {
 		return repairTime;
-	}
-	
-	/**
-	 * Changes the number of turns it take for a component to get repaired.
-	 * 
-	 * @param repairTime the number of turns required for this component 
-	 * 					 to be repaired
-	 */
-	protected void setRepairTime(int repairTime) {
-		this.repairTime = repairTime;
 	}
 
 	/**

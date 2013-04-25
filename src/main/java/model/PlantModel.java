@@ -63,6 +63,7 @@ public class PlantModel implements Serializable {
 		this.isPaused = false;
 		this.highScores = new ArrayList<HighScore>();
 		this.plantComponents = factory.createPlantComponents();
+		assignComponentsToFields(this.plantComponents);
 		this.failedComponents = new ArrayList<RandomlyFailableComponent>();
 	}
 	
@@ -74,6 +75,7 @@ public class PlantModel implements Serializable {
 		this.isPaused = false;
 		this.highScores = new ArrayList<HighScore>();
 		this.plantComponents = factory.createPlantComponents();
+		assignComponentsToFields(this.plantComponents);
 		this.failedComponents = new ArrayList<RandomlyFailableComponent>();
 	}
 	
@@ -139,17 +141,7 @@ public class PlantModel implements Serializable {
 	 * @return the reactor object of the plant
 	 */
 	public Reactor getReactor() {
-		if (this.reactor != null) {
-			return reactor;
-		} else {
-			for (PlantComponent pc : this.plantComponents) {
-				if (pc instanceof Reactor) {
-					this.reactor = (Reactor) pc;
-					return this.reactor;
-				}
-			}
-			return null; // No reactor found?!
-		}
+		return reactor;
 	}
 	
 	/**
@@ -157,52 +149,23 @@ public class PlantModel implements Serializable {
 	 * @return a list of valves in the plant
 	 */
 	public List<Valve> getValves() {
-		ArrayList<Valve> valvesList = new ArrayList<Valve>();
-		if (this.valves != null) {
-			return this.valves;
-		} else {
-			for (PlantComponent pc : this.plantComponents) {
-				if (pc instanceof Valve) valvesList.add((Valve) pc);
-			}
-			this.valves = valvesList;
-			return this.valves;
-		}
+		return valves;
 	}
 
 	/**
 	 * 
 	 * @return a list of all connector pipes in the plant
 	 */
-	public List<ConnectorPipe> getConnectorPipes()
-	{
-		ArrayList<ConnectorPipe> connectorPipes = new ArrayList<ConnectorPipe>();
-		if (this.connectorPipes != null) {
-			return this.connectorPipes;
-		} else {
-			for (PlantComponent pc : this.plantComponents) {
-				if (pc instanceof ConnectorPipe) connectorPipes.add((ConnectorPipe) pc);
-			}
-			this.connectorPipes = connectorPipes;
-			return this.connectorPipes;
-		}
+	public List<ConnectorPipe> getConnectorPipes() {
+		return connectorPipes;
 	}
 
 	/**
 	 * 
 	 * @return the condenser of the plant
 	 */
-	public Condenser getCondenser()
-	{
-		if (this.condenser != null) {
-			return this.condenser;
-		}
-		for (PlantComponent pc : this.plantComponents) {
-			if (pc instanceof Condenser) {
-				this.condenser = (Condenser) pc;
-				return this.condenser;
-			}
-		}
-		return null; // No condenser found?!
+	public Condenser getCondenser() {
+		return condenser;
 	}
 	
 	/**
@@ -210,15 +173,7 @@ public class PlantModel implements Serializable {
 	 * @return a list of all pumps in the plant
 	 */
 	public List<Pump> getPumps() {
-		ArrayList<Pump> pumpsList = new ArrayList<Pump>();
-		if (this.pumps != null) {
-			return this.pumps;
-		}
-		for (PlantComponent pc : this.plantComponents) {
-			if (pc instanceof Pump) pumpsList.add((Pump) pc);
-		}
-		this.pumps = pumpsList;
-		return pumpsList;
+		return pumps;
 	}
 	
 	/**
@@ -226,16 +181,7 @@ public class PlantModel implements Serializable {
 	 * @return the turbine of the plant.
 	 */
 	public Turbine getTurbine() {
-		if (this.turbine != null) {
-			return this.turbine;
-		}
-		for (PlantComponent pc : this.plantComponents) {
-			if (pc instanceof Turbine) {
-				this.turbine = (Turbine) pc;
-				return this.turbine;
-			}
-		}
-		return null;
+		return turbine;
 	}
 	
 	/**
@@ -243,14 +189,6 @@ public class PlantModel implements Serializable {
 	 * @return the generator of the plant
 	 */
 	public Generator getGenerator() {
-		Generator generator = null;
-		if (this.generator != null) {
-			return this.generator;
-		}
-		for (PlantComponent pc : this.plantComponents) {
-			if (pc instanceof Generator) generator = (Generator) pc;
-		}
-		this.generator = generator;
 		return generator;
 	}
 	
@@ -259,14 +197,6 @@ public class PlantModel implements Serializable {
 	 * @return the operating software of the plant
 	 */
 	public OperatingSoftware getOperatingSoftware() {
-		OperatingSoftware operatingSoftware = null;
-		if (this.operatingSoftware != null) {
-			return this.operatingSoftware;
-		}
-		for (PlantComponent pc : this.plantComponents) {
-			if (pc instanceof OperatingSoftware) operatingSoftware = (OperatingSoftware) pc;
-		}
-		this.operatingSoftware = operatingSoftware;
 		return operatingSoftware;
 	}
 
@@ -308,7 +238,7 @@ public class PlantModel implements Serializable {
 		return plantComponents;
 	}
 	
-	public List<RandomlyFailableComponent> getFailableComponents() {
+	public List<RandomlyFailableComponent> getRandomlyFailableComponents() {
 		ArrayList<RandomlyFailableComponent> failableComponents = new ArrayList<RandomlyFailableComponent>();
 		for (PlantComponent plantComponent : plantComponents) {
 			if(plantComponent instanceof RandomlyFailableComponent) {
@@ -316,14 +246,6 @@ public class PlantModel implements Serializable {
 			}
 		}
 		return failableComponents;
-	}
-	
-	/**
-	 * 
-	 * @param plantComponents   list of all plant components
-	 */
-	public void setPlantComponents(List<PlantComponent> plantComponents) {
-		this.plantComponents = plantComponents;
 	}
 	
 	/**
@@ -378,5 +300,34 @@ public class PlantModel implements Serializable {
 	 */
 	public void setMultiplayer(boolean multiplayer) {
 		this.multiplayer = multiplayer;
+	}
+	
+	private void assignComponentsToFields(List<PlantComponent> components) {
+		initialiseListFields();
+		for (PlantComponent component : components) {
+			if (component instanceof Reactor) {
+				this.reactor = (Reactor) component;
+			} else if (component instanceof Condenser) {
+				this.condenser = (Condenser) component;
+			} else if (component instanceof Turbine) {
+				this.turbine = (Turbine) component;
+			} else if (component instanceof Generator) {
+				this.generator = (Generator) component;
+			} else if (component instanceof OperatingSoftware) {
+				this.operatingSoftware = (OperatingSoftware) component;
+			} else if (component instanceof Pump) {
+				this.pumps.add((Pump) component);
+			} else if (component instanceof Valve) {
+				this.valves.add((Valve) component);
+			} else if (component instanceof ConnectorPipe) {
+				this.connectorPipes.add((ConnectorPipe) component);
+			}
+		}
+	}
+	
+	private void initialiseListFields() {
+		this.pumps = new ArrayList<Pump>();
+		this.valves = new ArrayList<Valve>();
+		this.connectorPipes = new ArrayList<ConnectorPipe>();
 	}
 }

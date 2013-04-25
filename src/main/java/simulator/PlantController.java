@@ -443,15 +443,14 @@ public class PlantController {
 				updateBeingRepaired();
 				updateFlow();
 				updatePlant();
-				checkWearFailures(); //Condenser/Reactor wear failures.
+				updateCriticalComponentsHealth();
 				// If not in multiplayer mode then invoke random failures.
-				if (!model.isMultiplayer()) checkRandomFailures();
+				if (!model.isMultiplayer()) updateRandomFailures();
 			}
 			else {
 				break;
 			}
 		}
-		//printFlowDebugInfo();
 	}
 	
 	// ----------------		Methods used in systemText (TextUI class)	----------------
@@ -530,45 +529,6 @@ public class PlantController {
 		addHighScore(highScore);
 	}
 	
-	// ----------------		Debug methods	----------------
-	/**
-	 * Prints debug info to the console.
-	 */
-	private void printDebugInfo() {
-		System.out.println("--------------------------");
-		System.out.println("--        Reactor       --");
-		System.out.println("-- Health:\t" + this.model.getReactor().getHealth() + "\t--");
-		System.out.println("-- Steam Vol:\t" + this.model.getReactor().getSteamVolume() + "\t--");
-		System.out.println("-- Water Vol:\t" + this.model.getReactor().getWaterVolume() + "\t--");
-		System.out.println("-- Temp:\t" + this.model.getReactor().getTemperature() + "\t--");
-		System.out.println("-- Steam Flow:\t" + this.model.getReactor().getFlowOut().getRate() + "\t--");
-		System.out.println("-- Steam Temp:\t" + this.model.getReactor().getFlowOut().getTemperature() + "\t--");
-		System.out.println("--------------------------");
-		System.out.println("--       Condenser      --");
-		System.out.println("-- Health:\t" + this.model.getCondenser().getHealth() + "\t--");
-		System.out.println("-- Steam Vol:\t" + this.model.getCondenser().getSteamVolume() + "\t--");
-		System.out.println("-- Water Vol:\t" + this.model.getCondenser().getWaterVolume() + "\t--");
-		System.out.println("-- Temp:\t" + this.model.getCondenser().getTemperature() + "\t--");
-		System.out.println("-- Stm Flow In:\t" + this.model.getCondenser().getInput().getFlowOut().getRate() + "\t--");
-		System.out.println("-- Stm Temp In:\t" + this.model.getCondenser().getInput().getFlowOut().getTemperature() + "\t--");
-	}
-	
-	/**
-	 * Prints debug info related to the flow of the plant to the console.
-	 */
-	private void printFlowDebugInfo() {
-		System.out.println("--------------------------");
-		for (PlantComponent pc : this.model.getPlantComponents()) {
-			System.out.println("-----");
-			System.out.println(pc.getClass().toString());
-			if (pc instanceof Pump) System.out.println("\tID:" + ((Pump) pc).getID());
-			if (pc instanceof Valve) System.out.println("\tID:" + ((Valve) pc).getID());
-			System.out.println("\tFlow Out:" + pc.getFlowOut().getRate());
-			System.out.println("\tTemp Out:" + pc.getFlowOut().getTemperature());
-		}
-			
-	}
-	
 	// ------------		Update Plant Flow Methods	------------
 	/**
 	 * Go through all components and call updateState() then calculates the current score.
@@ -615,14 +575,14 @@ public class PlantController {
 	 * If more than one component fails, only one is actually getting broken.
 	 * If a reactor or condenser is broken, then the game is over.
 	 */
-	private void checkRandomFailures() {
-		List<RandomlyFailableComponent> failableComponents  = model.getFailableComponents();
+	private void updateRandomFailures() {
+		List<RandomlyFailableComponent> randomlyFailableComponents  = model.getRandomlyFailableComponents();
 		List<RandomlyFailableComponent> failedComponents    = model.getFailedComponents();
 		List<RandomlyFailableComponent> failingComponents = new ArrayList<RandomlyFailableComponent>();
 		int faults = 0;
 		
 		//Checks all components if they randomly fail
-		for (RandomlyFailableComponent component : failableComponents) 
+		for (RandomlyFailableComponent component : randomlyFailableComponents) 
 		{
 			if (component.hasFailed() && !failedComponents.contains(component)) 
 			{
@@ -649,7 +609,7 @@ public class PlantController {
 		}
 	}
 	
-	private void checkWearFailures() {
+	private void updateCriticalComponentsHealth() {
 		try {
 			model.getReactor().updateHealth();
 			model.getCondenser().updateHealth();

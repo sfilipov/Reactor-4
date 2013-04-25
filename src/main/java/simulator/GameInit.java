@@ -21,6 +21,6 @@ public class GameInit {
 	public static void main(String[] args) {
 		PlantModel model = new PlantModel();
 		PlantController controller = new PlantController(model);
-		MainGUI newView = new MainGUI(controller);
+		MainGUI view = new MainGUI(controller);
 	}
 }

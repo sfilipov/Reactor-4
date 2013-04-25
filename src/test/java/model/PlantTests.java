@@ -24,36 +24,6 @@ public class PlantTests {
 	}
 	
 	@Test
-	public void getReactor_reactorExists_returnsTheReactor() {
-		ArrayList<PlantComponent> components = new ArrayList<PlantComponent>();
-		Reactor reactor = new Reactor();
-		components.add(reactor);
-		plant.setPlantComponents(components);
-		
-		assertSame(reactor, plant.getReactor());
-	}
-	
-	@Test
-	public void getCondenser_condenserExists_returnsTheCondenser() {
-		ArrayList<PlantComponent> components = new ArrayList<PlantComponent>();
-		Condenser condenser = new Condenser(null);
-		components.add(condenser);
-		plant.setPlantComponents(components);
-		
-		assertSame(condenser, plant.getCondenser());
-	}
-	
-	@Test
-	public void getTurbine_turbineExists_returnsTheTurbine() {
-		ArrayList<PlantComponent> components = new ArrayList<PlantComponent>();
-		Turbine turbine = new Turbine(0);
-		components.add(turbine);
-		plant.setPlantComponents(components);
-		
-		assertSame(turbine, plant.getTurbine());
-	}
-	
-	@Test
 	public void getHighScores_noHighScores_returnsEmptyList() {
 		assertTrue(plant.getHighScores().isEmpty());
 	}
