@@ -43,13 +43,8 @@ public class Reactor extends CriticalComponent implements UpdatableComponent {
 	
 	private ControlRod controlRod;
 	private int waterPumpedIn;
-<<<<<<< HEAD
 	private boolean quenchAvailable;
-	
-=======
 
-
->>>>>>> d7d4824cdc5975cfe791c74923094dda669e9f81
 	public Reactor() {
 		super(DEFAULT_WATER_VOLUME);
 		this.controlRod = new ControlRod();

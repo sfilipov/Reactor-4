@@ -238,8 +238,8 @@ public class PlantController {
 	 * @return true if the reactor was quenched, false if quench is not available.
 	 */
 	public synchronized boolean quenchReactor() {
-		if (plant.getReactor().isQuenchAvailable()) {
-			plant.getReactor().quench();
+		if (model.getReactor().isQuenchAvailable()) {
+			model.getReactor().quench();
 			return true;
 		} else {
 			return false;
@@ -247,7 +247,7 @@ public class PlantController {
 	}
 	
 	public synchronized boolean isQuenchAvailable() {
-		return plant.getReactor().isQuenchAvailable();
+		return model.getReactor().isQuenchAvailable();
 	}
 	
 	/**
