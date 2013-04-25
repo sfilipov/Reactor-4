@@ -234,6 +234,23 @@ public class PlantController {
 	}
 	
 	/**
+	 * Attempts to quench the reactor.
+	 * @return true if the reactor was quenched, false if quench is not available.
+	 */
+	public synchronized boolean quenchReactor() {
+		if (model.getReactor().isQuenchAvailable()) {
+			model.getReactor().quench();
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public synchronized boolean isQuenchAvailable() {
+		return model.getReactor().isQuenchAvailable();
+	}
+	
+	/**
 	 * 
 	 * @param valveID the valve to be set
 	 * @param open true to open the valve, false to close it

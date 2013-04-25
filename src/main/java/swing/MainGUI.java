@@ -50,6 +50,11 @@ import simulator.PlantController;
  */
 public class MainGUI
 {
+	// Quench button tooltip
+	private static final String quenchToolTip = "Quench!:\n Quench the reactor with a burst of cool water. Use it wisely,\n you only have enough spare water to use it once.";
+    
+	// the string that is shown initially in the player name field
+    private String initialNameValue = "Change me";
 	// the only reference that is needed to the plant
     private PlantController plantController;
     
@@ -68,6 +73,8 @@ public class MainGUI
     private JButton btnShowManual;
     private JButton btnShowScores;
     private JButton btnToggleMultiplayer;
+    private JButton btnQuenchReactor;
+    
     //make a number of steps
     private JButton btnStep;
     private JButton btnRepairOperatingSoftware;
@@ -135,9 +142,6 @@ public class MainGUI
     
     //a shorthand for the list of the components that are being repaired
     private ArrayList<String> componentsBeingRepaired = new ArrayList<String>();
-    
-    //the string that is shown initially in the player name field
-    private String initialNameValue = "Change me";
 
     //a temporary value which has different usages 
     private int tempValue;
@@ -614,6 +618,22 @@ public class MainGUI
         layeredPane.setLayer(btnValve2, 1);
         layeredPane.add(btnValve2);
         
+        
+        // issues a repair command to pump 3 if it is not operational
+        btnQuenchReactor = new JButton("Quench!");
+        btnQuenchReactor.setBackground(new Color(30,255,30)); // Green
+        btnQuenchReactor.setToolTipText(quenchToolTip);
+        btnQuenchReactor.setBounds(38, 440, 100, 38);
+        btnQuenchReactor.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if(plantController.quenchReactor())
+                {
+                   updateGUI();
+                }
+            }
+        });
+        layeredPane.setLayer(btnQuenchReactor, 1);
+        layeredPane.add(btnQuenchReactor);
 
         //issues a repair command to pump 1 if it is not operational
         btnRepairPump1 = new JButton(repairButtonDisabledImageIcon);
@@ -1025,6 +1045,13 @@ public class MainGUI
         {
             lblTurbineState.setIcon(stateSafeImageIcon);
             btnRepairTurbine.setIcon(repairButtonDisabledImageIcon);
+        }
+        
+        // Quench button color.
+        if (plantController.isQuenchAvailable()) {
+        	btnQuenchReactor.setBackground(new Color(30,255,30)); // Green
+        } else {
+        	btnQuenchReactor.setBackground(new Color(255,30,30)); // Red
         }
         
         //if the operating software is being repaired all components that rely on it for their commands to

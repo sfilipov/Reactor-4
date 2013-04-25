@@ -37,14 +37,19 @@ public class Reactor extends CriticalComponent implements UpdatableComponent {
 	private final static int BOILING_POINT = 285; // boiling point of water at 1000psi - no variable boiling point.
 	private final static int MAX_STEAM_FLOW_RATE = 500; // Out of the reactor.
 	
+	// Quench feature constants.
+	private final static double FRACTION_OF_STEAM_CONDENSED = 0.9;
+	private final static int AFTER_QUENCH_TEMP = 30;
+	
 	private ControlRod controlRod;
 	private int waterPumpedIn;
-
+	private boolean quenchAvailable;
 
 	public Reactor() {
 		super(DEFAULT_WATER_VOLUME);
 		this.controlRod = new ControlRod();
 		this.getFlowOut().setType(FlowType.Steam);
+		this.quenchAvailable = true;
 	}
 	
 	// ----------- Getters & Setters ---------------
@@ -101,6 +106,30 @@ public class Reactor extends CriticalComponent implements UpdatableComponent {
 	public void setPercentageLowered(int percentageLowered) {
 		controlRod.setPercentageLowered(percentageLowered);
 	}
+	
+	public boolean isQuenchAvailable() {
+		return this.quenchAvailable;
+	}
+	
+	// ---------------- Quench! ---------------
+	
+	/**
+	 * Implements the quench feature.
+	 * Condenses almost all of the reactor's steam and instantly reduces the temperature.
+	 * Pressure is then updated to reflect the new reactor contents.
+	 */
+	public void quench() {
+		if (this.quenchAvailable) {
+			int steamCondensed = (int) Math.round(this.getSteamVolume() * FRACTION_OF_STEAM_CONDENSED);
+			int waterCreated = (int) Math.round(steamCondensed / WATER_STEAM_RATIO); 
+			removeSteam(steamCondensed);
+			this.setWaterVolume(waterCreated + this.getWaterVolume());
+			this.setTemperature(AFTER_QUENCH_TEMP); 
+			updatePressure();
+			quenchAvailable = false;
+		}
+	}
+	
 	
 	// ---------------- System update methods ---------------
 	/**
