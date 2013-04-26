@@ -18,14 +18,15 @@ public class Condenser extends CriticalComponent implements UpdatableComponent {
 	
 	private final static int MAX_TEMPERATURE = 2000;
 	private final static int MAX_PRESSURE = 2000;
-	private final static int COOLANT_TEMP = 20; // temperature of the coolant coming in
-	private final static int MAX_COOLDOWN_PER_STEP = 500; // Maximum amount to cool the condenser per step. 
+	private final static int COOLANT_TEMP = 100; // temperature of the coolant coming in
+	private final static int MAX_COOLDOWN_PER_STEP = 100; // Maximum amount to cool the condenser per step. 
 	private final static int WATER_STEAM_RATIO = 2; // water to steam ratio.
 	private final static int HEALTH_CHANGE_WHEN_DAMAGING = 5;
 	private final static double COND_MULTIPLIER = 2; // temperature to steam condensed multiplier.
 	private final static double VOL_TO_PRESSURE_MULTIPLIER = 0.15;
 	
-	private int steamIn;
+	private int steamInVolume;
+	private int steamInTemperature;
 	private Pump coolantPump;
 	
 	
@@ -82,12 +83,13 @@ public class Condenser extends CriticalComponent implements UpdatableComponent {
 	 *  
 	 * @param amount the amount of steam to add to the volume
 	 */
-	public void addSteam(int amount)
+	public void addSteam(int amount, int temperature)
 	{
 		if (amount < 0) {
 			throw new IllegalArgumentException("The amount of steam to add to the condenser should be positive.");
 		} else {
-			this.steamIn = amount;
+			steamInVolume = amount;
+			steamInTemperature = temperature;
 			setSteamVolume(getSteamVolume() + amount);
 		}
 	}
@@ -117,12 +119,8 @@ public class Condenser extends CriticalComponent implements UpdatableComponent {
 	 * cooling.
 	 */
 	private void updateTemperature() {
-		int changeInTemp;
-		Flow flowIn = this.getInput().getFlowOut();
-		int steamTemperature = flowIn.getTemperature();
-		
-		changeInTemp = heating(steamTemperature, this.steamIn) - cooldown();
-		setTemperature(getTemperature() + changeInTemp);
+		 setTemperature(getTemperature() + heating(steamInVolume, steamInTemperature));
+		 setTemperature(getTemperature() - cooldown());
 	}
 	
 	/**
@@ -140,15 +138,15 @@ public class Condenser extends CriticalComponent implements UpdatableComponent {
 	 * Calculates the increase in temperature based upon the temperature and volume
 	 * of steam coming into the condenser.
 	 * 
-	 * @param steamTemperature temperature of steam coming into the condenser
-	 * @param steamVolumeIn amount of steam that has come into the condenser in the last step
+	 * @param steamInTemperature temperature of steam coming into the condenser
+	 * @param steamInVolume amount of steam that has come into the condenser in the last step
 	 * @return temperature increase for this step
 	 */
-	private int heating(int steamTemperature, int steamVolumeIn) {
-		int tempDiff = steamTemperature - getTemperature();
+	private int heating(int steamInVolume, int steamInTemperature) {
+		int tempDiff = steamInTemperature - getTemperature();
 		if (getSteamVolume() < 1) return 0; // stops a potential divide by 0.
-		if (steamVolumeIn == 0) return 0; // No steam flowing in => no heating.
-		return tempDiff * (1 - ((getSteamVolume() - steamVolumeIn) / getSteamVolume()));
+		if (steamInVolume == 0) return 0; // No steam flowing in => no heating.
+		return tempDiff * (1 - ((getSteamVolume() - steamInVolume) / getSteamVolume()));
 	}
 	
 	/**
@@ -160,10 +158,9 @@ public class Condenser extends CriticalComponent implements UpdatableComponent {
 	 * @return amount of temperature decrease for this step
 	 */
 	private int cooldown() {
-		int cooldownAmount = cooldownPerStep();
-		int potentialNewTemp = getTemperature() - cooldownAmount;
+		int potentialNewTemp = getTemperature() - cooldownPerStep();
 		if (potentialNewTemp > COOLANT_TEMP) {
-			return cooldownAmount;
+			return cooldownPerStep();
 		} else {
 			return getTemperature() - COOLANT_TEMP;
 		}
@@ -185,7 +182,6 @@ public class Condenser extends CriticalComponent implements UpdatableComponent {
 	 */
 	private void condenseSteam() {
 		int steamCondensed;
-		int waterCreated;
 		if (getTemperature() < MAX_TEMPERATURE) {
 			steamCondensed = (int) Math.ceil((MAX_TEMPERATURE - getTemperature()) * COND_MULTIPLIER);
 		} else {
@@ -193,7 +189,7 @@ public class Condenser extends CriticalComponent implements UpdatableComponent {
 		}
 		
 		if (steamCondensed > getSteamVolume()) steamCondensed = getSteamVolume();
-		waterCreated = (int) Math.ceil(steamCondensed * (1 / new Double(WATER_STEAM_RATIO)));
+		int waterCreated = (int) Math.ceil(steamCondensed * (1 / new Double(WATER_STEAM_RATIO)));
 		/*
 		 * Since we do a dodgy division above, to make sure we aren't losing / creating
 		 * water we remultiply out the waterCreated.

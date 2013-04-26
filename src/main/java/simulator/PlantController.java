@@ -108,7 +108,7 @@ public class PlantController {
 	 * 
 	 * @param operatorName the name of the player
 	 */
-	public synchronized void newGame(String operatorName) {
+	public void newGame(String operatorName) {
 		this.model.newGame(operatorName);
 		readHighScores();
 		uidata = new UIData(model);
@@ -123,7 +123,7 @@ public class PlantController {
 	 * 
 	 * @return true if saving a game was successful, false otherwise
 	 */
-	public synchronized boolean saveGame(){
+	public boolean saveGame(){
 		FileOutputStream fileOut = null;
 		ObjectOutputStream out   = null;
 		try {
@@ -146,7 +146,7 @@ public class PlantController {
 	 * 
 	 * @return true if loading a game was successful, false otherwise
 	 */
-	public synchronized boolean loadGame() {
+	public boolean loadGame() {
 		PlantModel plant = null;
 		FileInputStream fileIn  = null;
 		ObjectInputStream in = null;
@@ -182,7 +182,7 @@ public class PlantController {
 	 * Currently not in used as the game is turn based. Gives the possibility
 	 * to easily create a real-time game.
 	 */
-	public synchronized void togglePaused() {
+	public void togglePaused() {
 		this.model.setPaused(!this.model.isPaused());
 	}
 	
@@ -228,7 +228,7 @@ public class PlantController {
 	 * Toggles multiplayer mode on/off.
 	 * Returns the new boolean state. (True = multiplayer on).
 	 */
-	public synchronized boolean toggleMultiplayer() {
+	public boolean toggleMultiplayer() {
 		model.setMultiplayer(!model.isMultiplayer());
 		return model.isMultiplayer();
 	}
@@ -237,7 +237,7 @@ public class PlantController {
 	 * Attempts to quench the reactor.
 	 * @return true if the reactor was quenched, false if quench is not available.
 	 */
-	public synchronized boolean quenchReactor() {
+	public boolean quenchReactor() {
 		if (model.getReactor().isQuenchAvailable()) {
 			model.getReactor().quench();
 			return true;
@@ -246,7 +246,7 @@ public class PlantController {
 		}
 	}
 	
-	public synchronized boolean isQuenchAvailable() {
+	public boolean isQuenchAvailable() {
 		return model.getReactor().isQuenchAvailable();
 	}
 	
@@ -256,7 +256,7 @@ public class PlantController {
 	 * @param open true to open the valve, false to close it
 	 * @return true if command was successful, false if a valve with that ID was not found
 	 */
-	public synchronized boolean setValve(int valveID, boolean open) {
+	public boolean setValve(int valveID, boolean open) {
 		List<Valve> valves = model.getValves();
 		for (Valve valve : valves) {
 			if (valveID == valve.getID()) {
@@ -273,7 +273,7 @@ public class PlantController {
 	 * @param on true to turn the pump on, false to turn it off
 	 * @return true if command was successful, false if a pump with that ID was not found
 	 */
-	public synchronized boolean setPumpOnOff(int pumpID, boolean on) {
+	public boolean setPumpOnOff(int pumpID, boolean on) {
 		List<Pump> pumps = model.getPumps();
 		for (Pump pump : pumps) {
 			if (pumpID == pump.getID()) {
@@ -292,7 +292,7 @@ public class PlantController {
 	 * @return true if setting the RPM was successful, false otherwise
 	 * @throws IllegalArgumentException if RPM is out of the allowed range (rpm < 0 || rpm > MAX_RPM).
 	 */
-	public synchronized boolean setPumpRpm(int pumpID, int rpm) throws IllegalArgumentException {
+	public boolean setPumpRpm(int pumpID, int rpm) throws IllegalArgumentException {
 		List<Pump> pumps = model.getPumps();
 		for (Pump pump : pumps) {
 			if (pumpID == pump.getID()) {
@@ -312,7 +312,7 @@ public class PlantController {
 	 * 
 	 * @param percentageLowered the new value of percentageLowered
 	 */
-	public synchronized void setControlRods(int percentageLowered) {
+	public void setControlRods(int percentageLowered) {
 		if(percentageLowered >= 0 && percentageLowered <= 100) {
 			Reactor reactor = model.getReactor();
 			reactor.setPercentageLowered(percentageLowered);
@@ -324,7 +324,7 @@ public class PlantController {
 	 * 
 	 * @param pumpID ID of the pump to fail.
 	 */
-	public synchronized void failPump(int pumpID) {
+	public void failPump(int pumpID) {
 		List<Pump> pumps = model.getPumps();
 		Pump foundPump = null;
 		List<RandomlyFailableComponent> failedComponents = model.getFailedComponents();
@@ -345,7 +345,7 @@ public class PlantController {
 	/**
 	 * Forces the failure of the turbine.
 	 */
-	public synchronized void failTurbine() {
+	public void failTurbine() {
 		List<RandomlyFailableComponent> failedComponents = model.getFailedComponents();
 		Turbine turbine = model.getTurbine();
 		if (!failedComponents.contains(turbine)) {
@@ -365,7 +365,7 @@ public class PlantController {
 	/**
 	 * Forces the failure of the operating software.
 	 */
-	public synchronized void failOS() {
+	public void failOS() {
 		List<RandomlyFailableComponent> failedComponents = model.getFailedComponents();
 		OperatingSoftware os = model.getOperatingSoftware();
 		if (!failedComponents.contains(os)) {
@@ -382,7 +382,7 @@ public class PlantController {
 	 * 
 	 * @return true only if the turbine has failed and is not already being repaired
 	 */
-	public synchronized boolean repairTurbine() {
+	public boolean repairTurbine() {
 		Turbine turbine = model.getTurbine();
 		List<RandomlyFailableComponent> failedComponents = model.getFailedComponents();
 		List<Repair> beingRepaired = model.getBeingRepaired();
@@ -403,7 +403,7 @@ public class PlantController {
 	 * @param  pumpID the internal ID of the pump to be repaired
 	 * @return true only if the pump is found, has failed and is not already being repaired
 	 */
-	public synchronized boolean repairPump(int pumpID) {
+	public boolean repairPump(int pumpID) {
 		List<Pump> pumps = model.getPumps();
 		Pump foundPump = null;
 		boolean found = false;
@@ -431,7 +431,7 @@ public class PlantController {
 	 * 
 	 * @return true only if the operating software has failed and is not already being repaired
 	 */
-	public synchronized boolean repairOperatingSoftware() {
+	public boolean repairOperatingSoftware() {
 		OperatingSoftware operatingSoftware = model.getOperatingSoftware();
 		List<RandomlyFailableComponent> failedComponents = model.getFailedComponents();
 		List<Repair> beingRepaired = model.getBeingRepaired();
@@ -454,7 +454,7 @@ public class PlantController {
 	 * 
 	 * @param numSteps number of timesteps to advance the game by.
 	 */
-	public synchronized void step(int numSteps) {
+	public void step(int numSteps) {
 		for (int i = 0; i < numSteps; i++) {
 			if (!model.isGameOver()) {
 				updateBeingRepaired();
@@ -554,7 +554,6 @@ public class PlantController {
 		List<PlantComponent> plantComponents = model.getPlantComponents();
 		for (PlantComponent plantComponent : plantComponents) {
 			if (plantComponent instanceof UpdatableComponent)
-				//NEEDS TO INCLUDE FAILING COMPONENTS !!!
 				((UpdatableComponent) plantComponent).updateState();
 		}
 		model.calcScore();
@@ -696,7 +695,7 @@ public class PlantController {
 		Reactor reactor = this.model.getReactor();
 		Condenser condenser = this.model.getCondenser();
 		reactor.removeSteam(reactor.getFlowOut().getRate());
-		condenser.addSteam(condenser.getInput().getFlowOut().getRate());
+		condenser.addSteam(condenser.getInput().getFlowOut().getRate(), condenser.getInput().getFlowOut().getTemperature());
 	}
 
 	/**
@@ -1015,11 +1014,7 @@ public class PlantController {
 	private void increaseCondenserFlowOutFromPump(Pump p) {
 		int flowRate = calcFlowFromPumpRpm(p);
 		Condenser condenser = this.model.getCondenser();
-		// If there's a clear path to the condenser from p then add the flowRate of this pump
-		// to the flowOut rate of the condenser.
-		if (isPathToBackwards(p, condenser)) {
-			condenser.getFlowOut().setRate(condenser.getFlowOut().getRate() + flowRate);
-		}
+		condenser.getFlowOut().setRate(condenser.getFlowOut().getRate() + flowRate);
 	}
 	
 	/**

@@ -17,73 +17,39 @@ public class CondenserTests {
 	@Before
 	public void setUp() {
 		coolantPump = new Pump(1);
+		coolantPump.setRpm(coolantPump.getMaxRpm());
 		condenser = new Condenser(coolantPump);
-		setupWithZeroFlowInOrOut();
-	}
-	
-//	@Test
-//	public void updateWaterVolume_shouldIncreaseWaterVolumeByCorrectAmount() {
-//		int deltaVolume = 1234;
-//		int initialWaterVolume = condenser.getWaterVolume();
-//		condenser.updateWaterVolume(deltaVolume);
-//		int finalWaterVolume = condenser.getWaterVolume();
-//		assertEquals(deltaVolume, finalWaterVolume - initialWaterVolume);
-//	}
-	
-	@Test
-	public void updateSteamVolume_shouldIncreaseSteamVolumeByCorrectAmount() {
-		int deltaVolume = 1234;
-		int initialSteamVolume = condenser.getSteamVolume();
-		condenser.addSteam(deltaVolume);
-		int finalSteamVolume = condenser.getSteamVolume();
-		assertEquals(deltaVolume, finalSteamVolume - initialSteamVolume);
 	}
 	
 	@Test
-	public void getCoolantPump_shouldReturnCorrectPumpReference() {
-		Pump coolantPumpTest = new Pump(0);
-		Condenser c = new Condenser(coolantPumpTest);
-		assertSame(coolantPumpTest, c.getCoolantPump());
+	public void addSteam_positiveAmount_increaseSteamVolumeByAmount() {
+		int steamVolumeBefore = condenser.getSteamVolume();
+		condenser.addSteam(1000, 0);
+		int steamVolumeAfter = condenser.getSteamVolume();
+		assertEquals(1000, steamVolumeAfter - steamVolumeBefore);
 	}
 	
 	@Test
-	public void Condenser_shouldCoolWhenNoSteamFlowingIn() {
-		setupWithHighTemperatureAndFlowIn();
+	public void updateState_addHotSteamOnce_condenserCoolsItself() {		
+		condenser.addSteam(1000, 1000);
+		condenser.updateState();
+		int temperatureBefore = condenser.getTemperature();
+		condenser.updateState();
+		int temperatureAfter = condenser.getTemperature();
 		
-		int startingTemperature = 1000;
-		
-		while (condenser.getTemperature() < startingTemperature) {
-			condenser.addSteam(condenser.getInput().getFlowOut().getRate());
-			condenser.updateState();
-		}
-		
-		int currentTemperature = condenser.getTemperature();
-		int previousTemperature = 1000000; // Arbitrarily high temperature
-		
-		for (int i = 0; i < 20; i++) {
-			currentTemperature = 0;
-			condenser.updateState();
-		}
+		assertTrue(temperatureBefore > temperatureAfter);
 	}
 	
-	
-	// -------- Helper Methods :) --------
-	
-	private void setupWithHighTemperatureAndFlowIn() {
-		Valve input = new Valve(1,FlowType.Steam);
-		input.getFlowOut().setRate(1000);
-		input.getFlowOut().setTemperature(1000);
-		condenser.setInput(input);
+	@Test
+	public void updateState_addHotSteamOnce_condenseSomeSteamToWater() {
+		condenser.addSteam(1000, 1000);
+		int steamVolumeBefore = condenser.getSteamVolume();
+		int waterVolumeBefore = condenser.getWaterVolume();
+		condenser.updateState();
+		int steamVolumeAfter = condenser.getSteamVolume();
+		int waterVolumeAfter = condenser.getWaterVolume();
 		
-		Valve output = new Valve(2, FlowType.Water);
-		condenser.setOutput(output);
+		assertTrue(steamVolumeBefore > steamVolumeAfter);
+		assertTrue(waterVolumeBefore < waterVolumeAfter);
 	}
-	
-	private void setupWithZeroFlowInOrOut() {
-		Valve input  = new Valve(1, FlowType.Steam);
-		Valve output = new Valve(2, FlowType.Water);
-		condenser.setInput(input);
-		condenser.setOutput(output);
-	}
-
 }
