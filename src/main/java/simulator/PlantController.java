@@ -76,10 +76,6 @@ public class PlantController {
                 setControlRods(operatingSoftware.getPercentageLowered());
                 break;
                 
-            case SetPumpOnOff:
-                setPumpOnOff(operatingSoftware.getPumpID(),operatingSoftware.isOn());
-                break;
-                
             case SetPumpRpm:
                 setPumpRpm(operatingSoftware.getPumpID(),operatingSoftware.getRpm());
                 break;
@@ -261,23 +257,6 @@ public class PlantController {
 		for (Valve valve : valves) {
 			if (valveID == valve.getID()) {
 				valve.setOpen(open);
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	/**
-	 * 
-	 * @param pumpID the pump to be set
-	 * @param on true to turn the pump on, false to turn it off
-	 * @return true if command was successful, false if a pump with that ID was not found
-	 */
-	public boolean setPumpOnOff(int pumpID, boolean on) {
-		List<Pump> pumps = model.getPumps();
-		for (Pump pump : pumps) {
-			if (pumpID == pump.getID()) {
-				pump.setOn(on);
 				return true;
 			}
 		}

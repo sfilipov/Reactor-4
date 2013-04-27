@@ -94,17 +94,6 @@ public class PlantControllerTests {
 	}
 	
 	@Test
-	public void testSetPumpOnOff() {
-		
-		controller.setPumpOnOff(1, false);
-		
-		List<Pump> pumps = model.getPumps();
-		
-		assertEquals("Result", false, pumps.get(0).isOn());
-		
-	}
-	
-	@Test
 	public void testSetPumpRpm() {
 		
 		controller.setPumpRpm(1, 127);

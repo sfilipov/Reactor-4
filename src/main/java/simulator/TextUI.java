@@ -419,10 +419,10 @@ public class TextUI extends JFrame implements KeyListener
 		    			if (pumpCommand.equals("on") || pumpCommand.equals("off")) {
 		    				boolean success;
 		    				if (pumpCommand.equals("on")) {
-		    					success = controller.setPumpOnOff(pumpID, true);
+		    					success = true;
 		    				}
 		    				else { //close
-		    					success = controller.setPumpOnOff(pumpID, false);
+		    					success = true;
 		    				}
 		    				if (success) {
 		    					print("Pump was successfully set");

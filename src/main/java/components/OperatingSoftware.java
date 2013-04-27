@@ -31,7 +31,7 @@ public class OperatingSoftware extends RandomlyFailableComponent {
     
     //the available commands that can be stored by the operating software
     public enum OperationRequest 
-    {DoNothing, SetControlRods, SetPumpRpm, SetValve, RepairTurbine, RepairPump, SetPumpOnOff}
+    {DoNothing, SetControlRods, SetPumpRpm, SetValve, RepairTurbine, RepairPump}
     
     private OperationRequest requestedOperation = OperationRequest.DoNothing;
     
@@ -78,12 +78,6 @@ public class OperatingSoftware extends RandomlyFailableComponent {
                 case SetControlRods: 
                     requestedOperation = OperationRequest.SetControlRods;
                     percentageLowered = random.nextInt(101);//random rods level generation
-                    break;
-                    
-                case SetPumpOnOff:
-                    requestedOperation = OperationRequest.SetPumpOnOff;
-                    pumpID = 1 + random.nextInt(3);//random pump id generation
-                    on = random.nextBoolean();//random on state generation
                     break;
                     
                 case SetPumpRpm:
@@ -157,25 +151,6 @@ public class OperatingSoftware extends RandomlyFailableComponent {
         else
             {failedSoftwareResponse();}//!
         
-    }
-    
-    /**
-     * Stores a pump on/off state if the software is working properly,
-     * otherwise calls the appropriate method.
-     * 
-     * @param pumpID
-     * @param on     state of the pump
-     */
-    public synchronized void setPumpOnOff(int pumpID, boolean on)
-    {
-        if(super.isOperational())
-        {
-            requestedOperation = OperationRequest.SetPumpOnOff;
-            this.pumpID = pumpID;
-            this.on = on;
-        }
-        else
-            failedSoftwareResponse();
     }
     
     /**

@@ -40,14 +40,6 @@ public class OperatingSoftwareTests {
 		assertTrue(OS.isOpen());
 	}
 	
-	//Tests that the pumps are set correctly
-	@Test
-	public void testSetPumpOnOff(){
-		OS.setPumpOnOff(1, true);
-		assertEquals(1, OS.getPumpID());
-		assertTrue(OS.isOn());
-	}
-	
 	//Tests that the pumps rpm is set correctly
 	@Test
 	public void testSetPumpRpm(){

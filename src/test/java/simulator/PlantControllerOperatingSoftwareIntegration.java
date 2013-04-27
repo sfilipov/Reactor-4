@@ -51,14 +51,6 @@ public class PlantControllerOperatingSoftwareIntegration {
 	}
 	
 	@Test
-	public void testSetPumpOnOff(){
-		pump.setOn(false);
-		OS.setPumpOnOff(1, true);
-		controller.executeStoredCommand();
-		assertTrue(pump.isOn());
-	}
-	
-	@Test
 	public void testSetPumpRpm(){
 		pump.setRpm(0);
 		OS.setPumpRpm(1, 20);
