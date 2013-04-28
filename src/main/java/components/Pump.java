@@ -22,7 +22,6 @@ public class Pump extends RandomlyFailableComponent {
 	
 	private int ID;
 	private int rpm;
-	private boolean on;
 	
 	/**
 	 * Constructs a pump with the selected ID.
@@ -33,7 +32,6 @@ public class Pump extends RandomlyFailableComponent {
 		super(DEFAULT_FAILURE_RATE, DEFAULT_REPAIR_TIME, MAX_FAILURE_RATE);
 		this.ID = ID;
 		setRpm(DEFAULT_RPM);
-		this.on = DEFAULT_ON_STATE;
 	}
 	
 	/**
@@ -52,7 +50,7 @@ public class Pump extends RandomlyFailableComponent {
 	 * @return the current RPM value of the pump
 	 */
 	public int getRpm() {
-		return (!on || !this.isOperational()) ? 0 : rpm;
+		return (!this.isOperational()) ? 0 : rpm;
 	}
 	
 	/**
@@ -66,24 +64,6 @@ public class Pump extends RandomlyFailableComponent {
 		} else {
 			throw new IllegalArgumentException("Pump rpm must be in the range [0 - " + MAX_RPM + "]");
 		}
-		if (rpm != 0 && !on) on = true;
-	}
-	
-	/**
-	 * 
-	 * @return true if the pump is on
-	 */
-	public boolean isOn() {
-		return on;
-	}
-	
-	/**
-	 * Sets the pump (on/off).
-	 * 
-	 * @param on true if the pump needs to be on, false if it needs to be off
-	 */
-	public void setOn(boolean on) {
-		this.on = on;
 	}
 	
 	/**

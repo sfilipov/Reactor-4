@@ -316,7 +316,6 @@ public class TextUI extends JFrame implements KeyListener
         	for (Pump p : pump) {
         		reactorInfo += "PUMP ID: " + p.getID() + "  | ";
         		reactorInfo += "STATUS: " + ((p.isOperational()) ? "FUNCTIONAL | " : "BROKEN | ");
-        		reactorInfo += "POWER STATE: " + (p.isOn() ? "ON | " : "OFF | ");
         		reactorInfo += "RPM: " + p.getRpm() + "\n";
         	}
         	reactorInfo += "\n";

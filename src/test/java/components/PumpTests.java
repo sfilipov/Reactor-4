@@ -32,22 +32,6 @@ public class PumpTests {
 		pump.setRpm(100);		//A value within the valid range, to check the setRpm works
 		assertEquals(100, this.pump.getRpm());
 		
-	}		
-	
-	@Test
-	public void getRpm_pumpIsSetOn_RpmIsCorrect() {
-		pump.setRpm(100); 		//A Value within the valid range
-		pump.setOn(true);
-		
-		assertEquals(100, pump.getRpm());		
 	}
-	
-	@Test
-	public void getRpm_pumpIsSetOff_RpmIsZero() {
-		pump.setRpm(100);		//A Value within the valid range
-		pump.setOn(false);		//Setting the state to off should mean there can be no Rpm
-		
-		assertEquals(0, pump.getRpm());		
-	}	
 
 }
