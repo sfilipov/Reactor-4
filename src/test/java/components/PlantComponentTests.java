@@ -1,7 +1,7 @@
 package components;
 
 import static org.junit.Assert.assertTrue;
-import model.PlantModel;
+import model.Plant;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -10,13 +10,13 @@ import simulator.PlantController;
 
 public class PlantComponentTests {
 
-	private PlantModel model;
+	private Plant model;
 	private PlantController presenter;
     private Pump pump;
 	
 	@Before
 	public void setUp() {
-		model = new PlantModel();
+		model = new Plant();
 		presenter = new PlantController(model);
 		pump = presenter.getPlant().getPumps().get(0);
 	}

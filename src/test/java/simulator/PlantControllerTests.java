@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import model.HighScore;
-import model.PlantModel;
+import model.Plant;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -19,11 +19,11 @@ import components.Valve;
 public class PlantControllerTests {
 	
 	private PlantController controller;
-	private PlantModel model;
+	private Plant model;
 
 	@Before
 	public void setUp() {
-		model = new PlantModel();
+		model = new Plant();
 		controller = new PlantController(model);
 		controller.newGame("Bob");
 	}

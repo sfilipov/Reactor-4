@@ -42,7 +42,7 @@ public interface Model {
 	
 	public void quenchReactor();
 	
-	//Methods giving information about randomly failable components
+	//Methods giving information about randomly failing components
 	
 	public int getPumpRpm(int pumpID);
 	
@@ -75,6 +75,5 @@ public interface Model {
 	public int getCondenserWaterLevel();
 	
 	public int getCondenserHealth();
-	
 	
 }

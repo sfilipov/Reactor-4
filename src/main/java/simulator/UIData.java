@@ -8,7 +8,7 @@ import components.Pump;
 import components.Valve;
 
 
-import model.PlantModel;
+import model.Plant;
 
 
 
@@ -19,7 +19,7 @@ import model.PlantModel;
  * @author Lamprey 
  */
 public class UIData {
-	private PlantModel plant;
+	private Plant plant;
 	
 	private String  operatorName;
 	private int     score;
@@ -53,7 +53,7 @@ public class UIData {
 	
 	private List<PlantComponent> brokenOnStep;
 	
-	UIData(PlantModel plant) {
+	UIData(Plant plant) {
 		this.plant = plant;
 		
 		this.operatorName = plant.getOperatorName();

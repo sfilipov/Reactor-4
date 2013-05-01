@@ -2,7 +2,7 @@ package components;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import model.PlantModel;
+import model.Plant;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -11,13 +11,13 @@ import simulator.PlantController;
 
 public class OperatingSoftwareTests {
 	
-	private PlantModel model;
+	private Plant model;
 	private PlantController presenter;
 	private OperatingSoftware OS;
 	
 	@Before
 	public void testSetup() {
-		model = new PlantModel();
+		model = new Plant();
 		presenter = new PlantController(model);
 		presenter.newGame("Bob");
 		OS = new OperatingSoftware();

@@ -103,7 +103,7 @@ public class Reactor extends CriticalComponent implements UpdatableComponent {
 		return controlRod.getPercentageLowered();
 	}
 	
-	public void setPercentageLowered(int percentageLowered) {
+	public void setControlRods(int percentageLowered) {
 		controlRod.setPercentageLowered(percentageLowered);
 	}
 	

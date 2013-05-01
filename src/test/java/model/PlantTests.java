@@ -16,11 +16,11 @@ import components.Turbine;
 
 public class PlantTests {
 	
-	private PlantModel plant;
+	private Plant plant;
 
 	@Before
 	public void setUp() {
-		plant = new PlantModel();
+		plant = new Plant();
 	}
 	
 	@Test

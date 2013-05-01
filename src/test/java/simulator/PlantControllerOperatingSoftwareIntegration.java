@@ -5,7 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import model.PlantModel;
+import model.Plant;
 import model.Repair;
 
 import org.junit.Before;
@@ -20,9 +20,9 @@ import components.Valve;
 
 public class PlantControllerOperatingSoftwareIntegration {
 	
-	private PlantModel model;
+	private Plant model;
 	private PlantController controller;
-	private PlantModel plant;
+	private Plant plant;
     private OperatingSoftware OS;
     private Reactor reactor;
     private Pump pump;
@@ -31,7 +31,7 @@ public class PlantControllerOperatingSoftwareIntegration {
 	
 	@Before
 	public void setUp() {
-		model = new PlantModel();
+		model = new Plant();
 		controller = new PlantController(model);
 		controller.newGame("Bob");
 		plant = controller.getPlant();
@@ -44,7 +44,7 @@ public class PlantControllerOperatingSoftwareIntegration {
 	
 	@Test
 	public void testSetControlRods(){
-		reactor.setPercentageLowered(50);
+		reactor.setControlRods(50);
 		OS.setControlRods(10);
 		controller.executeStoredCommand();
 		assertEquals(10, reactor.getPercentageLowered());
