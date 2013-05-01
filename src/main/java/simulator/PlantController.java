@@ -107,6 +107,7 @@ public class PlantController {
 	public void newGame(String operatorName) {
 		this.plant.newGame(operatorName);
 		uidata = new UIData(plant);
+		readHighScores();
 		// update things as per the default values.
 		// mainly to calculate the pressure etc in these things.
 	}
