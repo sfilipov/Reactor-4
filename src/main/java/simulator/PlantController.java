@@ -278,56 +278,21 @@ public class PlantController {
 	 * @param pumpID ID of the pump to fail.
 	 */
 	public void failPump(int pumpID) {
-		List<Pump> pumps = plant.getPumps();
-		Pump foundPump = null;
-		List<RandomlyFailableComponent> failedComponents = plant.getFailedComponents();
-		for (Pump pump : pumps) { // Find the pump with the selected ID
-			if (pump.getID() == pumpID) {
-				foundPump = pump;
-			}
-		}
-		if (!failedComponents.contains(foundPump)) {
-			// No need to check if the pump is currently being repaired...
-			// If it is being repaired then it must be broken.
-			failedComponents.add(foundPump);
-			foundPump.setOperational(false);
-			uidata.addBrokenOnStep(foundPump);
-		}
+		plant.failPump(pumpID);
 	}
 	
 	/**
 	 * Forces the failure of the turbine.
 	 */
 	public void failTurbine() {
-		List<RandomlyFailableComponent> failedComponents = plant.getFailedComponents();
-		Turbine turbine = plant.getTurbine();
-		if (!failedComponents.contains(turbine)) {
-			// No need to check if the pump is currently being repaired...
-			// If it is being repaired then it must be broken.
-			failedComponents.add(turbine);
-			turbine.setOperational(false);
-			// Safety feature.
-			setValve(1,false);
-			setValve(2, true);
-			setControlRods(100);
-
-			uidata.addBrokenOnStep(turbine);
-		}
+		plant.failTurbine();
 	}
 	
 	/**
 	 * Forces the failure of the operating software.
 	 */
 	public void failOS() {
-		List<RandomlyFailableComponent> failedComponents = plant.getFailedComponents();
-		OperatingSoftware os = plant.getOperatingSoftware();
-		if (!failedComponents.contains(os)) {
-			// No need to check if the pump is currently being repaired...
-			// If it is being repaired then it must be broken.
-			failedComponents.add(os);
-			os.setOperational(false);
-			uidata.addBrokenOnStep(os);
-		}
+		plant.failOS();
 	}
 	
 	/**

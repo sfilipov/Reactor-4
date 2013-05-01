@@ -42,6 +42,14 @@ public interface Model {
 	
 	public void quenchReactor();
 	
+	//Methods used during multiplayer to fail a component
+	
+	public void failPump(int pumpID);
+	
+	public void failTurbine();
+	
+	public void failOS();
+	
 	//Methods giving information about randomly failing components
 	
 	public int getPumpRpm(int pumpID);

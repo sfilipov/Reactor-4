@@ -11,6 +11,9 @@ public class MultiplayerModel implements Model, Serializable {
 	
 	private GamePersistence persistence;
 	
+	private int stepCount;
+	private boolean multiplayer;
+	
 	public MultiplayerModel() {
 		plantOne = new Plant();
 		plantTwo = new Plant();
@@ -27,6 +30,8 @@ public class MultiplayerModel implements Model, Serializable {
 	public void newSingleplayerGame(String playerOneName) {
 		plantOne.newGame(playerOneName);
 		currentlyPlaying = plantOne;
+		stepCount = 0;
+		multiplayer = false;
 	}
 
 	@Override
@@ -34,6 +39,8 @@ public class MultiplayerModel implements Model, Serializable {
 		plantOne.newGame(playerOneName);
 		plantTwo.newGame(playerTwoName);
 		currentlyPlaying = plantTwo;
+		stepCount = 0;
+		multiplayer = true;
 	}
 
 	@Override
@@ -73,7 +80,12 @@ public class MultiplayerModel implements Model, Serializable {
 
 	@Override
 	public void step(int numSteps) {
+		stepCount++;
 		currentlyPlaying.step(numSteps);
+		
+		if(multiplayer && !currentlyPlaying.isGameOver() && stepCount > 50) {
+//			swap();
+		}
 	}
 
 	@Override
@@ -111,7 +123,25 @@ public class MultiplayerModel implements Model, Serializable {
 	public void quenchReactor() {
 		currentlyPlaying.quenchReactor();
 	}
+	
+	@Override
+	public void failPump(int pumpID) {
+		//TODO Insert conditional logic
+		currentlyPlaying.failPump(pumpID);
+	}
 
+	@Override
+	public void failTurbine() {
+		//TODO Insert conditional logic
+		currentlyPlaying.failTurbine();
+	}
+
+	@Override
+	public void failOS() {
+		//TODO Insert conditional logic
+		currentlyPlaying.failOS();
+	}
+	
 	@Override
 	public int getPumpRpm(int pumpID) {
 		return currentlyPlaying.getPumpRpm(pumpID);
@@ -181,6 +211,4 @@ public class MultiplayerModel implements Model, Serializable {
 	public int getCondenserHealth() {
 		return currentlyPlaying.getCondenserHealth();
 	}
-	
-	
 }
