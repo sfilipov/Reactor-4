@@ -73,134 +73,113 @@ public class MultiplayerModel implements Model, Serializable {
 
 	@Override
 	public void step(int numSteps) {
-		// TODO Auto-generated method stub
-		// TODO Add step method to Plant
-//		currentlyPlaying.step(int numSteps);
+		currentlyPlaying.step(numSteps);
 	}
 
 	@Override
 	public void setControlRods(int percentageLowered) {
-//		currentlyPlaying.setControlRods(percentageLowered);
+		currentlyPlaying.setControlRods(percentageLowered);
 	}
 
 	@Override
 	public void setPumpRpm(int pumpID, int rpm) {
-		// TODO Auto-generated method stub
+		currentlyPlaying.setPumpRpm(pumpID, rpm);
 
 	}
 
 	@Override
 	public void setValve(int valveID, boolean open) {
-		// TODO Auto-generated method stub
-
+		currentlyPlaying.setValve(valveID, open);
 	}
 
 	@Override
 	public void repairPump(int pumpID) {
-		// TODO Auto-generated method stub
-
+		currentlyPlaying.repairPump(pumpID);
 	}
 
 	@Override
 	public void repairTurbine() {
-		// TODO Auto-generated method stub
-
+		currentlyPlaying.repairTurbine();
 	}
 
 	@Override
 	public void repairOperatingSoftware() {
-		// TODO Auto-generated method stub
-
+		currentlyPlaying.repairOperatingSoftware();
 	}
 
 	@Override
 	public void quenchReactor() {
-		// TODO Auto-generated method stub
-
+		currentlyPlaying.quenchReactor();
 	}
 
 	@Override
 	public int getPumpRpm(int pumpID) {
-		// TODO Auto-generated method stub
-		return 0;
+		return currentlyPlaying.getPumpRpm(pumpID);
 	}
 
 	@Override
-	public boolean isValveOpen(int ValveID) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean isValveOpen(int valveID) {
+		return currentlyPlaying.isValveOpen(valveID);
 	}
 
 	@Override
 	public boolean isPumpOperational(int pumpID) {
-		// TODO Auto-generated method stub
-		return false;
+		return currentlyPlaying.isPumpOperational(pumpID);
 	}
 
 	@Override
 	public boolean isTurbineOperational() {
-		// TODO Auto-generated method stub
-		return false;
+		return currentlyPlaying.isTurbineOperational();
 	}
 
 	@Override
 	public boolean isSoftwareOperational() {
-		// TODO Auto-generated method stub
-		return false;
+		return currentlyPlaying.isSoftwareOperational();
 	}
 
 	@Override
 	public int getControlRodsLevel() {
-		// TODO Auto-generated method stub
-		return 0;
+		return currentlyPlaying.getControlRodsLevel();
 	}
 
 	@Override
 	public int getReactorTemperature() {
-		// TODO Auto-generated method stub
-		return 0;
+		return currentlyPlaying.getReactorTemperature();
 	}
 
 	@Override
 	public int getReactorPressure() {
-		// TODO Auto-generated method stub
-		return 0;
+		return currentlyPlaying.getReactorPressure();
 	}
 
 	@Override
-	public int getReactorWaterLevel() {
-		// TODO Auto-generated method stub
-		return 0;
+	public int getReactorWaterVolume() {
+		return currentlyPlaying.getReactorWaterVolume();
 	}
 
 	@Override
 	public int getReactorHealth() {
-		// TODO Auto-generated method stub
-		return 0;
+		return currentlyPlaying.getReactorHealth();
 	}
 
 	@Override
 	public int getCondenserTemperature() {
-		// TODO Auto-generated method stub
-		return 0;
+		return currentlyPlaying.getCondenserTemperature();
 	}
 
 	@Override
 	public int getCondenserPressure() {
-		// TODO Auto-generated method stub
-		return 0;
+		return currentlyPlaying.getCondenserPressure();
 	}
 
 	@Override
-	public int getCondenserWaterLevel() {
-		// TODO Auto-generated method stub
-		return 0;
+	public int getCondenserWaterVolume() {
+		return currentlyPlaying.getCondenserWaterVolume();
 	}
 
 	@Override
 	public int getCondenserHealth() {
-		// TODO Auto-generated method stub
-		return 0;
+		return currentlyPlaying.getCondenserHealth();
 	}
 	
 	

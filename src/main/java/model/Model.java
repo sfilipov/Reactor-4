@@ -62,7 +62,7 @@ public interface Model {
 	
 	public int getReactorPressure();
 	
-	public int getReactorWaterLevel();
+	public int getReactorWaterVolume();
 	
 	public int getReactorHealth();
 	
@@ -72,7 +72,7 @@ public interface Model {
 	
 	public int getCondenserPressure();
 	
-	public int getCondenserWaterLevel();
+	public int getCondenserWaterVolume();
 	
 	public int getCondenserHealth();
 	

@@ -81,6 +81,9 @@ public class Plant implements Serializable {
 		this.plantComponents = factory.createPlantComponents();
 		assignComponentsToFields(this.plantComponents);
 		this.failedComponents = new ArrayList<RandomlyFailableComponent>();
+		
+		updateFlow();
+		updatePlant();
 	}
 	
 	/**
@@ -281,8 +284,12 @@ public class Plant implements Serializable {
 		this.isPaused = isPaused;
 	}
 	
+	public int getControlRodsLevel() {
+		return getReactor().getPercentageLowered();
+	}
+	
 	public void setControlRods(int percentageLowered) {
-		reactor.setControlRods(percentageLowered);
+		getReactor().setControlRods(percentageLowered);
 	}
 
 	/**
@@ -293,12 +300,37 @@ public class Plant implements Serializable {
 		return reactor;
 	}
 	
+	public int getReactorTemperature() {
+		return getReactor().getTemperature();
+	}
+	
+	public int getReactorPressure() {
+		return getReactor().getPressure();
+	}
+	
+	public int getReactorWaterVolume() {
+		return getReactor().getWaterVolume();
+	}
+	
+	public int getReactorHealth() {
+		return getReactor().getHealth();
+	}
+	
 	/**
 	 * 
 	 * @return a list of valves in the plant
 	 */
 	public List<Valve> getValves() {
 		return valves;
+	}
+	
+	public boolean isValveOpen(int valveID) {
+		for (Valve valve : getValves()) {
+			if (valveID == valve.getID()) {
+				return valve.isOpen();
+			}
+		}
+		return false;
 	}
 	
 	/**
@@ -308,8 +340,7 @@ public class Plant implements Serializable {
 	 * @return true if command was successful, false if a valve with that ID was not found
 	 */
 	public boolean setValve(int valveID, boolean open) {
-		List<Valve> valves = getValves();
-		for (Valve valve : valves) {
+		for (Valve valve : getValves()) {
 			if (valveID == valve.getID()) {
 				valve.setOpen(open);
 				return true;
@@ -334,6 +365,22 @@ public class Plant implements Serializable {
 		return condenser;
 	}
 	
+	public int getCondenserTemperature() {
+		return getCondenser().getTemperature();
+	}
+	
+	public int getCondenserPressure() {
+		return getCondenser().getPressure();
+	}
+	
+	public int getCondenserWaterVolume() {
+		return getCondenser().getWaterVolume();
+	}
+	
+	public int getCondenserHealth() {
+		return getCondenser().getHealth();
+	}
+	
 	/**
 	 * 
 	 * @return a list of all pumps in the plant
@@ -342,12 +389,53 @@ public class Plant implements Serializable {
 		return pumps;
 	}
 	
+	public boolean isPumpOperational(int pumpID) {
+		for (Pump pump : getPumps()) {
+			if (pumpID == pump.getID()) {
+				return pump.isOperational();
+			}
+		}
+		return false;
+	}
+	
+	public int getPumpRpm(int pumpID) {
+		for (Pump pump : getPumps()) {
+			if (pumpID == pump.getID()) {
+				return pump.getRpm();
+			}
+		}
+		return 0;
+	}
+	
+	/**
+	 * Sets the RPM of a particular pump.
+	 * 
+	 * @param  pumpID the internal ID of the pump
+	 * @param  rpm the new value of the RPM, needs to be in range (0 to MAX_RPM)
+	 * @return true if setting the RPM was successful, false otherwise
+	 * @throws IllegalArgumentException if RPM is out of the allowed range (rpm < 0 || rpm > MAX_RPM).
+	 */
+	public boolean setPumpRpm(int pumpID, int rpm) throws IllegalArgumentException {
+		for (Pump pump : getPumps()) {
+			if (pumpID == pump.getID()) {
+				pump.setRpm(rpm);
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	
 	/**
 	 * 
 	 * @return the turbine of the plant.
 	 */
 	public Turbine getTurbine() {
 		return turbine;
+	}
+	
+	public boolean isTurbineOperational() {
+		return turbine.isOperational();
 	}
 	
 	/**
@@ -364,6 +452,92 @@ public class Plant implements Serializable {
 	 */
 	public OperatingSoftware getOperatingSoftware() {
 		return operatingSoftware;
+	}
+	
+	public boolean isSoftwareOperational() {
+		return operatingSoftware.isOperational();
+	}
+	
+	/**
+	 * Start the repair of a particular pump
+	 * 
+	 * @param  pumpID the internal ID of the pump to be repaired
+	 * @return true only if the pump is found, has failed and is not already being repaired
+	 */
+	public boolean repairPump(int pumpID) {
+		List<Pump> pumps = getPumps();
+		Pump foundPump = null;
+		boolean found = false;
+		List<RandomlyFailableComponent> failedComponents = getFailedComponents();
+		List<Repair> beingRepaired = getBeingRepaired();
+		for (Pump pump : pumps) { //Find the pump with the selected ID
+			if (pump.getID() == pumpID) {
+				foundPump = pump;
+				found = true;
+			}
+		}
+		if (found && failedComponents.contains(foundPump)) {
+			for (Repair br : beingRepaired) {
+				if (br.getPlantComponent() == foundPump) 
+					return false; //Pump already being repaired
+			}
+			beingRepaired.add(new Repair(foundPump));
+			return true; //Pump has failed and is not being repaired (success)
+		}
+		return false; //Pump not found or has not failed
+	}
+	
+	/**
+	 * Start the repair of the turbine if it has failed.
+	 * 
+	 * @return true only if the turbine has failed and is not already being repaired
+	 */
+	public boolean repairTurbine() {
+		Turbine turbine = getTurbine();
+		List<RandomlyFailableComponent> failedComponents = getFailedComponents();
+		List<Repair> beingRepaired = getBeingRepaired();
+		if (failedComponents.contains(turbine)) {
+			for (Repair br : beingRepaired) {
+				if (br.getPlantComponent() == turbine)
+					return false; //Turbine already being repaired
+			}
+			beingRepaired.add(new Repair(turbine));
+			return true; //Turbine has failed and is not being repaired (success)
+		}
+		return false; //Turbine has not failed
+	}
+	
+	/**
+	 * Start the repair of the operating software if it has failed
+	 * 
+	 * @return true only if the operating software has failed and is not already being repaired
+	 */
+	public boolean repairOperatingSoftware() {
+		OperatingSoftware operatingSoftware = getOperatingSoftware();
+		List<RandomlyFailableComponent> failedComponents = getFailedComponents();
+		List<Repair> beingRepaired = getBeingRepaired();
+		if (failedComponents.contains(operatingSoftware)) {
+			for (Repair br : beingRepaired) {
+				if (br.getPlantComponent() == operatingSoftware)
+					return false; //operating software already being repaired
+			}
+			beingRepaired.add(new Repair(operatingSoftware));
+			return true; //OperatingSoftware has failed and is not being repaired (success)
+		}
+		return false; //OperatingSoftware has not failed
+	}
+	
+	/**
+	 * Attempts to quench the reactor.
+	 * @return true if the reactor was quenched, false if quench is not available.
+	 */
+	public boolean quenchReactor() {
+		if (getReactor().isQuenchAvailable()) {
+			getReactor().quench();
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	/**
