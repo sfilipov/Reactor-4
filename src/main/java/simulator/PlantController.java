@@ -332,7 +332,11 @@ public class PlantController {
 	 * @param numSteps number of timesteps to advance the game by.
 	 */
 	public void step(int numSteps) {
-		plant.step(numSteps);
+		try {
+			plant.step(numSteps);
+		} catch (GameOverException e) {
+			gameOver();
+		}
 	}
 	
 	// ----------------		Methods used in systemText (TextUI class)	----------------
@@ -412,17 +416,7 @@ public class PlantController {
 	}
 	
 	// ------------		Update Plant Flow Methods	------------
-	/**
-	 * Go through all components and call updateState() then calculates the current score.
-	 */
-	private void updatePlant() {
-		List<PlantComponent> plantComponents = plant.getPlantComponents();
-		for (PlantComponent plantComponent : plantComponents) {
-			if (plantComponent instanceof UpdatableComponent)
-				((UpdatableComponent) plantComponent).updateState();
-		}
-		plant.calcScore();
-	}
+
 	
 	/**
 	 * Highest level method for updating flow. This method calls all other methods

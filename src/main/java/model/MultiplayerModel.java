@@ -3,6 +3,8 @@ package model;
 import java.io.Serializable;
 import java.util.List;
 
+import components.GameOverException;
+
 public class MultiplayerModel implements Model, Serializable {
 	
 	private Plant plantOne;
@@ -13,11 +15,13 @@ public class MultiplayerModel implements Model, Serializable {
 	
 	private int stepCount;
 	private boolean multiplayer;
+	private boolean gameOver;
 	
 	public MultiplayerModel() {
 		plantOne = new Plant();
 		plantTwo = new Plant();
 		persistence = new MultiplayerPersistenceManager(this);
+		gameOver = false;
 	}
 	
 	public void copy(MultiplayerModel model) {
@@ -32,6 +36,7 @@ public class MultiplayerModel implements Model, Serializable {
 		currentlyPlaying = plantOne;
 		stepCount = 0;
 		multiplayer = false;
+		gameOver = false;
 	}
 
 	@Override
@@ -41,6 +46,7 @@ public class MultiplayerModel implements Model, Serializable {
 		currentlyPlaying = plantTwo;
 		stepCount = 0;
 		multiplayer = true;
+		gameOver = false;
 	}
 
 	@Override
@@ -80,11 +86,15 @@ public class MultiplayerModel implements Model, Serializable {
 
 	@Override
 	public void step(int numSteps) {
-		stepCount++;
-		currentlyPlaying.step(numSteps);
+		stepCount += numSteps;
+		try {
+			currentlyPlaying.step(numSteps);
+		} catch (GameOverException e) {
+			gameOver();
+		}
 		
-		if(multiplayer && !currentlyPlaying.isGameOver() && stepCount > 50) {
-//			swap();
+		if(multiplayer && stepCount > 50 && !gameOver) {
+			swapPlayers();
 		}
 	}
 
@@ -210,5 +220,15 @@ public class MultiplayerModel implements Model, Serializable {
 	@Override
 	public int getCondenserHealth() {
 		return currentlyPlaying.getCondenserHealth();
+	}
+	
+	private void gameOver() {
+		gameOver = true;
+		HighScore highScore = new HighScore(currentlyPlaying.getOperatorName(), currentlyPlaying.getScore());
+		persistence.addHighScore(highScore);
+	}
+	
+	private void swapPlayers() {
+		//TODO Insert swapPlayers logic
 	}
 }

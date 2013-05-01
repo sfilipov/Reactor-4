@@ -131,7 +131,7 @@ public class Plant implements Serializable {
 	 * 
 	 * @param numSteps number of timesteps to advance the game by.
 	 */
-	public void step(int numSteps) {
+	public void step(int numSteps) throws GameOverException {
 		for (int i = 0; i < numSteps; i++) {
 			if (!isGameOver()) {
 				updateBeingRepaired();
@@ -225,13 +225,9 @@ public class Plant implements Serializable {
 		}
 	}
 	
-	private void updateCriticalComponentsHealth() {
-		try {
-			getReactor().updateHealth();
-			getCondenser().updateHealth();
-		} catch (GameOverException e) {
-			gameOver();
-		}
+	private void updateCriticalComponentsHealth() throws GameOverException {
+		getReactor().updateHealth();
+		getCondenser().updateHealth();
 	}
 
 	/**
@@ -640,6 +636,7 @@ public class Plant implements Serializable {
 	 */
 	public void gameOver() {
 		this.gameOver = true;
+		
 	}
 	
 	/**
