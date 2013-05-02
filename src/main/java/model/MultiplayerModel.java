@@ -1,11 +1,12 @@
 package model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import components.GameOverException;
 
-public class MultiplayerModel implements Model, Serializable {
+public class MultiplayerModel implements Model, Observable, Serializable {
 	
 	private Plant plantOne;
 	private Plant plantTwo;
@@ -17,17 +18,24 @@ public class MultiplayerModel implements Model, Serializable {
 	private boolean multiplayer;
 	private boolean gameOver;
 	
+	private List<Observer> observers;
+	
 	public MultiplayerModel() {
 		plantOne = new Plant();
 		plantTwo = new Plant();
 		persistence = new MultiplayerPersistenceManager(this);
 		gameOver = false;
+		observers = new ArrayList<Observer>();
 	}
 	
 	public void copy(MultiplayerModel model) {
 		this.plantOne = model.plantOne;
 		this.plantTwo = model.plantTwo;
 		this.currentlyPlaying = model.currentlyPlaying;
+		
+		this.stepCount = model.stepCount;
+		this.multiplayer = model.multiplayer;
+		this.gameOver = model.gameOver;
 	}
 
 	@Override
@@ -222,6 +230,23 @@ public class MultiplayerModel implements Model, Serializable {
 		return currentlyPlaying.getCondenserHealth();
 	}
 	
+	@Override
+	public void addObserver(Observer o) {
+		observers.add(o);
+	}
+
+	@Override
+	public void removeObserver(Observer o) {
+		observers.remove(o);
+	}
+
+	@Override
+	public void notifyObservers() {
+		for (Observer o : observers) {
+			o.update();
+		}
+	}
+	
 	private void gameOver() {
 		gameOver = true;
 		HighScore highScore = new HighScore(currentlyPlaying.getOperatorName(), currentlyPlaying.getScore());
@@ -231,4 +256,6 @@ public class MultiplayerModel implements Model, Serializable {
 	private void swapPlayers() {
 		//TODO Insert swapPlayers logic
 	}
+
+
 }
