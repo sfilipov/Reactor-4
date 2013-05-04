@@ -36,6 +36,7 @@ import components.Turbine;
 import model.Observer;
 import model.Repair;
 
+import simulator.Multiplayer2Controller;
 import simulator.MultiplayerController;
 import simulator.PlantController;
 
@@ -56,10 +57,8 @@ public class MainGUI implements Observer
     
 	// the string that is shown initially in the player name field
     private String initialNameValue = "Change me";
-	// the only reference that is needed to the plant
-    private PlantController plantController;
     
-    private MultiplayerController multiplayerController;
+    private Multiplayer2Controller controller;
     
     //the main frame
     private JFrame frame;
@@ -140,9 +139,6 @@ public class MainGUI implements Observer
     //with them when they cannot be used - this variable prevents them from being used
     //when they are 'disabled'
     private boolean controlButtonsEnabled = true;
-    
-    //a shorthand for the list of the components that are being repaired
-    private ArrayList<String> componentsBeingRepaired = new ArrayList<String>();
 
     //a temporary value which has different usages 
     private int tempValue;
@@ -150,16 +146,15 @@ public class MainGUI implements Observer
 
     
     /**
-     * The constructor sets the plantController object, initialises the gui
+     * The constructor sets the controller object, initialises the gui
      * and makes it visible.
-     * @param plantController
+     * @param controller
      */
-    public MainGUI(PlantController plantController)
+    public MainGUI(Multiplayer2Controller controller)
     {
-        this.plantController = plantController;
+        this.controller = controller;
         initialize();
         frame.setVisible(true);
-        this.multiplayerController = new MultiplayerController(this.plantController);
     }
 
 
@@ -250,14 +245,14 @@ public class MainGUI implements Observer
                 }
                 else
                 	if(nameTextField.getText().length() > 15)
-                		plantController.getPlant().setOperatorName(nameTextField.getText().substring(0,15));
-                	else plantController.getPlant().setOperatorName(nameTextField.getText());
+                		controller.setPlayerOneName(nameTextField.getText().substring(0,15));
+                	else controller.setPlayerOneName(nameTextField.getText());
             }
         });
         nameTextField.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 if(nameTextField.getText() != "")
-                    plantController.getPlant().setOperatorName(nameTextField.getText());
+                    controller.setPlayerOneName(nameTextField.getText());
             }
         });
         layeredPane.setLayer(nameTextField, 1);
@@ -345,7 +340,7 @@ public class MainGUI implements Observer
         
         //creation and instantiation of the sliders
         //every slider calls the appropriate method in the OperatingSoftware
-        //requests its execution from the plantController
+        //requests its execution from the controller
         //and updates the gui
         sliderPump1RPM = new JSlider();
         sliderPump1RPM.setOpaque(false);
@@ -355,9 +350,8 @@ public class MainGUI implements Observer
         sliderPump1RPM.setValue(0);
         sliderPump1RPM.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent arg0) {
-                if(plantController.getUIData().getPumps().get(0).isOperational() && controlButtonsEnabled)
-                {   plantController.getPlant().getOperatingSoftware().setPumpRpm(1, sliderPump1RPM.getValue());
-                    plantController.executeStoredCommand();
+                if (controller.isPumpOperational(1) && controlButtonsEnabled) {
+                	controller.setPumpRpm(1, sliderPump1RPM.getValue());
                     updateGUI();
                 }
             }
@@ -373,10 +367,8 @@ public class MainGUI implements Observer
         sliderPump2RPM.setMaximum(1000);
         sliderPump2RPM.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent arg0) {
-                if(plantController.getUIData().getPumps().get(1).isOperational() && controlButtonsEnabled)
-                {
-                    plantController.getPlant().getOperatingSoftware().setPumpRpm(2, sliderPump2RPM.getValue());
-                    plantController.executeStoredCommand();
+                if (controller.isPumpOperational(2) && controlButtonsEnabled) {
+                	controller.setPumpRpm(2, sliderPump2RPM.getValue());
                     updateGUI();
                 }
             }
@@ -392,10 +384,8 @@ public class MainGUI implements Observer
         sliderPump3RPM.setValue(0);
         sliderPump3RPM.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent arg0) {
-                if(plantController.getUIData().getPumps().get(2).isOperational() && controlButtonsEnabled)
-                {
-                    plantController.getPlant().getOperatingSoftware().setPumpRpm(3, sliderPump3RPM.getValue());
-                    plantController.executeStoredCommand();
+                if (controller.isPumpOperational(3) && controlButtonsEnabled) {
+                	controller.setPumpRpm(3, sliderPump3RPM.getValue());
                     updateGUI();
                 }
             }
@@ -412,8 +402,7 @@ public class MainGUI implements Observer
             public void stateChanged(ChangeEvent e) {
                 if(controlButtonsEnabled)
                 {
-                    plantController.getPlant().getOperatingSoftware().setControlRods(100-sliderRodsLevel.getValue());
-                    plantController.executeStoredCommand();
+                    controller.setControlRods(100-sliderRodsLevel.getValue());
                     updateGUI();
                 }
                 
@@ -446,7 +435,7 @@ public class MainGUI implements Observer
         btnNewGame.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 btnNewGame.setEnabled(false);
-                plantController.newGame(initialNameValue);
+                controller.newSingleplayerGame(initialNameValue);
                 updateGUI();
                 btnNewGame.setEnabled(true);
                 sliderNumberOfSteps.setValue(1);
@@ -462,7 +451,7 @@ public class MainGUI implements Observer
         btnLoad.setBorder(null);
         btnLoad.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent arg0) {
-        		plantController.loadGame();
+        		controller.loadGame();
         		updateGUI();
         	}
         });
@@ -479,8 +468,8 @@ public class MainGUI implements Observer
         btnSave.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 btnSave.setEnabled(false);
-                if(!plantController.getUIData().isGameOver())
-                 plantController.saveGame();
+                if(!controller.isGameOver())
+                	controller.saveGame();
                 btnSave.setEnabled(true);
             }
         });
@@ -531,7 +520,7 @@ public class MainGUI implements Observer
         btnToggleMultiplayer.setBorder(null);
         btnToggleMultiplayer.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent arg0) {
-        		boolean multiplayer = plantController.toggleMultiplayer();
+        		boolean multiplayer = controller.toggleMultiplayer();
         		btnToggleMultiplayer.setText((multiplayer) ? "M" : "S");
         	}
         });
@@ -555,12 +544,12 @@ public class MainGUI implements Observer
                 for(int i=0;i<sliderNumberOfSteps.getValue();i++)
             	{
                 	
-                	if (!plantController.getUIData().isGameOver()) {
-						plantController.step(1);
+                	if (!controller.isGameOver()) {
+						controller.step(1);
 						updateGUI();
 					}
             	}
-                if(plantController.getUIData().isGameOver())
+                if(controller.isGameOver())
                     endGameHandler();
             }
         });
@@ -576,16 +565,14 @@ public class MainGUI implements Observer
                 if (controlButtonsEnabled)
                 {
                 	//checks if the valve 1 state and alternates it
-                    if (plantController.getUIData().getValves().get(0).isOpen())
+                    if (controller.isValveOpen(1))
                     {
-                        plantController.getPlant().getOperatingSoftware().setValve(1, false);
-                        plantController.executeStoredCommand();
+                    	controller.setValve(1, false);
                         updateGUI();
                         
                     } else
                     {
-                        plantController.getPlant().getOperatingSoftware().setValve(1, true);
-                        plantController.executeStoredCommand();
+                    	controller.setValve(1, true);
                         updateGUI();
                     }
                 }
@@ -602,15 +589,14 @@ public class MainGUI implements Observer
                 if (controlButtonsEnabled)
                 {
                 	//checks if the valve 1 state and alternates it
-                    if (plantController.getUIData().getValves().get(1).isOpen())
+                    if (controller.isValveOpen(2))
                     {
-                        plantController.getPlant().getOperatingSoftware().setValve(2, false);
-                        plantController.executeStoredCommand();
+                    	controller.setValve(2, false);
                         updateGUI();
+                        
                     } else
                     {
-                        plantController.getPlant().getOperatingSoftware().setValve(2, true);
-                        plantController.executeStoredCommand();
+                    	controller.setValve(2, true);
                         updateGUI();
                     }
                 }
@@ -627,10 +613,8 @@ public class MainGUI implements Observer
         btnQuenchReactor.setBounds(38, 440, 100, 38);
         btnQuenchReactor.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if(plantController.quenchReactor())
-                {
-                   updateGUI();
-                }
+                controller.quenchReactor();
+                updateGUI();
             }
         });
         layeredPane.setLayer(btnQuenchReactor, 1);
@@ -641,10 +625,9 @@ public class MainGUI implements Observer
         btnRepairPump1.setBounds(283, 626, 59, 57);
         btnRepairPump1.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if(!plantController.getUIData().getPumps().get(0).isOperational() && controlButtonsEnabled)
+                if(!controller.isPumpOperational(1) && controlButtonsEnabled)
                 {
-                    plantController.getPlant().getOperatingSoftware().repairPump(1);
-                    plantController.executeStoredCommand();
+                	controller.repairPump(1);
                     updateGUI();
                     
                 } 
@@ -660,10 +643,9 @@ public class MainGUI implements Observer
         btnRepairPump2.setBounds(506, 626, 59, 57);
         btnRepairPump2.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if(!plantController.getUIData().getPumps().get(1).isOperational() && controlButtonsEnabled)
+                if(!controller.isPumpOperational(2) && controlButtonsEnabled)
                 {
-                    plantController.getPlant().getOperatingSoftware().repairPump(2);
-                    plantController.executeStoredCommand();
+                	controller.repairPump(2);
                     updateGUI();
                     
                 } 
@@ -679,10 +661,9 @@ public class MainGUI implements Observer
         btnRepairPump3.setBounds(726, 626, 59, 57);
         btnRepairPump3.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if(!plantController.getUIData().getPumps().get(2).isOperational() && controlButtonsEnabled)
+                if(!controller.isPumpOperational(3) && controlButtonsEnabled)
                 {
-                    plantController.getPlant().getOperatingSoftware().repairPump(3);
-                    plantController.executeStoredCommand();
+                	controller.repairPump(3);
                     updateGUI();
                     
                 } 
@@ -700,10 +681,9 @@ public class MainGUI implements Observer
         btnRepairTurbine.setBorder(null);
         btnRepairTurbine.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if(!plantController.getUIData().isTurbineFunctional()  && controlButtonsEnabled)
+                if(!controller.isTurbineOperational()  && controlButtonsEnabled)
                 {
-                    plantController.getPlant().getOperatingSoftware().repairTurbine();
-                    plantController.executeStoredCommand();
+                	controller.repairTurbine();
                     updateGUI();
                     
                 } 
@@ -721,9 +701,9 @@ public class MainGUI implements Observer
         btnRepairOperatingSoftware.setBorder(null);
         btnRepairOperatingSoftware.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if(!plantController.getUIData().isOperatingSoftwareFunctional())
+                if(!controller.isSoftwareOperational())
                 {
-                    plantController.repairOperatingSoftware();
+                    controller.repairOperatingSoftware();
                     updateGUI();
                     
                 } 
@@ -854,40 +834,34 @@ public class MainGUI implements Observer
      * synchronising it with the plant
      */
     private void updateGUI()
-    {
-    	//updates the information that is stored in the UIData object
-        plantController.getUIData().updateUIData();
-        
-        //resets the list with components that are being repaired
-        componentsBeingRepaired.clear();
-        
+    {        
         //restores the state of the control buttons and sliderRodsLevel variables to true
         controlButtonsEnabled = true;
         sliderRodsLevel.setEnabled(true);
         
         //updates the operators name that is shown to that that is stored,
         //useful when a game is being loaded
-        nameTextField.setText(plantController.getUIData().getOperatorName());
+        nameTextField.setText(controller.getPlayerOneName());
         
         //updates the score and enables the buttons the control the valves
         //they can be disabled if the operatingSoftware is being repaired
-        lblScore.setText(""+plantController.getUIData().getScore());
+        lblScore.setText(""+controller.getPlayerOneScore());
         btnValve1.setEnabled(true);
         btnValve2.setEnabled(true);
         
         //sets the button valve icons appropriately
-        if(plantController.getUIData().getValves().get(0).isOpen())
+        if(controller.isValveOpen(1))
             btnValve1.setIcon(valveOpenedImageIcon);
         else
             btnValve1.setIcon(valveClosedImageIcon);
         
-        if(plantController.getUIData().getValves().get(1).isOpen())
+        if(controller.isValveOpen(2))
             btnValve2.setIcon(valveOpenedImageIcon);
         else
             btnValve2.setIcon(valveClosedImageIcon);
         
         //sets the level of the control rods appropriately 
-        tempValue = plantController.getUIData().getControlRodsPercentage();
+        tempValue = controller.getControlRodsLevel();
         if(tempValue >=0 && tempValue <= 100)
         	
         	//it is 100 - tempValue because in the plant it is shown how much
@@ -896,95 +870,71 @@ public class MainGUI implements Observer
             sliderRodsLevel.setValue(100 - tempValue);
 
         //sets the values of the progress bars by scaling the value to 100
-        tempValue = plantController.getUIData().getReactorHealth();
+        tempValue = controller.getReactorHealth();
         if(tempValue >=0 && tempValue <= 100)
             progressBarReactorHealth.setValue(tempValue);
         
-        tempValue = plantController.getUIData().getCondenserHealth();
+        tempValue = controller.getCondenserHealth();
         if(tempValue >=0 && tempValue <= 100)
             progressBarCondenserHealth.setValue(tempValue);
         
-        tempValue = plantController.getUIData().getReactorTemperature();
+        tempValue = controller.getReactorTemperature();
         if(tempValue >=0 && tempValue <= 3000)
             progressBarReactorTemperature.setValue((int) tempValue/30);
         else if(tempValue > 3000)
         		progressBarReactorTemperature.setValue(100);
         
-        tempValue = plantController.getUIData().getCondenserTemperature();
+        tempValue = controller.getCondenserTemperature();
         if(tempValue >=0 && tempValue <= 2000)
             progressBarCondenserTemperature.setValue((int) tempValue/20);
         else if(tempValue > 2000)
     		progressBarCondenserTemperature.setValue(100);
         
-        tempValue = plantController.getUIData().getReactorPressure();
+        tempValue = controller.getReactorPressure();
         if(tempValue >=0 && tempValue <= 2000)
             progressBarReactorPressure.setValue((int) tempValue/20);
         else if(tempValue > 2000)
     		progressBarReactorPressure.setValue(100);
         
-        tempValue = plantController.getUIData().getCondenserPressure();
+        tempValue = controller.getCondenserPressure();
         if(tempValue >=0 && tempValue <= 2000)
             progressBarCondenserPressure.setValue((int) tempValue/20);
         else if(tempValue > 2000)
     		progressBarCondenserPressure.setValue(100);
         
-        tempValue = plantController.getUIData().getReactorWaterVolume();
+        tempValue = controller.getReactorWaterVolume();
         if(tempValue >=0 && tempValue <= 10000)
             progressBarReactorWaterLevel.setValue((int) tempValue/100);  
         
-        tempValue = plantController.getUIData().getCondenserWaterVolume();
+        tempValue = controller.getCondenserWaterVolume();
         if(tempValue >=0 && tempValue <= 10000)
             progressBarCondenserWaterLevel.setValue((int) tempValue/100);
         
-        tempValue = plantController.getUIData().getControlRodsPercentage();
+        tempValue = controller.getControlRodsLevel();
         if(tempValue >=0 && tempValue <= 100)
             sliderRodsLevel.setValue((int) 100 - tempValue);
         
-        tempValue = plantController.getUIData().getPumps().get(0).getRpm();
+        tempValue = controller.getPumpRpm(1);
         if(tempValue >=0 && tempValue <= 1000)
             sliderPump1RPM.setValue((int) tempValue);
         
-        tempValue = plantController.getUIData().getPumps().get(1).getRpm();
+        tempValue = controller.getPumpRpm(2);
         if(tempValue >=0 && tempValue <= 1000)
             sliderPump2RPM.setValue((int) tempValue);
         
-        tempValue = plantController.getUIData().getPumps().get(2).getRpm();
+        tempValue = controller.getPumpRpm(3);
         if(tempValue >=0 && tempValue <= 1000)
             sliderPump3RPM.setValue((int) tempValue);
         
-        
-        
-        //reads all the components that are being repaired and adds them to a short hand
-        //string quick reference list
-        for(Repair repair:plantController.getPlant().getBeingRepaired())
-        {
-            if(repair.getPlantComponent() instanceof Pump)
-            {
-                int id = ((Pump) repair.getPlantComponent()).getID();
-                
-                componentsBeingRepaired.add("pump"+id);
-            }
-            
-            if(repair.getPlantComponent() instanceof Turbine)
-            {
-                componentsBeingRepaired.add("turbine");
-            }
-            
-            if(repair.getPlantComponent() instanceof OperatingSoftware)
-            {
-                componentsBeingRepaired.add("operatingSoftware");
-            }
-        }
-        
         //checks which components are being repaired and updates the gui in an appropriate way
         //if a component is being repaired its controls are disabled and a yellow light is showing
-        if(componentsBeingRepaired.contains("pump1"))
+        if(controller.isPumpBeingRepaired(1))
         {
             lblPump1State.setIcon(stateBeingRepairedImageIcon);
             sliderPump1RPM.setEnabled(false);
             btnRepairPump1.setIcon(repairButtonDisabledImageIcon);
         }//if a component has failed and is not repaired its controls are disabled and red light is showing
-        else if(!plantController.getUIData().getPumps().get(0).isOperational())
+        else if(!controller.isPumpOperational(1))
         {
             lblPump1State.setIcon(stateBrokenImageIcon);
             sliderPump1RPM.setEnabled(false);
@@ -994,16 +944,16 @@ public class MainGUI implements Observer
         {
             lblPump1State.setIcon(stateSafeImageIcon);
             sliderPump1RPM.setEnabled(true);
-            sliderPump1RPM.setValue(plantController.getUIData().getPumps().get(0).getRpm());
+            sliderPump1RPM.setValue(controller.getPumpRpm(1));
             btnRepairPump1.setIcon(repairButtonDisabledImageIcon);
         }
         
-        if(componentsBeingRepaired.contains("pump2"))
+        if(controller.isPumpBeingRepaired(2))
         {
             lblPump2State.setIcon(stateBeingRepairedImageIcon);
             sliderPump2RPM.setEnabled(false);
             btnRepairPump2.setIcon(repairButtonDisabledImageIcon);
-        }else if(!plantController.getUIData().getPumps().get(1).isOperational())
+        }else if(!controller.isPumpOperational(2))
         {
             lblPump2State.setIcon(stateBrokenImageIcon);
             sliderPump2RPM.setEnabled(false);
@@ -1012,15 +962,15 @@ public class MainGUI implements Observer
         {
             lblPump2State.setIcon(stateSafeImageIcon);
             sliderPump2RPM.setEnabled(true);
-            sliderPump2RPM.setValue(plantController.getUIData().getPumps().get(1).getRpm());
+            sliderPump2RPM.setValue(controller.getPumpRpm(2));
             btnRepairPump2.setIcon(repairButtonDisabledImageIcon);
         }
         
-        if(componentsBeingRepaired.contains("pump3"))
+        if(controller.isPumpBeingRepaired(3))
         {   lblPump3State.setIcon(stateBeingRepairedImageIcon);
             sliderPump3RPM.setEnabled(false);
             btnRepairPump3.setIcon(repairButtonDisabledImageIcon);
-        }else if(!plantController.getUIData().getPumps().get(2).isOperational())
+        }else if(!controller.isPumpOperational(3))
         {   
             lblPump3State.setIcon(stateBrokenImageIcon);
             sliderPump3RPM.setEnabled(false);
@@ -1030,15 +980,15 @@ public class MainGUI implements Observer
            
             lblPump3State.setIcon(stateSafeImageIcon);
             sliderPump3RPM.setEnabled(true);
-            sliderPump3RPM.setValue(plantController.getUIData().getPumps().get(2).getRpm());
+            sliderPump3RPM.setValue(controller.getPumpRpm(3));
             btnRepairPump3.setIcon(repairButtonDisabledImageIcon);
         }
         
-        if(componentsBeingRepaired.contains("turbine"))
+        if(controller.isTurbineBeingRepaired())
         {
             lblTurbineState.setIcon(stateBeingRepairedImageIcon);
             btnRepairTurbine.setIcon(repairButtonDisabledImageIcon);
-        }else if(!plantController.getUIData().isTurbineFunctional())
+        }else if(!controller.isTurbineOperational())
         {
             lblTurbineState.setIcon(stateBrokenImageIcon);
             btnRepairTurbine.setIcon(repairButtonEnabledImageIcon);
@@ -1048,16 +998,9 @@ public class MainGUI implements Observer
             btnRepairTurbine.setIcon(repairButtonDisabledImageIcon);
         }
         
-        // Quench button color.
-        if (plantController.isQuenchAvailable()) {
-        	btnQuenchReactor.setBackground(new Color(30,255,30)); // Green
-        } else {
-        	btnQuenchReactor.setBackground(new Color(255,30,30)); // Red
-        }
-        
         //if the operating software is being repaired all components that rely on it for their commands to
         //be executed are disabled
-        if(componentsBeingRepaired.contains("operatingSoftware"))
+        if(controller.isSoftwareBeingRepaired())
         {
             lblOperatingSoftwareState.setIcon(stateBeingRepairedImageIcon);
             btnRepairOperatingSoftware.setIcon(repairButtonDisabledImageIcon);
@@ -1072,7 +1015,7 @@ public class MainGUI implements Observer
             btnRepairTurbine.setIcon(repairButtonDisabledImageIcon);
             btnValve1.setEnabled(false);
             btnValve2.setEnabled(false);
-        }else if(!plantController.getUIData().isOperatingSoftwareFunctional())
+        }else if(!controller.isSoftwareOperational())
         {
         	//otherwise just set its light to show red and enable its repair button
             lblOperatingSoftwareState.setIcon(stateBrokenImageIcon);
@@ -1081,7 +1024,14 @@ public class MainGUI implements Observer
         {   //otherwise just set its light to show green and disable its repair button
             lblOperatingSoftwareState.setIcon(stateSafeImageIcon);
             btnRepairOperatingSoftware.setIcon(repairButtonDisabledImageIcon);
-        }   
+        }
+        
+        // Quench button color.
+        if (controller.isQuenchAvailable()) {
+        	btnQuenchReactor.setBackground(new Color(30,255,30)); // Green
+        } else {
+        	btnQuenchReactor.setBackground(new Color(255,30,30)); // Red
+        }
     }
     
     /**
@@ -1091,8 +1041,8 @@ public class MainGUI implements Observer
      */
     private void endGameHandler()
     {
-    	EndGameGUI endGameGui = new EndGameGUI(this, plantController.getUIData().getScore());
-    	plantController.newGame(initialNameValue);
+    	EndGameGUI endGameGui = new EndGameGUI(this, controller.getPlayerOneScore());
+    	controller.newSingleplayerGame(initialNameValue);
     	updateGUI();
     	sliderNumberOfSteps.setValue(1);
     }
@@ -1114,7 +1064,7 @@ public class MainGUI implements Observer
      */
     private void showScores()
     {
-    	ScoresGUI scoresGui = new ScoresGUI(this, plantController);
+    	ScoresGUI scoresGui = new ScoresGUI(this, controller);
     }
 
 

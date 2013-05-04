@@ -1,6 +1,6 @@
 package simulator;
 
-import model.Plant;
+import model.MultiplayerModel;
 import swing.MainGUI;
 
 
@@ -19,8 +19,9 @@ import swing.MainGUI;
 public class GameInit {	
 	@SuppressWarnings("unused")
 	public static void main(String[] args) {
-		Plant model = new Plant();
-		PlantController controller = new PlantController(model);
+		MultiplayerModel model = new MultiplayerModel();
+		Multiplayer2Controller controller = new Multiplayer2Controller(model, model);
+		controller.newSingleplayerGame("");
 		MainGUI view = new MainGUI(controller);
 	}
 }

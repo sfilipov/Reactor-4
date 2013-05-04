@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import components.GameOverException;
+import components.OperatingSoftware;
+import components.Pump;
+import components.Turbine;
 
 public class MultiplayerModel implements Model, Observable, Serializable {
 	
@@ -107,6 +110,11 @@ public class MultiplayerModel implements Model, Observable, Serializable {
 	@Override
 	public boolean isMultiplayer() {
 		return multiplayer;
+	}
+	
+	@Override
+	public boolean isGameOver() {
+		return gameOver;
 	}
 
 	@Override
@@ -286,5 +294,43 @@ public class MultiplayerModel implements Model, Observable, Serializable {
 		if(multiplayer && stepCount > 50 && !gameOver) {
 			//TODO Insert swapPlayers logic
 		}
+	}
+
+	@Override
+	public boolean isPumpBeingRepaired(int pumpID) {
+		List<Repair> repairs = currentlyPlaying.getBeingRepaired();
+		for (Repair repair : repairs) {
+			if (repair.getPlantComponent() instanceof Pump && ((Pump) repair.getPlantComponent()).getID() == pumpID) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public boolean isTurbineBeingRepaired() {
+		List<Repair> repairs = currentlyPlaying.getBeingRepaired();
+		for (Repair repair : repairs) {
+			if (repair.getPlantComponent() instanceof Turbine) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public boolean isSoftwareBeingRepaired() {
+		List<Repair> repairs = currentlyPlaying.getBeingRepaired();
+		for (Repair repair : repairs) {
+			if (repair.getPlantComponent() instanceof OperatingSoftware) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public boolean isQuenchAvailable() {
+		return currentlyPlaying.isQuenchAvailable();
 	}
 }

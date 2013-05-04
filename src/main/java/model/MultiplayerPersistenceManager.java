@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -16,6 +17,7 @@ public class MultiplayerPersistenceManager implements GamePersistence {
 	
 	public MultiplayerPersistenceManager(MultiplayerModel model) {
 		this.model = model;
+		highScores = new ArrayList<HighScore>();
 		readHighScores();
 	}
 
@@ -60,11 +62,13 @@ public class MultiplayerPersistenceManager implements GamePersistence {
 					if (oldHighScore.compareTo(highScore) < 0) {
 						highScores.add(i, highScore);
 						writeHighScores();
+						break;
 					}
 				}
 				else {
 					highScores.add(highScores.size(), highScore);
 					writeHighScores();
+					break;
 				}
 			}
 		}
@@ -76,7 +80,7 @@ public class MultiplayerPersistenceManager implements GamePersistence {
 			highScores = highScores.subList(0, 20); //Trims the high scores list to only the first 20 elements
 			writeHighScores();
 		}
-		return Collections.unmodifiableList(highScores);
+		return highScores;
 	}
 	
 	/**

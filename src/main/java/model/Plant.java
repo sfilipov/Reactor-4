@@ -562,6 +562,10 @@ public class Plant implements Serializable {
 			return false;
 		}
 	}
+	
+	public boolean isQuenchAvailable() {
+		return reactor.isQuenchAvailable();
+	}
 
 	/**
 	 * 

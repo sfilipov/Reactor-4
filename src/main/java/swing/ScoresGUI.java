@@ -12,6 +12,7 @@ import javax.swing.JTextArea;
 
 import model.HighScore;
 
+import simulator.Multiplayer2Controller;
 import simulator.PlantController;
 
 
@@ -28,7 +29,7 @@ public class ScoresGUI {
 	private MainGUI mainGUI;
 	
 	//reference to the plant
-	private PlantController controller;
+	private Multiplayer2Controller controller;
 	
 	//where the scores are displayed
 	private JTextArea textArea;
@@ -43,7 +44,7 @@ public class ScoresGUI {
 	 * @param mainGUI
 	 * @param controller
 	 */
-	public ScoresGUI(MainGUI mainGUI, PlantController controller)
+	public ScoresGUI(MainGUI mainGUI, Multiplayer2Controller controller)
 	{
 		this.mainGUI = mainGUI;
 		this.controller = controller;

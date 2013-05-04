@@ -28,6 +28,8 @@ public interface Model {
 	
 	public boolean isMultiplayer();
 	
+	public boolean isGameOver();
+	
 	public List<HighScore> getHighScores();
 	
 	public void step(int numSteps);
@@ -68,6 +70,12 @@ public interface Model {
 	
 	public boolean isSoftwareOperational();
 	
+	public boolean isPumpBeingRepaired(int pumpID);
+	
+	public boolean isTurbineBeingRepaired();
+	
+	public boolean isSoftwareBeingRepaired();
+	
 	//Methods giving information about the reactor
 	
 	public int getControlRodsLevel();
@@ -79,6 +87,8 @@ public interface Model {
 	public int getReactorWaterVolume();
 	
 	public int getReactorHealth();
+	
+	public boolean isQuenchAvailable();
 	
 	//Methods giving information about the condenser
 	

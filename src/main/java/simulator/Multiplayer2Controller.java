@@ -44,6 +44,19 @@ public class Multiplayer2Controller implements Observer{
 		model.setPlayerTwoName(playerTwoName);
 	}
 	
+	/** 
+	 * @deprecated Use only until normal multiplayer functionality is implemented! 
+	 */ 
+	public boolean toggleMultiplayer() {
+		if (model.isMultiplayer()) {
+			model.newSingleplayerGame("");
+			return false;
+		} else {
+			model.newMultiplayerGame("", "");
+			return true;
+		}
+	}
+	
 	public String getPlayerOneName() {
 		return model.getPlayerOneName();
 	}
@@ -62,6 +75,10 @@ public class Multiplayer2Controller implements Observer{
 	
 	public boolean isMultiplayer() {
 		return model.isMultiplayer();
+	}
+	
+	public boolean isGameOver() {
+		return model.isGameOver();
 	}
 	
 	public List<HighScore> getHighScores() {
@@ -113,11 +130,7 @@ public class Multiplayer2Controller implements Observer{
 	}
 	
 	public void repairOperatingSoftware() {
-		if (model.isSoftwareOperational() || model.isMultiplayer()) {
-			model.repairOperatingSoftware();
-		} else {
-			failedSoftwareResponse();
-		};
+		model.repairOperatingSoftware();
 	}
 	
 	public void quenchReactor() {
@@ -157,7 +170,18 @@ public class Multiplayer2Controller implements Observer{
 	public boolean isSoftwareOperational() {
 		return model.isSoftwareOperational();
 	}
+
+	public boolean isPumpBeingRepaired(int pumpID) {
+		return model.isPumpBeingRepaired(pumpID);
+	}
 	
+	public boolean isTurbineBeingRepaired() {
+		return model.isTurbineBeingRepaired();
+	}
+	
+	public boolean isSoftwareBeingRepaired() {
+		return model.isSoftwareBeingRepaired();
+	}
 	//Methods giving information about the reactor
 	
 	public int getControlRodsLevel() {
@@ -178,6 +202,10 @@ public class Multiplayer2Controller implements Observer{
 	
 	public int getReactorHealth() {
 		return model.getReactorHealth();
+	}
+	
+	public boolean isQuenchAvailable() {
+		return model.isQuenchAvailable();
 	}
 	
 	//Methods giving information about the condenser
