@@ -26,6 +26,8 @@ public interface Model {
 	
 	public int getPlayerTwoScore();
 	
+	public boolean isMultiplayer();
+	
 	public List<HighScore> getHighScores();
 	
 	public void step(int numSteps);

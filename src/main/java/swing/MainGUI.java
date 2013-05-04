@@ -33,6 +33,7 @@ import components.Reactor;
 import components.Turbine;
 
 
+import model.Observer;
 import model.Repair;
 
 import simulator.MultiplayerController;
@@ -48,7 +49,7 @@ import simulator.PlantController;
  * When the game is over the EndGame class is instantiated which has its own gui.
  * @author 
  */
-public class MainGUI
+public class MainGUI implements Observer
 {
 	// Quench button tooltip
 	private static final String quenchToolTip = "Quench!:\n Quench the reactor with a burst of cool water. Use it wisely,\n you only have enough spare water to use it once.";
@@ -1115,5 +1116,12 @@ public class MainGUI
     {
     	ScoresGUI scoresGui = new ScoresGUI(this, plantController);
     }
+
+
+	@Override
+	public void update() {
+		// TODO Auto-generated method stub
+		
+	}
     
 }

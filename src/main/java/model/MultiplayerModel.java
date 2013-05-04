@@ -45,6 +45,8 @@ public class MultiplayerModel implements Model, Observable, Serializable {
 		stepCount = 0;
 		multiplayer = false;
 		gameOver = false;
+		
+		notifyObservers();
 	}
 
 	@Override
@@ -55,6 +57,8 @@ public class MultiplayerModel implements Model, Observable, Serializable {
 		stepCount = 0;
 		multiplayer = true;
 		gameOver = false;
+		
+		notifyObservers();
 	}
 
 	@Override
@@ -65,16 +69,19 @@ public class MultiplayerModel implements Model, Observable, Serializable {
 	@Override
 	public void loadGame() {
 		persistence.loadGame();
+		notifyObservers();
 	}
 	
 	@Override
 	public void setPlayerOneName(String playerOneName) {
 		plantOne.setOperatorName(playerOneName);
+		notifyObservers();
 	}
 
 	@Override
 	public void setPlayerTwoName(String playerTwoName) {
 		plantTwo.setOperatorName(playerTwoName);
+		notifyObservers();
 	}
 
 	@Override
@@ -96,6 +103,11 @@ public class MultiplayerModel implements Model, Observable, Serializable {
 	public int getPlayerTwoScore() {
 		return plantTwo.getScore();
 	}
+	
+	@Override
+	public boolean isMultiplayer() {
+		return multiplayer;
+	}
 
 	@Override
 	public List<HighScore> getHighScores() {
@@ -110,64 +122,71 @@ public class MultiplayerModel implements Model, Observable, Serializable {
 		} catch (GameOverException e) {
 			gameOver();
 		}
-		
-		if(multiplayer && stepCount > 50 && !gameOver) {
-			swapPlayers();
-		}
+		swapPlayers();
+		notifyObservers();
 	}
 
 	@Override
 	public void setControlRods(int percentageLowered) {
 		currentlyPlaying.setControlRods(percentageLowered);
+		notifyObservers();
 	}
 
 	@Override
 	public void setPumpRpm(int pumpID, int rpm) {
 		currentlyPlaying.setPumpRpm(pumpID, rpm);
-
+		notifyObservers();
 	}
 
 	@Override
 	public void setValve(int valveID, boolean open) {
 		currentlyPlaying.setValve(valveID, open);
+		notifyObservers();
 	}
 
 	@Override
 	public void repairPump(int pumpID) {
 		currentlyPlaying.repairPump(pumpID);
+		notifyObservers();
 	}
 
 	@Override
 	public void repairTurbine() {
 		currentlyPlaying.repairTurbine();
+		notifyObservers();
 	}
 
 	@Override
 	public void repairOperatingSoftware() {
 		currentlyPlaying.repairOperatingSoftware();
+		notifyObservers();
 	}
 
 	@Override
 	public void quenchReactor() {
 		currentlyPlaying.quenchReactor();
+		notifyObservers();
 	}
 	
 	@Override
 	public void failPump(int pumpID) {
 		//TODO Insert conditional logic
 		currentlyPlaying.failPump(pumpID);
+		notifyObservers();
 	}
 
 	@Override
 	public void failTurbine() {
 		//TODO Insert conditional logic
 		currentlyPlaying.failTurbine();
+		notifyObservers();
 	}
 
 	@Override
 	public void failOS() {
 		//TODO Insert conditional logic
 		currentlyPlaying.failOS();
+		notifyObservers();
 	}
 	
 	@Override
@@ -264,10 +283,8 @@ public class MultiplayerModel implements Model, Observable, Serializable {
 	}
 	
 	private void swapPlayers() {
-		//TODO Insert swapPlayers logic
+		if(multiplayer && stepCount > 50 && !gameOver) {
+			//TODO Insert swapPlayers logic
+		}
 	}
-
-
-
-
 }
