@@ -59,7 +59,7 @@ public class Plant implements Serializable {
 	 * when there is no saved game (i.e. new game)
 	 */
 	public Plant() {
-		this.factory = new ModelComponentFactory();
+		this.factory = new PlantComponentFactory();
 		this.flowUpdater = new FlowUpdater(this);
 		
 		this.playerName = null;

@@ -66,6 +66,16 @@ public class MultiplayerModel implements Model, Observable, Serializable {
 	public void loadGame() {
 		persistence.loadGame();
 	}
+	
+	@Override
+	public void setPlayerOneName(String playerOneName) {
+		plantOne.setOperatorName(playerOneName);
+	}
+
+	@Override
+	public void setPlayerTwoName(String playerTwoName) {
+		plantTwo.setOperatorName(playerTwoName);
+	}
 
 	@Override
 	public String getPlayerOneName() {
@@ -256,6 +266,8 @@ public class MultiplayerModel implements Model, Observable, Serializable {
 	private void swapPlayers() {
 		//TODO Insert swapPlayers logic
 	}
+
+
 
 
 }

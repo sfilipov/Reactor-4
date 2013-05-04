@@ -14,7 +14,7 @@ import components.Reactor;
 import components.Turbine;
 import components.Valve;
 
-public class ModelComponentFactory implements ComponentFactory, Serializable {
+public class PlantComponentFactory implements ComponentFactory, Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	private Reactor reactor;

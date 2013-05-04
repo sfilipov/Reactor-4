@@ -14,6 +14,10 @@ public interface Model {
 	
 	public void loadGame();
 	
+	public void setPlayerOneName(String playerOneName);
+	
+	public void setPlayerTwoName(String playerTwoName);
+	
 	public String getPlayerOneName();
 	
 	public String getPlayerTwoName();
