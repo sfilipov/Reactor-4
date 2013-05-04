@@ -7,11 +7,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class MultiplayerPersistenceManager implements GamePersistence {
+public class MultiplayerPersistenceManager implements GamePersistence, Serializable {
 	private MultiplayerModel model;
 	private List<HighScore> highScores;
 	

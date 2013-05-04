@@ -10,14 +10,11 @@ import model.Model;
 import model.Observable;
 import model.Observer;
 
-public class Multiplayer2Controller implements Observer{
+public class Multiplayer2Controller {
 	private Model model;
-	private Observable observable;
 	
-	public Multiplayer2Controller(Model model, Observable observable) {
+	public Multiplayer2Controller(Model model) {
 		this.model = model;
-		this.observable = observable;
-		observable.addObserver(this);
 	}
 	
 	public void newSingleplayerGame(String playerOneName) {
@@ -115,7 +112,7 @@ public class Multiplayer2Controller implements Observer{
 	
 	public void repairPump(int pumpID) {
 		if (model.isSoftwareOperational() || model.isMultiplayer()) {
-			model.failPump(pumpID);
+			model.repairPump(pumpID);
 		} else {
 			failedSoftwareResponse();
 		};
@@ -224,11 +221,6 @@ public class Multiplayer2Controller implements Observer{
 	
 	public int getCondenserHealth() {
 		return model.getCondenserHealth();
-	}
-
-	@Override
-	public void update() {
-		// TODO Auto-generated method stub
 	}
 	
     /**

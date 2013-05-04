@@ -20,7 +20,7 @@ public class GameInit {
 	@SuppressWarnings("unused")
 	public static void main(String[] args) {
 		MultiplayerModel model = new MultiplayerModel();
-		Multiplayer2Controller controller = new Multiplayer2Controller(model, model);
+		Multiplayer2Controller controller = new Multiplayer2Controller(model);
 		controller.newSingleplayerGame("");
 		MainGUI view = new MainGUI(controller);
 	}

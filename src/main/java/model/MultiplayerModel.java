@@ -39,6 +39,8 @@ public class MultiplayerModel implements Model, Observable, Serializable {
 		this.stepCount = model.stepCount;
 		this.multiplayer = model.multiplayer;
 		this.gameOver = model.gameOver;
+		
+		notifyObservers();
 	}
 
 	@Override
