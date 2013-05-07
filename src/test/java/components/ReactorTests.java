@@ -1,5 +1,6 @@
 package components;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
@@ -11,6 +12,7 @@ public class ReactorTests {
 	@Before
 	public void setUp() {
 		reactor = new Reactor();
+		reactor.setInput(new ConnectorPipe());
 	}
 	
 	@Test
@@ -53,5 +55,42 @@ public class ReactorTests {
 	@Test (expected=IllegalArgumentException.class)
 	public void removeSteam_volumeNegative_throwsException() {
 		reactor.removeSteam(-100);
+	}
+	
+	@Test
+	public void quench_notUsed_lowersTemperatureAndPressure() {
+		reactor.setTemperature(1500);
+		reactor.updateState();
+		reactor.updateState();
+		
+		int beforeTemperature = reactor.getTemperature();
+		int beforePressure    = reactor.getPressure();
+		
+		reactor.quench();
+		
+		int afterTemperature  = reactor.getTemperature();
+		int afterPressure     = reactor.getPressure();
+		
+		assertTrue(beforeTemperature > afterTemperature);
+		assertTrue(beforePressure > afterPressure);
+	}
+	
+	@Test
+	public void quench_alreadyUsed_noChangeToTemperatureAndPressure() {
+		reactor.setTemperature(1500);
+		reactor.quench();
+		reactor.updateState();
+		reactor.updateState();
+		
+		int beforeTemperature = reactor.getTemperature();
+		int beforePressure    = reactor.getPressure();
+		
+		reactor.quench();
+		
+		int afterTemperature  = reactor.getTemperature();
+		int afterPressure     = reactor.getPressure();
+		
+		assertTrue(beforeTemperature == afterTemperature);
+		assertTrue(beforePressure == afterPressure);
 	}
 }
