@@ -7,7 +7,7 @@ package components;
  * 
  * @author Lamprey
  */
-public class Turbine extends RandomlyFailableComponent implements UpdatableComponent {
+public class Turbine extends RandomlyFailableComponent implements UpdatableComponent, ForcedFailableComponent {
 	private static final long serialVersionUID = 1106025692966179166L;
 
 	public final static int DEFAULT_FAILURE_RATE = 10; //1%
@@ -52,5 +52,17 @@ public class Turbine extends RandomlyFailableComponent implements UpdatableCompo
 	 */
 	public int getRpm() {
 		return (this.isOperational()) ? rpm : 0;
+	}
+
+	@Override
+	public int numStepsUntilFailable() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public boolean isForceFailable() {
+		// TODO Auto-generated method stub
+		return false;
 	}	
 }

@@ -58,7 +58,7 @@ public class MainGUI implements Observer
 	private static final String quenchToolTip = "Quench!:\n Quench the reactor with a burst of cool water. Use it wisely,\n you only have enough spare water to use it once.";
     
 	// the string that is shown initially in the player name field
-    private String initialNameValue = "Change me";
+    private String initialNameValue = "";
     
     private Multiplayer2Controller controller;
     
@@ -66,7 +66,7 @@ public class MainGUI implements Observer
     private JFrame frame;
     
     //the field where the player should write theirs
-    private JTextField nameTextField;
+    private JLabel nameTextField;
     
     //the buttons which effect is not dependent on the operating software
     private JButton btnNewSingleplayerGame;
@@ -235,37 +235,12 @@ public class MainGUI implements Observer
         //empty or bigger than 15 characters, it is set as the operator's name
         //if the text is bigger than 15 characters only the first 15 are used
         //if the text field is empty, the initial text is set put it
-        nameTextField = new JTextField(initialNameValue);
+        nameTextField = new JLabel(initialNameValue);
         nameTextField.setFont(new Font("Tahoma", Font.PLAIN, 14));
         nameTextField.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-        nameTextField.setColumns(20);
         nameTextField.setOpaque(false);
         nameTextField.setBorder(null);
         nameTextField.setBounds(10, 11, 102, 20);
-        nameTextField.addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusGained(FocusEvent arg0) {
-                nameTextField.selectAll();
-            }
-            @Override
-            public void focusLost(FocusEvent e) {
-                if(nameTextField.getText() == "")
-                {
-                    nameTextField.setText(initialNameValue);
-                    nameTextField.selectAll();
-                }
-                else
-                	if(nameTextField.getText().length() > 15)
-                		controller.setPlayerOneName(nameTextField.getText().substring(0,15));
-                	else controller.setPlayerOneName(nameTextField.getText());
-            }
-        });
-        nameTextField.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent arg0) {
-                if(nameTextField.getText() != "")
-                    controller.setPlayerOneName(nameTextField.getText());
-            }
-        });
         layeredPane.setLayer(nameTextField, 1);
         layeredPane.add(nameTextField);
         
@@ -447,12 +422,7 @@ public class MainGUI implements Observer
         btnNewSingleplayerGame.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 btnNewSingleplayerGame.setEnabled(false);
-                String playerName = JOptionPane.showInputDialog(null,
-                		  "Please enter your name",
-                		  "Enter your name",
-                		  JOptionPane.QUESTION_MESSAGE);
-                controller.newSingleplayerGame(playerName);
-                updateGUI();
+                startNewSingleplayerGame();
                 btnNewSingleplayerGame.setEnabled(true);
                 sliderNumberOfSteps.setValue(1);
             }
@@ -1111,6 +1081,19 @@ public class MainGUI implements Observer
 
 	@Override
 	public void update() {
+		updateGUI();
+	}
+
+
+	/**
+	 * 
+	 */
+	private void startNewSingleplayerGame() {
+		String playerName = JOptionPane.showInputDialog(null,
+				  "Please enter your name",
+				  "Enter your name",
+				  JOptionPane.QUESTION_MESSAGE);
+		controller.newSingleplayerGame(playerName);
 		updateGUI();
 	}
     
