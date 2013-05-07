@@ -59,7 +59,6 @@ public class UIData {
 		this.operatorName = plant.getOperatorName();
 		this.score        = plant.getScore();
 		this.gameOver     = plant.isGameOver();
-		this.multiplayer  = plant.isMultiplayer();
 		
 		this.turbineRpm			= plant.getTurbine().getRpm();
 		this.turbineFunctional	= plant.getTurbine().isOperational();
@@ -96,7 +95,6 @@ public class UIData {
 		this.operatorName = plant.getOperatorName();
 		this.score        = plant.getScore();
 		this.gameOver     = plant.isGameOver();
-		this.multiplayer  = plant.isMultiplayer();
 		
 		this.turbineRpm			= plant.getTurbine().getRpm();
 		this.turbineFunctional	= plant.getTurbine().isOperational();

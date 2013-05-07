@@ -18,21 +18,35 @@ public interface Model {
 	
 	public void setPlayerTwoName(String playerTwoName);
 	
+	public int getCurrentPlayerNumber();
+	
+	public int getStepsPerPlayer();
+	
 	public String getPlayerOneName();
 	
 	public String getPlayerTwoName();
+	
+	public String getCurrentPlayerName();
 	
 	public int getPlayerOneScore();
 	
 	public int getPlayerTwoScore();
 	
+	public int getCurrentPlayerScore();
+	
 	public boolean isMultiplayer();
 	
 	public boolean isGameOver();
 	
+	public boolean isRandomFailures();
+	
+	public void setRandomFailures(boolean randomFailuresOn);
+	
 	public List<HighScore> getHighScores();
 	
 	public void step(int numSteps);
+	
+	public int getStepsLeftOfTurn();
 	
 	//Methods controlling plant's components
 	

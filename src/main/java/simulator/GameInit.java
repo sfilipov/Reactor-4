@@ -23,5 +23,6 @@ public class GameInit {
 		Multiplayer2Controller controller = new Multiplayer2Controller(model);
 		controller.newSingleplayerGame("");
 		MainGUI view = new MainGUI(controller);
+		model.addObserver(view);
 	}
 }

@@ -219,15 +219,6 @@ public class PlantController {
 	}
 	
 	/**
-	 * Toggles multiplayer mode on/off.
-	 * Returns the new boolean state. (True = multiplayer on).
-	 */
-	public boolean toggleMultiplayer() {
-		plant.setMultiplayer(!plant.isMultiplayer());
-		return plant.isMultiplayer();
-	}
-	
-	/**
 	 * Attempts to quench the reactor.
 	 * @return true if the reactor was quenched, false if quench is not available.
 	 */

@@ -8,16 +8,20 @@ import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
@@ -57,6 +61,14 @@ public class MainGUI implements Observer
 	// Quench button tooltip
 	private static final String quenchToolTip = "Quench!:\n Quench the reactor with a burst of cool water. Use it wisely,\n you only have enough spare water to use it once.";
     
+	// Player 2 key bindings.
+	private static final int FAIL_PUMP_1 = KeyEvent.VK_1; // 1
+	private static final int FAIL_PUMP_2 = KeyEvent.VK_2; // 2
+	private static final int FAIL_PUMP_3 = KeyEvent.VK_3; // 3
+	private static final int FAIL_TURBINE = KeyEvent.VK_4; // 4
+	private static final int FAIL_OS = KeyEvent.VK_5; // 5
+	private static final int TOGGLE_RANDOM_FAILURES = KeyEvent.VK_6; //6
+	
 	// the string that is shown initially in the player name field
     private String initialNameValue = "";
     
@@ -102,6 +114,9 @@ public class MainGUI implements Observer
     //this label shows how many timesteps will be issued
     private JLabel lblNumberOfSteps;
     
+    // How many steps are left in a players go until the swap (Multiplayer only)
+    private JLabel lblStepsUntilSwap;
+    
     //progress bars showing the temperature, pressure, water level and
     //health of the reactor and the condenser
     private JProgressBar progressBarReactorTemperature;
@@ -144,8 +159,12 @@ public class MainGUI implements Observer
 
     //a temporary value which has different usages 
     private int tempValue;
-    
 
+	private boolean displayedSwapDialog;
+
+	private JLabel lblRandomFailures;
+
+	private boolean displayedEndGameDialog;
     
     /**
      * The constructor sets the controller object, initialises the gui
@@ -157,14 +176,40 @@ public class MainGUI implements Observer
         this.controller = controller;
         initialize();
         frame.setVisible(true);
+        initGame();
     }
 
+    /**
+     * Asks the user whether they want to start a new singleplayer game,
+     * multiplayer game, or exit. And does the appropriate actions!
+     */
+    private void initGame() {
+    	Object[] options = { "Single-player", "2-player", "Exit" };
+    	String titleText = "What would you like to do?";		
+    	String messageText = "REACTOR: Extended Edition can be played in one of two modes...\n"+
+    						 "Which would you like to play?";		
+    	int opt = JOptionPane.showOptionDialog(null, messageText, titleText,
+    	JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,
+    	null, options, options[0]);
+    	switch (opt) {
+    		case 0: // 1-player
+    			startNewSingleplayerGame();
+    			break;
+    		case 1: // 2-play0r
+    			startNewMultiplayerGame();
+    			break;
+    		case 2: // Exit
+    		default:
+    			System.exit(0);
+    			break;
+    	}
+    }
 
     /**
      * Initialises the contents of the frame.
      */
     private void initialize()
-    {
+    {	
     	//instantiates the main frame
         frame = new JFrame();
         frame.setBounds(100, 100, 1049, 740);
@@ -221,14 +266,26 @@ public class MainGUI implements Observer
         layeredPane.setLayer(lblScore, 1);
         layeredPane.add(lblScore);
         
-      //initialises the label that shows the score
+        //initialises the label that shows the score
         lblOtherPlayerScore = new JLabel("");
         lblOtherPlayerScore.setFont(new Font("Tahoma", Font.BOLD, 15));
+        lblOtherPlayerScore.setHorizontalAlignment(SwingConstants.LEFT);
         lblOtherPlayerScore.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
         lblOtherPlayerScore.setForeground(new Color(0,255,0));
         lblOtherPlayerScore.setBounds(320, 10, 160, 23);
         layeredPane.setLayer(lblOtherPlayerScore, 2);
         layeredPane.add(lblOtherPlayerScore);
+        
+        
+        //initialises the label that shows the score
+        lblRandomFailures = new JLabel("");
+        lblRandomFailures.setFont(new Font("Tahoma", Font.BOLD, 12));
+        lblRandomFailures.setHorizontalAlignment(SwingConstants.LEFT);
+        lblRandomFailures.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+        lblRandomFailures.setForeground(new Color(0,255,0));
+        lblRandomFailures.setBounds(580, 530, 160, 23);
+        layeredPane.setLayer(lblRandomFailures, 2);
+        layeredPane.add(lblRandomFailures);
         
         //the player should type in their name in that text field
         //when the field loses focus the text is checked and if it is not
@@ -253,6 +310,17 @@ public class MainGUI implements Observer
         lblNumberOfSteps.setOpaque(false);
         layeredPane.setLayer(lblNumberOfSteps, 1);
         layeredPane.add(lblNumberOfSteps);
+        
+      //instantiation of the label showing the number of time steps
+        lblStepsUntilSwap = new JLabel("");
+        lblStepsUntilSwap.setHorizontalAlignment(SwingConstants.LEFT);
+        lblStepsUntilSwap.setFont(new Font("Tahoma", Font.PLAIN, 30));
+        lblStepsUntilSwap.setBounds(495, 499, 80, 40);
+        lblStepsUntilSwap.setForeground(new Color(0, 255, 0));
+        lblStepsUntilSwap.setOpaque(false);
+        layeredPane.setLayer(lblStepsUntilSwap, 1);
+        layeredPane.add(lblStepsUntilSwap);
+        
         
         //all the labels that show component states are
         //initialised with green light showing
@@ -512,16 +580,7 @@ public class MainGUI implements Observer
         btnNewMultiplayerGame.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent arg0) {
         		btnNewMultiplayerGame.setEnabled(false);
-                String playerOneName = JOptionPane.showInputDialog(null,
-		                "Player 1, please enter your name",
-		                "Enter your name",
-		                JOptionPane.QUESTION_MESSAGE);
-                String playerTwoName = JOptionPane.showInputDialog(null,
-		              	"Player 2, please enter your name",
-		              	"Enter your name",
-		              	JOptionPane.QUESTION_MESSAGE);
-                controller.newMultiplayerGame(playerOneName, playerTwoName);
-                updateGUI();
+                startNewMultiplayerGame();
                 btnNewMultiplayerGame.setEnabled(true);
                 sliderNumberOfSteps.setValue(1);
         	}
@@ -546,14 +605,12 @@ public class MainGUI implements Observer
             public void actionPerformed(ActionEvent arg0) {
                 for(int i=0;i<sliderNumberOfSteps.getValue();i++)
             	{
-                	
                 	if (!controller.isGameOver()) {
 						controller.step(1);
 						updateGUI();
 					}
             	}
-                if(controller.isGameOver())
-                    endGameHandler();
+                detectSwapAndNotify();
             }
         });
         layeredPane.setLayer(btnStep, 1);
@@ -767,6 +824,9 @@ public class MainGUI implements Observer
         //synchronises with the plant
         updateGUI();
         nameTextField.setText(initialNameValue);
+        
+        // Init listeners for player 2.
+        initialiseOpponentKeyListeners();
     }
     
     
@@ -845,18 +905,18 @@ public class MainGUI implements Observer
      * synchronising it with the plant
      */
     private void updateGUI()
-    {        
+    {
         //restores the state of the control buttons and sliderRodsLevel variables to true
         controlButtonsEnabled = true;
         sliderRodsLevel.setEnabled(true);
         
         //updates the operators name that is shown to that that is stored,
         //useful when a game is being loaded
-        nameTextField.setText(controller.getPlayerOneName());
+        nameTextField.setText(controller.getCurrentPlayerName());
         
         //updates the score and enables the buttons the control the valves
         //they can be disabled if the operatingSoftware is being repaired
-        lblScore.setText(""+controller.getPlayerOneScore());
+        lblScore.setText(""+controller.getCurrentPlayerScore());
         btnValve1.setEnabled(true);
         btnValve2.setEnabled(true);
         
@@ -1043,19 +1103,41 @@ public class MainGUI implements Observer
         } else {
         	btnQuenchReactor.setBackground(new Color(255,30,30)); // Red
         }
+        
+        if (controller.isMultiplayer()) {
+        	lblRandomFailures.setText("Random Failures : " + 
+        							  (controller.isRandomFailures() ? "On!" : "Off"));
+        	lblStepsUntilSwap.setText("" + controller.numberOfStepsUntilSwap());
+        } else { 
+        	lblStepsUntilSwap.setText("");
+        	lblRandomFailures.setText("");
+        }
+        
     }
     
-    /**
-     * called when the the game is over - creates a new EndGame object passing a reference to this object,
-     * the operator's name and the end score
-     * then it updates the gui and set the slider for the timesteps to 1
-     */
-    private void endGameHandler()
+    private void checkEndGameAndHandleIt()
     {
-    	EndGameGUI endGameGui = new EndGameGUI(this, controller.getPlayerOneScore());
-    	controller.newSingleplayerGame(initialNameValue);
-    	updateGUI();
-    	sliderNumberOfSteps.setValue(1);
+    	System.out.println("endGameHandler call");
+    	if (controller.isGameOver() && !displayedEndGameDialog) {
+	    	if (controller.isMultiplayer()) {
+	    		System.out.println("1");
+	    		if (controller.getCurrentPlayerNumber() == 1) { 
+	    			// Swapped!
+	    			System.out.println("2");
+	    		} else {
+	    			// Player 2 must've died... 
+	    			System.out.println("3");
+	    			updateGUI();
+	    			showMultiplayerEndGameDialog();
+	    		}
+	    	} else {
+	    		// Single player
+	    		EndGameGUI endGameGui = new EndGameGUI(this, controller.getPlayerOneScore());
+	    		startNewSingleplayerGame();
+	    	}
+			sliderNumberOfSteps.setValue(1);
+			initGame();
+    	}
     }
     
     
@@ -1077,24 +1159,150 @@ public class MainGUI implements Observer
     {
     	ScoresGUI scoresGui = new ScoresGUI(this, controller);
     }
+    
+    private void showMultiplayerEndGameDialog() {
+    	String messageText = controller.getPlayerOneName() + 
+    						 " finished with a score of:\n" +
+    						 controller.getPlayerOneScore() + "\n" +
+    						 controller.getPlayerTwoName() + 
+    						 " finished with a score of:\n" +
+    						 controller.getPlayerTwoScore() + "\n\n";
+    	String titleText;
+    	if (controller.getPlayerOneScore() > controller.getPlayerTwoScore()) {
+    		// Player 1 wins!
+    		messageText += controller.getPlayerOneName() + " wins!";
+    		titleText = controller.getPlayerOneName() + " won!";
+    	} else {
+    		// Player 2 wins!
+    		messageText += controller.getPlayerTwoName() + " wins!";
+    		titleText = controller.getPlayerTwoName() + " won!";
+    	}
+		displayedEndGameDialog = true;
+    	JOptionPane.showMessageDialog(null, messageText, titleText, JOptionPane.PLAIN_MESSAGE);
+    }
 
 
 	@Override
 	public void update() {
+		checkEndGameAndHandleIt();
 		updateGUI();
 	}
-
-
-	/**
-	 * 
-	 */
+ 
+	public void detectSwapAndNotify() {
+		if (controller.isMultiplayer()) {
+			if (controller.getCurrentPlayerNumber() == 2) { // Swapped!
+				if (!displayedSwapDialog) { // Need to notify players of swap 
+					displayedSwapDialog = true;
+					JOptionPane.showMessageDialog(null, controller.getPlayerOneName() +
+														" finished with a score of:\n" +
+														controller.getPlayerOneScore() + "\n" +
+														"Please swap controls. " +  
+														"Try to beat that, " + controller.getPlayerTwoName() 
+														+ ".");
+					lblOtherPlayerScore.setText(controller.getPlayerOneName() + " : " + 
+												controller.getPlayerOneScore());
+					sliderNumberOfSteps.setValue(1);
+				}
+				
+			}
+		}
+	}
+	
 	private void startNewSingleplayerGame() {
 		String playerName = JOptionPane.showInputDialog(null,
 				  "Please enter your name",
 				  "Enter your name",
 				  JOptionPane.QUESTION_MESSAGE);
 		controller.newSingleplayerGame(playerName);
+		displayedSwapDialog = false;
+		displayedEndGameDialog = false;
+		updateGUI();
+	}
+	
+	private void startNewMultiplayerGame() {
+		String playerOneName = JOptionPane.showInputDialog(null,
+		        "Player 1, please enter your name",
+		        "Enter your name",
+		        JOptionPane.QUESTION_MESSAGE);
+		String playerTwoName = JOptionPane.showInputDialog(null,
+		      	"Player 2, please enter your name",
+		      	"Enter your name",
+		      	JOptionPane.QUESTION_MESSAGE);
+		String messageText = playerOneName + ", you will be first to operate the plant.\n" +
+		      				 "Use the mouse to control the pumps, valves and control rods.\n" +
+		      				 "Choose how many timesteps you would like to advance by and press\n" +
+		      				 "the step button to progress through the game. If you lose control\n" +
+		      				 "of the reactor, there is a tank of emergency cooling water that\n" +
+		      				 "can be introduced into the core - this is the Quench feature, use\n" +
+		      				 "wisely - you only have enough water for one usage!" +
+		      				 "\n\n" +
+		      				 playerTwoName + ", you will be working to destroy the reactor by\n" +
+		      				 "causing failures in critical components. Use the number keys 1-5 to\n" +
+		      				 "fail the components that appear across the bottom of the screen.\n" +
+		      				 "Optionally, you can toggle random failures on/off by pressing 6 but\n" +
+		      				 "you will not be able to force failure of any components while random\n" +
+		      				 "failures are enabled." +
+		      				 "\n\n" +
+		      				 "After " + controller.getStepsPerPlayer() + " timesteps, you will swap controls and " +
+		      				 playerTwoName + " will attempt\nto set a higher score." ;
+		
+		JOptionPane.showMessageDialog(null, messageText);
+		controller.newMultiplayerGame(playerOneName, playerTwoName);
+		displayedSwapDialog = false;
+		displayedEndGameDialog = false;
 		updateGUI();
 	}
     
+	
+	// ------- Player 2 key listeners! -------
+
+		/**
+		 * Initialises a key press listener for the entire application, not just
+		 * specific components.
+		 */
+		private void initialiseOpponentKeyListeners() {
+			KeyboardFocusManager.getCurrentKeyboardFocusManager()
+					.addKeyEventDispatcher(new KeyEventDispatcher() {
+						@Override
+						public boolean dispatchKeyEvent(KeyEvent event) {
+							// Only capture and act upon KEY_PRESSED events.
+							if (event.getID() == KeyEvent.KEY_PRESSED)
+								keyPressActionHandler(event);
+							return false;
+						}
+					});
+		}
+
+		/**
+		 * Acts upon KeyEvents that it is passed. ie fails the relevant component.
+		 * 
+		 * @param event KeyEvent
+		 */
+		private void keyPressActionHandler(KeyEvent event) {
+			if (controller.isMultiplayer()) {
+				switch (event.getKeyCode()) {
+				case FAIL_PUMP_1:
+					controller.failPump(1);
+					break;
+				case FAIL_PUMP_2:
+					controller.failPump(2);
+					break;
+				case FAIL_PUMP_3:
+					controller.failPump(3);
+					break;
+				case FAIL_TURBINE:
+					controller.failTurbine();
+					break;
+				case FAIL_OS:
+					controller.failOS();
+					break;
+				case TOGGLE_RANDOM_FAILURES:
+					controller.toggleRandomFailures();
+					updateGUI();
+				default:
+					break;
+				}
+			}
+		}
+
 }

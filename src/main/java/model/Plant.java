@@ -38,7 +38,7 @@ public class Plant implements Serializable {
 	
 	private String playerName;
 	private boolean gameOver;
-	private boolean multiplayer;
+	private boolean randomFailures;
 	private int score;
 	private List<Repair> beingRepaired;
 	private boolean isPaused;
@@ -138,8 +138,7 @@ public class Plant implements Serializable {
 				flowUpdater.updateFlow();
 				updatePlant();
 				updateCriticalComponentsHealth();
-				// If not in multiplayer mode then invoke random failures.
-				if (!isMultiplayer()) updateRandomFailures();
+				if (isRandomFailures()) updateRandomFailures();
 			}
 			else {
 				break;
@@ -226,8 +225,13 @@ public class Plant implements Serializable {
 	}
 	
 	private void updateCriticalComponentsHealth() throws GameOverException {
-		getReactor().updateHealth();
-		getCondenser().updateHealth();
+		try {
+			getReactor().updateHealth();
+			getCondenser().updateHealth();
+		} catch (GameOverException goe) {
+			gameOver = true;
+			throw goe;
+		}
 	}
 
 	/**
@@ -651,24 +655,6 @@ public class Plant implements Serializable {
 	public boolean isGameOver() {
 		return this.gameOver;
 	}
-
-	/**
-	 * Returns true if the game is currently in multiplayer mode.
-	 * 
-	 * @return true if the game is currently in multiplayer mode.
-	 */
-	public boolean isMultiplayer() {
-		return this.multiplayer;
-	}
-
-	/**
-	 * Turns on/off multiplayer mode.
-	 * 
-	 * @param multiplayer true to set the game to multiplayer mode.
-	 */
-	public void setMultiplayer(boolean multiplayer) {
-		this.multiplayer = multiplayer;
-	}
 	
 	private void assignComponentsToFields(List<PlantComponent> components) {
 		initialiseListFields();
@@ -697,5 +683,13 @@ public class Plant implements Serializable {
 		this.pumps = new ArrayList<Pump>();
 		this.valves = new ArrayList<Valve>();
 		this.connectorPipes = new ArrayList<ConnectorPipe>();
+	}
+
+	public void setRandomFailures(boolean randomFailures) {
+		this.randomFailures = randomFailures;
+	}
+
+	public boolean isRandomFailures() {
+		return randomFailures;
 	}
 }

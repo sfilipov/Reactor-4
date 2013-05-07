@@ -33,6 +33,10 @@ public class Multiplayer2Controller {
 		model.loadGame();
 	}
 	
+	public int getCurrentPlayerNumber() {
+		return model.getCurrentPlayerNumber();
+	}
+	
 	public void setPlayerOneName(String playerOneName) {
 		model.setPlayerOneName(playerOneName);
 	}
@@ -41,17 +45,22 @@ public class Multiplayer2Controller {
 		model.setPlayerTwoName(playerTwoName);
 	}
 	
-	/** 
-	 * @deprecated Use only until normal multiplayer functionality is implemented! 
-	 */ 
-	public boolean toggleMultiplayer() {
-		if (model.isMultiplayer()) {
-			model.newSingleplayerGame("");
+	public boolean toggleRandomFailures() {
+		if (model.isRandomFailures()) {
+			model.setRandomFailures(false);
 			return false;
 		} else {
-			model.newMultiplayerGame("", "");
+			model.setRandomFailures(true);
 			return true;
 		}
+	}
+	
+	public int getStepsPerPlayer() {
+		return model.getStepsPerPlayer();
+	}
+	
+	public boolean isRandomFailures() {
+		return model.isRandomFailures();
 	}
 	
 	public String getPlayerOneName() {
@@ -62,12 +71,20 @@ public class Multiplayer2Controller {
 		return model.getPlayerTwoName();
 	}
 	
+	public String getCurrentPlayerName() {
+		return model.getCurrentPlayerName();
+	}
+	
 	public int getPlayerOneScore() {
 		return model.getPlayerOneScore();
 	}
 	
 	public int getPlayerTwoScore() {
 		return model.getPlayerTwoScore();
+	}
+	
+	public int getCurrentPlayerScore() {
+		return model.getCurrentPlayerScore();
 	}
 	
 	public boolean isMultiplayer() {
@@ -84,6 +101,10 @@ public class Multiplayer2Controller {
 	
 	public void step(int numSteps) {
 		model.step(numSteps);
+	}
+	
+	public int numberOfStepsUntilSwap() {
+		return model.getStepsLeftOfTurn();
 	}
 	
 	public void setControlRods(int percentageLowered) {

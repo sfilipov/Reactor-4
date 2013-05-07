@@ -11,6 +11,8 @@ import components.Turbine;
 
 public class MultiplayerModel implements Model, Observable, Serializable {
 	
+	private static final int STEPS_PER_PLAYER = 100; // Number of steps each player plays until the swapping. 
+	
 	private Plant plantOne;
 	private Plant plantTwo;
 	private Plant currentlyPlaying;
@@ -19,7 +21,7 @@ public class MultiplayerModel implements Model, Observable, Serializable {
 	
 	private int stepCount;
 	private boolean multiplayer;
-	private boolean gameOver;
+	//private boolean gameOver;
 	
 	private List<Observer> observers;
 	
@@ -27,7 +29,7 @@ public class MultiplayerModel implements Model, Observable, Serializable {
 		plantOne = new Plant();
 		plantTwo = new Plant();
 		persistence = new MultiplayerPersistenceManager(this);
-		gameOver = false;
+		//gameOver = false;
 		observers = new ArrayList<Observer>();
 	}
 	
@@ -38,7 +40,7 @@ public class MultiplayerModel implements Model, Observable, Serializable {
 		
 		this.stepCount = model.stepCount;
 		this.multiplayer = model.multiplayer;
-		this.gameOver = model.gameOver;
+		//this.gameOver = model.gameOver;
 		
 		notifyObservers();
 	}
@@ -49,8 +51,8 @@ public class MultiplayerModel implements Model, Observable, Serializable {
 		currentlyPlaying = plantOne;
 		stepCount = 0;
 		multiplayer = false;
-		gameOver = false;
-		
+		//gameOver = false;
+		currentlyPlaying.setRandomFailures(true);
 		notifyObservers();
 	}
 
@@ -58,11 +60,11 @@ public class MultiplayerModel implements Model, Observable, Serializable {
 	public void newMultiplayerGame(String playerOneName, String playerTwoName) {
 		plantOne.newGame(playerOneName);
 		plantTwo.newGame(playerTwoName);
-		currentlyPlaying = plantTwo;
+		currentlyPlaying = plantOne;
 		stepCount = 0;
 		multiplayer = true;
-		gameOver = false;
-		
+		currentlyPlaying.setRandomFailures(false);
+		//gameOver = false;
 		notifyObservers();
 	}
 
@@ -88,6 +90,11 @@ public class MultiplayerModel implements Model, Observable, Serializable {
 		plantTwo.setOperatorName(playerTwoName);
 		notifyObservers();
 	}
+	
+	@Override
+	public int getCurrentPlayerNumber() {
+		return currentlyPlaying.equals(plantOne) ? 1 : 2;
+	}
 
 	@Override
 	public String getPlayerOneName() {
@@ -97,6 +104,11 @@ public class MultiplayerModel implements Model, Observable, Serializable {
 	@Override
 	public String getPlayerTwoName() {
 		return plantTwo.getOperatorName();
+	}
+	
+	@Override
+	public String getCurrentPlayerName() {
+		return currentlyPlaying.getOperatorName();
 	}
 
 	@Override
@@ -110,13 +122,31 @@ public class MultiplayerModel implements Model, Observable, Serializable {
 	}
 	
 	@Override
+	public int getCurrentPlayerScore() {
+		return currentlyPlaying.getScore();
+	}
+	
+	@Override
 	public boolean isMultiplayer() {
 		return multiplayer;
 	}
 	
 	@Override
 	public boolean isGameOver() {
-		return gameOver;
+		return currentlyPlaying.isGameOver();
+	}
+	
+	@Override
+	public boolean isQuenchAvailable() {
+		return currentlyPlaying.isQuenchAvailable();
+	}
+
+	public boolean isRandomFailures() {
+		return currentlyPlaying.isRandomFailures();
+	}
+
+	public void setRandomFailures(boolean randomFailures) {
+		currentlyPlaying.setRandomFailures(randomFailures);
 	}
 
 	@Override
@@ -131,9 +161,10 @@ public class MultiplayerModel implements Model, Observable, Serializable {
 			currentlyPlaying.step(numSteps);
 		} catch (GameOverException e) {
 			gameOver();
+		} finally {
+			swapPlayers();
+			notifyObservers();
 		}
-		swapPlayers();
-		notifyObservers();
 	}
 
 	@Override
@@ -287,14 +318,19 @@ public class MultiplayerModel implements Model, Observable, Serializable {
 	}
 	
 	private void gameOver() {
-		gameOver = true;
+		//gameOver = true;
 		HighScore highScore = new HighScore(currentlyPlaying.getOperatorName(), currentlyPlaying.getScore());
 		persistence.addHighScore(highScore);
+		notifyObservers();
 	}
 	
 	private void swapPlayers() {
-		if(multiplayer && stepCount > 50 && !gameOver) {
-			//TODO Insert swapPlayers logic
+		// assume player 1 starts.
+		if(multiplayer && (stepCount >= STEPS_PER_PLAYER || isGameOver())) {
+			currentlyPlaying = plantTwo;
+			stepCount = 0;
+			//gameOver = false;
+			notifyObservers();
 		}
 	}
 
@@ -331,8 +367,11 @@ public class MultiplayerModel implements Model, Observable, Serializable {
 		return false;
 	}
 
-	@Override
-	public boolean isQuenchAvailable() {
-		return currentlyPlaying.isQuenchAvailable();
+	public int getStepsLeftOfTurn() {
+		return STEPS_PER_PLAYER - stepCount;
+	}
+
+	public int getStepsPerPlayer() {
+		return STEPS_PER_PLAYER;
 	}
 }
