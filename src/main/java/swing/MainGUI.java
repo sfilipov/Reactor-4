@@ -3,6 +3,7 @@ package swing;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.ComponentOrientation;
+import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -20,6 +21,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
+import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
@@ -67,12 +69,12 @@ public class MainGUI implements Observer
     private JTextField nameTextField;
     
     //the buttons which effect is not dependent on the operating software
-    private JButton btnNewGame;
+    private JButton btnNewSingleplayerGame;
+    private JButton btnNewMultiplayerGame;
     private JButton btnLoad;
     private JButton btnSave;
     private JButton btnShowManual;
     private JButton btnShowScores;
-    private JButton btnToggleMultiplayer;
     private JButton btnQuenchReactor;
     
     //make a number of steps
@@ -94,7 +96,7 @@ public class MainGUI implements Observer
     private JLabel lblTurbineState;
     private JLabel lblOperatingSoftwareState;
     
-    
+    private JLabel lblOtherPlayerScore;
     private JLabel lblScore;
     
     //this label shows how many timesteps will be issued
@@ -218,6 +220,15 @@ public class MainGUI implements Observer
         lblScore.setBounds(860, 81, 160, 23);
         layeredPane.setLayer(lblScore, 1);
         layeredPane.add(lblScore);
+        
+      //initialises the label that shows the score
+        lblOtherPlayerScore = new JLabel("");
+        lblOtherPlayerScore.setFont(new Font("Tahoma", Font.BOLD, 15));
+        lblOtherPlayerScore.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+        lblOtherPlayerScore.setForeground(new Color(0,255,0));
+        lblOtherPlayerScore.setBounds(320, 10, 160, 23);
+        layeredPane.setLayer(lblOtherPlayerScore, 2);
+        layeredPane.add(lblOtherPlayerScore);
         
         //the player should type in their name in that text field
         //when the field loses focus the text is checked and if it is not
@@ -427,28 +438,34 @@ public class MainGUI implements Observer
         
         //starts a new game when pressed
         //and updates the gui
-        btnNewGame = new JButton(newGameImageIcon);
-        btnNewGame.setToolTipText("New Game");
-        btnNewGame.setMargin(new Insets(0,0,0,0));
-        btnNewGame.setBorder(null);
-        btnNewGame.setBounds(749, 17, 40, 40);
-        btnNewGame.addActionListener(new ActionListener() {
+        btnNewSingleplayerGame = new JButton(newGameImageIcon);
+        btnNewSingleplayerGame.setToolTipText("New Singleplayer Game");
+        btnNewSingleplayerGame.setMargin(new Insets(0,0,0,0));
+        btnNewSingleplayerGame.setBorder(null);
+        btnNewSingleplayerGame.setBounds(749, 17, 40, 40);
+        btnNewSingleplayerGame.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnNewSingleplayerGame.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
-                btnNewGame.setEnabled(false);
-                controller.newSingleplayerGame(initialNameValue);
+                btnNewSingleplayerGame.setEnabled(false);
+                String playerName = JOptionPane.showInputDialog(null,
+                		  "Please enter your name",
+                		  "Enter your name",
+                		  JOptionPane.QUESTION_MESSAGE);
+                controller.newSingleplayerGame(playerName);
                 updateGUI();
-                btnNewGame.setEnabled(true);
+                btnNewSingleplayerGame.setEnabled(true);
                 sliderNumberOfSteps.setValue(1);
             }
         });
-        layeredPane.setLayer(btnNewGame, 1);
-        layeredPane.add(btnNewGame);
+        layeredPane.setLayer(btnNewSingleplayerGame, 1);
+        layeredPane.add(btnNewSingleplayerGame);
         
         //loads the saved game and updates the gui
         btnLoad = new JButton(loadGameImageIcon);
         btnLoad.setToolTipText("Load Game");
         btnLoad.setMargin(new Insets(0,0,0,0));
         btnLoad.setBorder(null);
+        btnLoad.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnLoad.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent arg0) {
         		controller.loadGame();
@@ -465,6 +482,7 @@ public class MainGUI implements Observer
         btnSave.setMargin(new Insets(0,0,0,0));
         btnSave.setBorder(null);
         btnSave.setBounds(849, 17, 40, 40);
+        btnSave.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnSave.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 btnSave.setEnabled(false);
@@ -482,6 +500,7 @@ public class MainGUI implements Observer
         btnShowScores.setToolTipText("Leaderboard");
         btnShowScores.setMargin(new Insets(0,0,0,0));
         btnShowScores.setBorder(null);
+        btnShowScores.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnShowScores.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent arg0) {
         		showScores();
@@ -509,24 +528,37 @@ public class MainGUI implements Observer
         btnShowManual.setMargin(new Insets(0,0,0,0));
         btnShowManual.setBorder(null);
         btnShowManual.setBounds(899, 17, 40, 40);
+        btnShowManual.setCursor(new Cursor(Cursor.HAND_CURSOR));
         layeredPane.setLayer(btnShowManual, 1);
         layeredPane.add(btnShowManual);
         
         // Button that toggles multiplayer on and off!
-        btnToggleMultiplayer = new JButton();
-        btnToggleMultiplayer.setToolTipText("Multiplayer on/off");
-        btnToggleMultiplayer.setText("S");
-        btnToggleMultiplayer.setMargin(new Insets(0,0,0,0));
-        btnToggleMultiplayer.setBorder(null);
-        btnToggleMultiplayer.addActionListener(new ActionListener() {
+        btnNewMultiplayerGame = new JButton();
+        btnNewMultiplayerGame.setToolTipText("Start new multiplayer game");
+        btnNewMultiplayerGame.setText("2P");
+        btnNewMultiplayerGame.setMargin(new Insets(0,0,0,0));
+        btnNewMultiplayerGame.setBorder(null);
+        btnNewMultiplayerGame.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnNewMultiplayerGame.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent arg0) {
-        		boolean multiplayer = controller.toggleMultiplayer();
-        		btnToggleMultiplayer.setText((multiplayer) ? "M" : "S");
+        		btnNewMultiplayerGame.setEnabled(false);
+                String playerOneName = JOptionPane.showInputDialog(null,
+		                "Player 1, please enter your name",
+		                "Enter your name",
+		                JOptionPane.QUESTION_MESSAGE);
+                String playerTwoName = JOptionPane.showInputDialog(null,
+		              	"Player 2, please enter your name",
+		              	"Enter your name",
+		              	JOptionPane.QUESTION_MESSAGE);
+                controller.newMultiplayerGame(playerOneName, playerTwoName);
+                updateGUI();
+                btnNewMultiplayerGame.setEnabled(true);
+                sliderNumberOfSteps.setValue(1);
         	}
         });
-        btnToggleMultiplayer.setBounds(999, 17, 40, 40);
-        layeredPane.setLayer(btnToggleMultiplayer, 1);
-        layeredPane.add(btnToggleMultiplayer);
+        btnNewMultiplayerGame.setBounds(999, 17, 40, 40);
+        layeredPane.setLayer(btnNewMultiplayerGame, 1);
+        layeredPane.add(btnNewMultiplayerGame);
         
         
         //when this button is pressed it takes the value of the sliderNumber of time steps,
@@ -539,6 +571,7 @@ public class MainGUI implements Observer
         btnStep.setBounds(426, 500, 49, 39);
         btnStep.setMargin(new Insets(0,0,0,0));
         btnStep.setBorder(null);
+        btnStep.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnStep.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 for(int i=0;i<sliderNumberOfSteps.getValue();i++)
@@ -560,6 +593,7 @@ public class MainGUI implements Observer
         //used to open and close the first valve
         btnValve1 = new JButton(valveOpenedImageIcon);
         btnValve1.setBounds(860, 508, 59, 23);
+        btnValve1.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnValve1.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (controlButtonsEnabled)
@@ -584,6 +618,7 @@ public class MainGUI implements Observer
         //used to open and close the second valve
         btnValve2 = new JButton(valveOpenedImageIcon);
         btnValve2.setBounds(968, 508, 59, 23);
+        btnValve2.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnValve2.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (controlButtonsEnabled)
@@ -611,6 +646,7 @@ public class MainGUI implements Observer
         btnQuenchReactor.setBackground(new Color(30,255,30)); // Green
         btnQuenchReactor.setToolTipText(quenchToolTip);
         btnQuenchReactor.setBounds(38, 440, 100, 38);
+        btnQuenchReactor.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnQuenchReactor.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 controller.quenchReactor();
@@ -623,6 +659,7 @@ public class MainGUI implements Observer
         //issues a repair command to pump 1 if it is not operational
         btnRepairPump1 = new JButton(repairButtonDisabledImageIcon);
         btnRepairPump1.setBounds(283, 626, 59, 57);
+        btnRepairPump1.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnRepairPump1.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if(!controller.isPumpOperational(1) && controlButtonsEnabled)
@@ -641,6 +678,7 @@ public class MainGUI implements Observer
         //issues a repair command to pump 2 if it is not operational
         btnRepairPump2 = new JButton(repairButtonDisabledImageIcon);
         btnRepairPump2.setBounds(506, 626, 59, 57);
+        btnRepairPump2.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnRepairPump2.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if(!controller.isPumpOperational(2) && controlButtonsEnabled)
@@ -659,6 +697,7 @@ public class MainGUI implements Observer
         //issues a repair command to pump 3 if it is not operational
         btnRepairPump3 = new JButton(repairButtonDisabledImageIcon);
         btnRepairPump3.setBounds(726, 626, 59, 57);
+        btnRepairPump3.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnRepairPump3.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if(!controller.isPumpOperational(3) && controlButtonsEnabled)
@@ -679,6 +718,7 @@ public class MainGUI implements Observer
         btnRepairTurbine.setBounds(836, 626, 59, 57);
         btnRepairTurbine.setMargin(new Insets(0,0,0,0));
         btnRepairTurbine.setBorder(null);
+        btnRepairTurbine.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnRepairTurbine.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if(!controller.isTurbineOperational()  && controlButtonsEnabled)
@@ -699,6 +739,7 @@ public class MainGUI implements Observer
         btnRepairOperatingSoftware.setBounds(937, 626, 59, 57);
         btnRepairOperatingSoftware.setMargin(new Insets(0,0,0,0));
         btnRepairOperatingSoftware.setBorder(null);
+        btnRepairOperatingSoftware.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnRepairOperatingSoftware.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if(!controller.isSoftwareOperational())
