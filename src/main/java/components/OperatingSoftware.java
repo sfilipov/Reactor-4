@@ -18,10 +18,11 @@ import java.util.Random;
  * 
  * @author Velislav
  */
-public class OperatingSoftware extends RandomlyFailableComponent {
+public class OperatingSoftware extends RandomlyFailableComponent implements ForcedFailableComponent, UpdatableComponent {
     
     public final static int DEFAULT_FAILURE_RATE = 10; //1%
     public final static int DEFAULT_REPAIR_TIME = 3;
+	private final static int DEFAULT_STEPS_UNTIL_FORCE_FAILABLE = 7;
     private final static int MAX_FAILURE_RATE = 50; //5%
     
     //controls the chance of doing nothing relative to storing different command
@@ -41,6 +42,7 @@ public class OperatingSoftware extends RandomlyFailableComponent {
     private boolean on;
     private int rpm;
     private int percentageLowered;
+	private int stepsUntilForceFailable;
  
     private Random random = new Random();
     
@@ -309,4 +311,29 @@ public class OperatingSoftware extends RandomlyFailableComponent {
     {
         return percentageLowered;
     }
+    
+	@Override
+	public void setOperational(boolean operational) {
+		super.setOperational(operational);
+		if (operational == false) {
+			stepsUntilForceFailable = DEFAULT_STEPS_UNTIL_FORCE_FAILABLE;
+		}
+	}
+
+	@Override
+	public int numStepsUntilFailable() {
+		return stepsUntilForceFailable;
+	}
+
+	@Override
+	public boolean isForceFailable() {
+		return (stepsUntilForceFailable == 0) ? true : false;
+	}
+
+	@Override
+	public void updateState() {
+		if (stepsUntilForceFailable > 0) {
+			stepsUntilForceFailable--;
+		}
+	}
 }

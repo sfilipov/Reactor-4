@@ -12,11 +12,13 @@ public class Turbine extends RandomlyFailableComponent implements UpdatableCompo
 
 	public final static int DEFAULT_FAILURE_RATE = 10; //1%
 	public final static int DEFAULT_REPAIR_TIME = 5;
+	private final static int DEFAULT_STEPS_UNTIL_FORCE_FAILABLE = 10;
 	private final static int MAX_FAILURE_RATE = 25;
 	private static final int MAX_TURBINE_RPM = 3500;
 	
 	private int rpm;
 	private int maxSteamThroughput;
+	private int stepsUntilForceFailable;
 	
 	/**
 	 * 
@@ -43,6 +45,10 @@ public class Turbine extends RandomlyFailableComponent implements UpdatableCompo
 		this.rpm = (this.isOperational()) ? newRpm : 0;
 		
 		increaseFailureRate();
+		
+		if (stepsUntilForceFailable > 0) {
+			stepsUntilForceFailable--;
+		}
 	}
 	
 	/**
@@ -55,14 +61,20 @@ public class Turbine extends RandomlyFailableComponent implements UpdatableCompo
 	}
 
 	@Override
+	public void setOperational(boolean operational) {
+		super.setOperational(operational);
+		if (operational == false) {
+			stepsUntilForceFailable = DEFAULT_STEPS_UNTIL_FORCE_FAILABLE;
+		}
+	}
+
+	@Override
 	public int numStepsUntilFailable() {
-		// TODO Auto-generated method stub
-		return 0;
+		return stepsUntilForceFailable;
 	}
 
 	@Override
 	public boolean isForceFailable() {
-		// TODO Auto-generated method stub
-		return false;
-	}	
+		return (stepsUntilForceFailable == 0) ? true : false;
+	}
 }

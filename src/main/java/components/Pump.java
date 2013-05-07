@@ -6,7 +6,7 @@ package components;
  * 
  * @author Lamprey
  */
-public class Pump extends RandomlyFailableComponent {
+public class Pump extends RandomlyFailableComponent implements ForcedFailableComponent, UpdatableComponent {
 
 	private static final long serialVersionUID = -446684199807618671L;
 	
@@ -14,14 +14,16 @@ public class Pump extends RandomlyFailableComponent {
 	private final static int DEFAULT_RPM = 0;
 	private final static boolean DEFAULT_ON_STATE = true;
 	private final static int MAX_RPM = 1000; 
-	public final static int DEFAULT_FAILURE_RATE = 10; //1%
-	public final static int DEFAULT_REPAIR_TIME = 5;
+	private final static int DEFAULT_FAILURE_RATE = 10; //1%
+	private final static int DEFAULT_REPAIR_TIME = 5;
+	private final static int DEFAULT_STEPS_UNTIL_FORCE_FAILABLE = 5;
 	private final static int MAX_FAILURE_RATE = 50; //5%
 	// the maximum flow rate for a pump when it is on and not broken
 	private final static int MAX_WATER_FLOW_RATE_PER_PUMP = 400;
-	
+
 	private int ID;
 	private int rpm;
+	private int stepsUntilForceFailable;
 	
 	/**
 	 * Constructs a pump with the selected ID.
@@ -32,6 +34,7 @@ public class Pump extends RandomlyFailableComponent {
 		super(DEFAULT_FAILURE_RATE, DEFAULT_REPAIR_TIME, MAX_FAILURE_RATE);
 		this.ID = ID;
 		setRpm(DEFAULT_RPM);
+		stepsUntilForceFailable = 0;
 	}
 	
 	/**
@@ -101,5 +104,30 @@ public class Pump extends RandomlyFailableComponent {
 	public static int getMaxWaterFlowRatePerPump()
 	{
 		return MAX_WATER_FLOW_RATE_PER_PUMP;
+	}
+	
+	@Override
+	public void setOperational(boolean operational) {
+		super.setOperational(operational);
+		if (operational == false) {
+			stepsUntilForceFailable = DEFAULT_STEPS_UNTIL_FORCE_FAILABLE;
+		}
+	}
+
+	@Override
+	public int numStepsUntilFailable() {
+		return stepsUntilForceFailable;
+	}
+
+	@Override
+	public boolean isForceFailable() {
+		return (stepsUntilForceFailable == 0) ? true : false;
+	}
+
+	@Override
+	public void updateState() {
+		if (stepsUntilForceFailable > 0) {
+			stepsUntilForceFailable--;
+		}
 	}
 }
