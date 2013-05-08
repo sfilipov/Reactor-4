@@ -22,7 +22,7 @@ public class OperatingSoftware extends RandomlyFailableComponent implements Forc
     
     public final static int DEFAULT_FAILURE_RATE = 10; //1%
     public final static int DEFAULT_REPAIR_TIME = 3;
-	private final static int DEFAULT_STEPS_UNTIL_FORCE_FAILABLE = 7;
+	private final static int DEFAULT_STEPS_UNTIL_FORCE_FAILABLE = 20;
     private final static int MAX_FAILURE_RATE = 50; //5%
     
     //controls the chance of doing nothing relative to storing different command

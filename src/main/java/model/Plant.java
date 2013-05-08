@@ -359,6 +359,15 @@ public class Plant implements Serializable {
 		return pumps;
 	}
 	
+	public Pump getPump(int pumpID) {
+		for (Pump pump : getPumps()) {
+			if (pumpID == pump.getID()) {
+				return pump;
+			}
+		}
+		return null;
+	}
+	
 	public boolean isPumpOperational(int pumpID) {
 		for (Pump pump : getPumps()) {
 			if (pumpID == pump.getID()) {
@@ -691,5 +700,9 @@ public class Plant implements Serializable {
 
 	public boolean isRandomFailures() {
 		return randomFailures;
+	}
+
+	public OperatingSoftware getOS() {
+		return this.operatingSoftware;
 	}
 }

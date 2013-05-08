@@ -12,7 +12,7 @@ public class Turbine extends RandomlyFailableComponent implements UpdatableCompo
 
 	public final static int DEFAULT_FAILURE_RATE = 10; //1%
 	public final static int DEFAULT_REPAIR_TIME = 5;
-	private final static int DEFAULT_STEPS_UNTIL_FORCE_FAILABLE = 10;
+	private final static int DEFAULT_STEPS_UNTIL_FORCE_FAILABLE = 40;
 	private final static int MAX_FAILURE_RATE = 25;
 	private static final int MAX_TURBINE_RPM = 3500;
 	

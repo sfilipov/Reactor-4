@@ -16,7 +16,7 @@ public class Pump extends RandomlyFailableComponent implements ForcedFailableCom
 	private final static int MAX_RPM = 1000; 
 	private final static int DEFAULT_FAILURE_RATE = 10; //1%
 	private final static int DEFAULT_REPAIR_TIME = 5;
-	private final static int DEFAULT_STEPS_UNTIL_FORCE_FAILABLE = 5;
+	private final static int DEFAULT_STEPS_UNTIL_FORCE_FAILABLE = 10;
 	private final static int MAX_FAILURE_RATE = 50; //5%
 	// the maximum flow rate for a pump when it is on and not broken
 	private final static int MAX_WATER_FLOW_RATE_PER_PUMP = 400;

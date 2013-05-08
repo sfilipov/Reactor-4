@@ -108,7 +108,7 @@ public class Multiplayer2Controller {
 	}
 	
 	public void setControlRods(int percentageLowered) {
-		if (model.isSoftwareOperational() || model.isMultiplayer()) {
+		if (model.isSoftwareOperational()) {
 			model.setControlRods(percentageLowered);
 		} else {
 			failedSoftwareResponse();
@@ -116,7 +116,7 @@ public class Multiplayer2Controller {
 	}
 	
 	public void setPumpRpm(int pumpID, int rpm) {
-		if (model.isSoftwareOperational() || model.isMultiplayer()) {
+		if (model.isSoftwareOperational()) {
 			model.setPumpRpm(pumpID, rpm);
 		} else {
 			failedSoftwareResponse();
@@ -124,7 +124,7 @@ public class Multiplayer2Controller {
 	}
 	
 	public void setValve(int valveID, boolean open) {
-		if (model.isSoftwareOperational() || model.isMultiplayer()) {
+		if (model.isSoftwareOperational()) {
 			model.setValve(valveID, open);
 		} else {
 			failedSoftwareResponse();
@@ -132,7 +132,7 @@ public class Multiplayer2Controller {
 	}
 	
 	public void repairPump(int pumpID) {
-		if (model.isSoftwareOperational() || model.isMultiplayer()) {
+		if (model.isSoftwareOperational()) {
 			model.repairPump(pumpID);
 		} else {
 			failedSoftwareResponse();
@@ -140,7 +140,7 @@ public class Multiplayer2Controller {
 	}
 	
 	public void repairTurbine() {
-		if (model.isSoftwareOperational() || model.isMultiplayer()) {
+		if (model.isSoftwareOperational()) {
 			model.repairTurbine();
 		} else {
 			failedSoftwareResponse();
@@ -279,4 +279,16 @@ public class Multiplayer2Controller {
                 break;
     	}
     }
+
+	public int getNumStepsUntilPumpFailable(int pumpID) {
+		return model.getNumStepsUntilPumpFailable(pumpID);
+	}
+	
+	public int getNumStepsUntilTurbineFailable() {
+		return model.getNumStepsUntilTurbineFailable();
+	}
+	
+	public int getNumStepsUntilOSFailable() {
+		return model.getNumStepsUntilOSFailable();
+	}
 }

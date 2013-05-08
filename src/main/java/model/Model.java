@@ -72,6 +72,12 @@ public interface Model {
 	
 	public void failOS();
 	
+	public int getNumStepsUntilPumpFailable(int pumpID);
+	
+	public int getNumStepsUntilTurbineFailable();
+	
+	public int getNumStepsUntilOSFailable();
+	
 	//Methods giving information about randomly failing components
 	
 	public int getPumpRpm(int pumpID);

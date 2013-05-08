@@ -2,6 +2,7 @@ package swing;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.ComponentOrientation;
 import java.awt.Cursor;
 import java.awt.Desktop;
@@ -117,6 +118,8 @@ public class MainGUI implements Observer
     // How many steps are left in a players go until the swap (Multiplayer only)
     private JLabel lblStepsUntilSwap;
     
+    private JLabel lblRandomFailures;
+    
     //progress bars showing the temperature, pressure, water level and
     //health of the reactor and the condenser
     private JProgressBar progressBarReactorTemperature;
@@ -161,11 +164,17 @@ public class MainGUI implements Observer
     private int tempValue;
 
 	private boolean displayedSwapDialog;
-
-	private JLabel lblRandomFailures;
-
 	private boolean displayedEndGameDialog;
-    
+
+	// Steps until failable labels.
+	private JLabel lblPump1Failable;
+	private JLabel lblPump2Failable;
+	private JLabel lblPump3Failable;
+	private JLabel lblOSFailable;
+	private JLabel lblTurbineFailable;
+
+	private ImageIcon multiGameImageIcon;
+	
     /**
      * The constructor sets the controller object, initialises the gui
      * and makes it visible.
@@ -247,6 +256,8 @@ public class MainGUI implements Observer
         
         imageURL = this.getClass().getClassLoader().getResource("newButtonLabel.png");
         newGameImageIcon = new ImageIcon(imageURL);
+        imageURL = this.getClass().getClassLoader().getResource("newMultiButtonLabel.png");
+        multiGameImageIcon = new ImageIcon(imageURL);
         imageURL = this.getClass().getClassLoader().getResource("loadButtonLabel.png");
         loadGameImageIcon = new ImageIcon(imageURL);
         imageURL = this.getClass().getClassLoader().getResource("saveButtonLabel.png");
@@ -271,7 +282,7 @@ public class MainGUI implements Observer
         lblOtherPlayerScore.setFont(new Font("Tahoma", Font.BOLD, 15));
         lblOtherPlayerScore.setHorizontalAlignment(SwingConstants.LEFT);
         lblOtherPlayerScore.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-        lblOtherPlayerScore.setForeground(new Color(0,255,0));
+        lblOtherPlayerScore.setForeground(new Color(20,220,0));
         lblOtherPlayerScore.setBounds(320, 10, 160, 23);
         layeredPane.setLayer(lblOtherPlayerScore, 2);
         layeredPane.add(lblOtherPlayerScore);
@@ -287,11 +298,6 @@ public class MainGUI implements Observer
         layeredPane.setLayer(lblRandomFailures, 2);
         layeredPane.add(lblRandomFailures);
         
-        //the player should type in their name in that text field
-        //when the field loses focus the text is checked and if it is not
-        //empty or bigger than 15 characters, it is set as the operator's name
-        //if the text is bigger than 15 characters only the first 15 are used
-        //if the text field is empty, the initial text is set put it
         nameTextField = new JLabel(initialNameValue);
         nameTextField.setFont(new Font("Tahoma", Font.PLAIN, 14));
         nameTextField.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
@@ -316,7 +322,7 @@ public class MainGUI implements Observer
         lblStepsUntilSwap.setHorizontalAlignment(SwingConstants.LEFT);
         lblStepsUntilSwap.setFont(new Font("Tahoma", Font.PLAIN, 30));
         lblStepsUntilSwap.setBounds(495, 499, 80, 40);
-        lblStepsUntilSwap.setForeground(new Color(0, 255, 0));
+        lblStepsUntilSwap.setForeground(new Color(20,220,0));
         lblStepsUntilSwap.setOpaque(false);
         layeredPane.setLayer(lblStepsUntilSwap, 1);
         layeredPane.add(lblStepsUntilSwap);
@@ -348,6 +354,52 @@ public class MainGUI implements Observer
         lblOperatingSoftwareState.setBounds(927, 592, 78, 23);
         layeredPane.setLayer(lblOperatingSoftwareState, 1);
         layeredPane.add(lblOperatingSoftwareState);
+        
+        
+        //initialises the label that shows how many steps until pump 1 can be forcably failed.
+        lblPump1Failable = new JLabel("");
+        lblPump1Failable.setFont(new Font("Tahoma", Font.BOLD, 20));
+        lblPump1Failable.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+        lblPump1Failable.setForeground(new Color(50,120,0));
+        lblPump1Failable.setBounds(112, 555, 160, 23);
+        layeredPane.setLayer(lblPump1Failable, 2);
+        layeredPane.add(lblPump1Failable);
+      
+        //initialises the label that shows how many steps until pump 1 can be forcably failed.
+        lblPump2Failable = new JLabel("");
+        lblPump2Failable.setFont(new Font("Tahoma", Font.BOLD, 20));
+        lblPump2Failable.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+        lblPump2Failable.setForeground(new Color(50,120,0));
+        lblPump2Failable.setBounds(333, 555, 160, 23);
+        layeredPane.setLayer(lblPump2Failable, 2);
+        layeredPane.add(lblPump2Failable);
+        
+      //initialises the label that shows how many steps until pump 1 can be forcably failed.
+        lblPump3Failable = new JLabel("");
+        lblPump3Failable.setFont(new Font("Tahoma", Font.BOLD, 20));
+        lblPump3Failable.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+        lblPump3Failable.setForeground(new Color(50,120,0));
+        lblPump3Failable.setBounds(554, 555, 160, 23);
+        layeredPane.setLayer(lblPump3Failable, 2);
+        layeredPane.add(lblPump3Failable);
+        
+      //initialises the label that shows how many steps until pump 1 can be forcably failed.
+        lblTurbineFailable = new JLabel("");
+        lblTurbineFailable.setFont(new Font("Tahoma", Font.BOLD, 20));
+        lblTurbineFailable.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+        lblTurbineFailable.setForeground(new Color(50,120,0));
+        lblTurbineFailable.setBounds(666, 555, 160, 23);
+        layeredPane.setLayer(lblTurbineFailable, 2);
+        layeredPane.add(lblTurbineFailable);
+        
+      //initialises the label that shows how many steps until pump 1 can be forcably failed.
+        lblOSFailable = new JLabel("");
+        lblOSFailable.setFont(new Font("Tahoma", Font.BOLD, 20));
+        lblOSFailable.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+        lblOSFailable.setForeground(new Color(50,120,0));
+        lblOSFailable.setBounds(3775, 555, 160, 23);
+        layeredPane.setLayer(lblOSFailable, 2);
+        layeredPane.add(lblOSFailable);
         
         //creation and instantiation of the progress bars
         //change state listeners added at the end of this method
@@ -498,6 +550,25 @@ public class MainGUI implements Observer
         layeredPane.setLayer(btnNewSingleplayerGame, 1);
         layeredPane.add(btnNewSingleplayerGame);
         
+     // Button that toggles multiplayer on and off!
+        btnNewMultiplayerGame = new JButton(multiGameImageIcon);
+        btnNewMultiplayerGame.setToolTipText("Start new multiplayer game");
+        btnNewMultiplayerGame.setMargin(new Insets(0,0,0,0));
+        btnNewMultiplayerGame.setBorder(null);
+        btnNewMultiplayerGame.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnNewMultiplayerGame.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent arg0) {
+        		btnNewMultiplayerGame.setEnabled(false);
+                startNewMultiplayerGame();
+                btnNewMultiplayerGame.setEnabled(true);
+                sliderNumberOfSteps.setValue(1);
+        	}
+        });
+        btnNewMultiplayerGame.setBounds(799, 17, 40, 40);
+        layeredPane.setLayer(btnNewMultiplayerGame, 1);
+        layeredPane.add(btnNewMultiplayerGame);
+        
+        
         //loads the saved game and updates the gui
         btnLoad = new JButton(loadGameImageIcon);
         btnLoad.setToolTipText("Load Game");
@@ -510,7 +581,7 @@ public class MainGUI implements Observer
         		updateGUI();
         	}
         });
-        btnLoad.setBounds(799, 17, 40, 40);
+        btnLoad.setBounds(849, 17, 40, 40);
         layeredPane.setLayer(btnLoad, 1);
         layeredPane.add(btnLoad);
         
@@ -519,7 +590,7 @@ public class MainGUI implements Observer
         btnSave.setToolTipText("Save Game");
         btnSave.setMargin(new Insets(0,0,0,0));
         btnSave.setBorder(null);
-        btnSave.setBounds(849, 17, 40, 40);
+        btnSave.setBounds(899, 17, 40, 40);
         btnSave.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnSave.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -544,7 +615,7 @@ public class MainGUI implements Observer
         		showScores();
         	}
         });
-        btnShowScores.setBounds(949, 17, 40, 40);
+        btnShowScores.setBounds(999, 17, 40, 40);
         layeredPane.setLayer(btnShowScores, 1);
         layeredPane.add(btnShowScores);
         
@@ -552,7 +623,7 @@ public class MainGUI implements Observer
         btnShowManual = new JButton(viewManualImageIcon);
         btnShowManual.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent arg0) {
-        		java.net.URL manualURL = this.getClass().getClassLoader().getResource("Manual3.pdf");
+        		java.net.URL manualURL = this.getClass().getClassLoader().getResource("Manual.pdf");
                 try{
                 	 Desktop.getDesktop().open(new File(manualURL.getPath()));
                 }catch (IOException e)
@@ -565,30 +636,10 @@ public class MainGUI implements Observer
         btnShowManual.setToolTipText("Manual");
         btnShowManual.setMargin(new Insets(0,0,0,0));
         btnShowManual.setBorder(null);
-        btnShowManual.setBounds(899, 17, 40, 40);
+        btnShowManual.setBounds(949, 17, 40, 40);
         btnShowManual.setCursor(new Cursor(Cursor.HAND_CURSOR));
         layeredPane.setLayer(btnShowManual, 1);
         layeredPane.add(btnShowManual);
-        
-        // Button that toggles multiplayer on and off!
-        btnNewMultiplayerGame = new JButton();
-        btnNewMultiplayerGame.setToolTipText("Start new multiplayer game");
-        btnNewMultiplayerGame.setText("2P");
-        btnNewMultiplayerGame.setMargin(new Insets(0,0,0,0));
-        btnNewMultiplayerGame.setBorder(null);
-        btnNewMultiplayerGame.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btnNewMultiplayerGame.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent arg0) {
-        		btnNewMultiplayerGame.setEnabled(false);
-                startNewMultiplayerGame();
-                btnNewMultiplayerGame.setEnabled(true);
-                sliderNumberOfSteps.setValue(1);
-        	}
-        });
-        btnNewMultiplayerGame.setBounds(999, 17, 40, 40);
-        layeredPane.setLayer(btnNewMultiplayerGame, 1);
-        layeredPane.add(btnNewMultiplayerGame);
-        
         
         //when this button is pressed it takes the value of the sliderNumber of time steps,
         //and issues a single time step at a time to the plant
@@ -603,13 +654,8 @@ public class MainGUI implements Observer
         btnStep.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnStep.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
-                for(int i=0;i<sliderNumberOfSteps.getValue();i++)
-            	{
-                	if (!controller.isGameOver()) {
-						controller.step(1);
-						updateGUI();
-					}
-            	}
+            	controller.step(sliderNumberOfSteps.getValue());
+            	updateGUI();
                 detectSwapAndNotify();
             }
         });
@@ -1107,17 +1153,30 @@ public class MainGUI implements Observer
         if (controller.isMultiplayer()) {
         	lblRandomFailures.setText("Random Failures : " + 
         							  (controller.isRandomFailures() ? "On!" : "Off"));
-        	lblStepsUntilSwap.setText("" + controller.numberOfStepsUntilSwap());
+        	lblStepsUntilSwap.setText(zeroToBlankString(controller.numberOfStepsUntilSwap()));
+        	lblPump1Failable.setText(zeroToBlankString(controller.getNumStepsUntilPumpFailable(1)));
+        	lblPump2Failable.setText(zeroToBlankString(controller.getNumStepsUntilPumpFailable(2)));
+        	lblPump3Failable.setText(zeroToBlankString(controller.getNumStepsUntilPumpFailable(3)));
+        	lblTurbineFailable.setText(zeroToBlankString(controller.getNumStepsUntilTurbineFailable()));
+        	lblOSFailable.setText(zeroToBlankString(controller.getNumStepsUntilOSFailable()));
         } else { 
         	lblStepsUntilSwap.setText("");
         	lblRandomFailures.setText("");
+        	lblPump1Failable.setText("");
+        	lblPump2Failable.setText("");
+        	lblPump3Failable.setText("");
+        	lblTurbineFailable.setText("");
+        	lblOSFailable.setText("");
         }
         
     }
     
+    private String zeroToBlankString(int i) {
+    	return (i == 0) ? "" : "" + i;
+    }
+    
     private void checkEndGameAndHandleIt()
     {
-    	System.out.println("endGameHandler call");
     	if (controller.isGameOver() && !displayedEndGameDialog) {
 	    	if (controller.isMultiplayer()) {
 	    		System.out.println("1");
@@ -1129,19 +1188,19 @@ public class MainGUI implements Observer
 	    			System.out.println("3");
 	    			updateGUI();
 	    			showMultiplayerEndGameDialog();
+	    			initGame();
 	    		}
 	    	} else {
 	    		// Single player
-	    		EndGameGUI endGameGui = new EndGameGUI(this, controller.getPlayerOneScore());
-	    		startNewSingleplayerGame();
+	    		updateGUI();
+	    		showSingleplayerEndGameDialog();
+	    		//EndGameGUI endGameGui = new EndGameGUI(this, controller.getPlayerOneScore());
 	    	}
 			sliderNumberOfSteps.setValue(1);
-			initGame();
     	}
     }
-    
-    
-    /**
+
+	/**
      * 
      * @return the main frame - used for relative positioning
      */
@@ -1159,6 +1218,35 @@ public class MainGUI implements Observer
     {
     	ScoresGUI scoresGui = new ScoresGUI(this, controller);
     }
+    
+
+    private void showSingleplayerEndGameDialog() {
+		String messageText = controller.getPlayerOneName() + 
+							 ", you scored:\n" +
+							 controller.getPlayerOneScore() +
+							 "\n\nWhat would you like to do now?";
+		Object[] options = {"Play again", "Play 2-player",  "Show Highscores", "Exit" };
+    	String titleText = "Nice score!";		
+    	int opt = JOptionPane.showOptionDialog(null, messageText, titleText,
+    	JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
+    	null, options, options[0]);
+    	switch (opt) {
+    		case 0: // Play again
+    			startNewSingleplayerGame();
+    			break;
+    		case 1: // Play wid dem ova playaz
+    			startNewMultiplayerGame();
+    			break;
+    		case 2: // show highscores 
+    			showScores();
+    			break;
+    		case 3: // Exit!
+    		default:
+    			System.exit(0);
+    			break;
+    	}
+    	
+	}
     
     private void showMultiplayerEndGameDialog() {
     	String messageText = controller.getPlayerOneName() + 
